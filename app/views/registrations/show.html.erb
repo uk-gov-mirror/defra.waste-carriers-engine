@@ -1,0 +1,14 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Reg identifier:</strong>
+  <%= @registration.reg_identifier %>
+</p>
+
+<p>
+  <strong>Company name:</strong>
+  <%= @registration.company_name %>
+</p>
+
+<%= link_to 'Edit', edit_registration_path(@registration) %> |
+<%= link_to 'Back', registrations_path %>
