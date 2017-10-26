@@ -4,7 +4,7 @@ RSpec.describe Registration, type: :model do
 
   describe "#status" do
     context "when a registration is created" do
-      let(:registration) { Registration.new }
+      let(:registration) { build(:registration) }
 
       it "has 'pending' status" do
         expect(registration).to have_state(:pending)
@@ -12,7 +12,7 @@ RSpec.describe Registration, type: :model do
     end
 
     context "when a registration is pending" do
-      let(:registration) { Registration.new(status: :pending) }
+      let(:registration) { build(:registration, status: :pending) }
 
       it "has 'pending' status" do
         expect(registration).to have_state(:pending)
@@ -48,7 +48,7 @@ RSpec.describe Registration, type: :model do
     end
 
     context "when a registration is active" do
-      let(:registration) { Registration.new(status: :active) }
+      let(:registration) { build(:registration, status: :active) }
 
       it "has 'active' status" do
         expect(registration).to have_state(:active)
@@ -57,11 +57,6 @@ RSpec.describe Registration, type: :model do
       it "can be revoked" do
         expect(registration).to allow_event :revoke
         expect(registration).to transition_from(:active).to(:revoked).on_event(:revoke)
-      end
-
-      it "can be renewed" do
-        expect(registration).to allow_event :renew
-        expect(registration).to transition_from(:active).to(:active).on_event(:renew)
       end
 
       it "can expire" do
@@ -81,10 +76,27 @@ RSpec.describe Registration, type: :model do
         expect(registration).to_not allow_transition_to(:pending)
         expect(registration).to_not allow_transition_to(:refused)
       end
+
+      context "when the registration expiration date is more than 6 months away" do
+        let(:registration) { build(:registration, status: :active, expires_on: 1.year.from_now) }
+
+        it "cannot be renewed" do
+          expect(registration).to_not allow_event :renew
+        end
+      end
+
+      context "when the registration expiration date is less than 6 months away" do
+        let(:registration) { build(:registration, status: :active, expires_on: 1.month.from_now) }
+
+        it "can be renewed" do
+          expect(registration).to allow_event :renew
+          expect(registration).to transition_from(:active).to(:active).on_event(:renew)
+        end
+      end
     end
 
     context "when a registration is refused" do
-      let(:registration) { Registration.new(status: :refused) }
+      let(:registration) { build(:registration, status: :refused) }
 
       it "has 'refused' status" do
         expect(registration).to have_state(:refused)
@@ -99,7 +111,7 @@ RSpec.describe Registration, type: :model do
     end
 
     context "when a registration is revoked" do
-      let(:registration) { Registration.new(status: :revoked) }
+      let(:registration) { build(:registration, status: :revoked) }
 
       it "has 'revoked' status" do
         expect(registration).to have_state(:revoked)
@@ -114,7 +126,7 @@ RSpec.describe Registration, type: :model do
     end
 
     context "when a registration is expired" do
-      let(:registration) { Registration.new(status: :expired) }
+      let(:registration) { build(:registration, status: :expired, expires_on: 1.month.ago) }
 
       it "has 'expired' status" do
         expect(registration).to have_state(:expired)

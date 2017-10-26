@@ -40,18 +40,19 @@ module CanChangeStatus
         transitions from: %i[active
                              expired],
                     to: :active,
-                    after: :update_registration_dates
+                    guard: :close_to_expiry_date?
       end
+    end
+
+    def close_to_expiry_date?
+      expiry_day = expires_on.to_date
+      six_months_from_today = 6.months.from_now
+
+      expiry_day < six_months_from_today
     end
 
     def log_status_change
       logger.debug "Changing from #{aasm.from_state} to #{aasm.to_state} (event: #{aasm.current_event})"
-    end
-
-    def update_registration_dates
-      logger.debug "3 more years!"
-      # TODO: Update the dates
-      # Maybe move this method out of here - should probably be a separate module
     end
   end
 end

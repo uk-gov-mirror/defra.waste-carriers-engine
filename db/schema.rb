@@ -11,14 +11,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20171026101356) do
+ActiveRecord::Schema.define(version: 20171026101322) do
 
   create_table "registrations", force: :cascade do |t|
     t.string   "reg_identifier"
     t.string   "company_name"
+    t.string   "status"
+    t.datetime "expires_on"
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
-    t.string   "status"
   end
 
 end
