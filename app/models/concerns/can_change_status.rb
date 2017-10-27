@@ -1,5 +1,6 @@
 module CanChangeStatus
   extend ActiveSupport::Concern
+  include Mongoid::Document
 
   included do
     include AASM
