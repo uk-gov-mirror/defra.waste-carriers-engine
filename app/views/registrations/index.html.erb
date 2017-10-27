@@ -14,8 +14,8 @@
   <tbody>
     <% @registrations.each do |registration| %>
       <tr>
-        <td><%= registration.reg_identifier %></td>
-        <td><%= registration.company_name %></td>
+        <td><%= registration.regIdentifier %></td>
+        <td><%= registration.companyName %></td>
         <td><%= link_to 'Show', registration %></td>
         <td><%= link_to 'Edit', edit_registration_path(registration) %></td>
         <td><%= link_to 'Destroy', registration, method: :delete, data: { confirm: 'Are you sure?' } %></td>

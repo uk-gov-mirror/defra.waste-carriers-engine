@@ -2,11 +2,13 @@ class Registration
   include CanChangeStatus
   include Mongoid::Document
 
-  field :reg_identifier, type: String
-  field :company_name, type: String
+  # Fields
+  field :regIdentifier, type: String
+  field :companyName, type: String
   field :status, type: String
-  field :expires_on, type: DateTime
+  field :expiresOn, type: DateTime
 
-  validates :reg_identifier, :status,
+  # Validations
+  validates :regIdentifier, :status,
             presence: true
 end
