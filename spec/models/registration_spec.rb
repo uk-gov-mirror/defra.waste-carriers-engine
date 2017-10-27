@@ -47,8 +47,19 @@ RSpec.describe Registration, type: :model do
       end
     end
 
+    context "when a registration is activated" do
+      let(:registration) { build(:registration, status: :pending) }
+
+      it "sets expires_on 3 years in the future" do
+        expect(registration.expires_on).to be_nil
+        registration.activate
+        # Use .to_i to ignore milliseconds when comparing time
+        expect(registration.expires_on.to_i).to eq(3.years.from_now.to_i)
+      end
+    end
+
     context "when a registration is active" do
-      let(:registration) { build(:registration, status: :active) }
+      let(:registration) { build(:registration, :has_expires_on, status: :active) }
 
       it "has 'active' status" do
         expect(registration).to have_state(:active)
@@ -91,6 +102,15 @@ RSpec.describe Registration, type: :model do
         it "can be renewed" do
           expect(registration).to allow_event :renew
           expect(registration).to transition_from(:active).to(:active).on_event(:renew)
+        end
+
+        it "extends expires_on by 3 years" do
+          old_expiry_date = registration.expires_on
+          registration.renew
+          new_expiry_date = registration.expires_on
+
+          # Use .to_i to ignore milliseconds when comparing time
+          expect(new_expiry_date.to_i).to eq((old_expiry_date + 3.years).to_i)
         end
       end
     end

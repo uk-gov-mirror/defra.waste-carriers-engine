@@ -18,7 +18,8 @@ module CanChangeStatus
       # TODO: Confirm what this workflow actually is
       event :activate do
         transitions from: :pending,
-                    to: :active
+                    to: :active,
+                    after: :set_expiry_date
       end
 
       event :revoke do
@@ -40,15 +41,27 @@ module CanChangeStatus
         transitions from: %i[active
                              expired],
                     to: :active,
-                    guard: :close_to_expiry_date?
+                    guard: :close_to_expiry_date?,
+                    after: :extend_expiry_date
       end
     end
 
+    # Guards
     def close_to_expiry_date?
       expiry_day = expires_on.to_date
       six_months_from_today = 6.months.from_now
 
       expiry_day < six_months_from_today
+    end
+
+    # Transition effects
+    def set_expiry_date
+      update_attribute(:expires_on, 3.years.from_now)
+    end
+
+    def extend_expiry_date
+      new_expiry_date = expires_on + 3.years
+      update_attribute(:expires_on, new_expiry_date)
     end
 
     def log_status_change
