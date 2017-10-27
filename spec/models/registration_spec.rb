@@ -103,6 +103,10 @@ RSpec.describe Registration, type: :model do
           expect(registration).to allow_event :renew
           expect(registration).to transition_from(:active).to(:active).on_event(:renew)
         end
+      end
+
+      context "when a registration is renewed" do
+        let(:registration) { build(:registration, status: :active, expires_on: 1.month.from_now) }
 
         it "extends expires_on by 3 years" do
           old_expiry_date = registration.expires_on
