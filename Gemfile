@@ -35,6 +35,8 @@ gem "sdoc", "~> 0.4.0", group: :doc
 # Use AASM to manage states and transitions
 gem "aasm", "~> 4.12"
 
+gem "govuk_template"
+
 group :development, :test do
   # Call "byebug" anywhere in the code to stop execution and get a debugger console
   gem "byebug"
