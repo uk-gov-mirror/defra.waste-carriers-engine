@@ -4,7 +4,8 @@ class RegistrationsController < ApplicationController
   # GET /registrations
   # GET /registrations.json
   def index
-    @registrations = Registration.all
+    # Only loading 50 for now
+    @registrations = Registration.all.limit(50)
   end
 
   # GET /registrations/1
