@@ -1,9 +1,16 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe "Registrations", type: :request do
   describe "GET /registrations" do
-    it "works! (now write some real specs)" do
+    it "returns a success response" do
       get registrations_path
+      expect(response).to have_http_status(200)
+    end
+  end
+
+  describe "GET /registrations/new" do
+    it "returns a success response" do
+      get new_registration_path
       expect(response).to have_http_status(200)
     end
   end

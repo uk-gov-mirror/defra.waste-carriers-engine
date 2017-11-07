@@ -1,10 +1,11 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe "registrations/edit", type: :view do
   before(:each) do
-    @registration = assign(:registration, Registration.create!(
-      :reg_identifier => "MyString",
-      :company_name => "MyString"
+    @registration = assign(:registration, create(
+                                            :registration,
+                                            regIdentifier: "Reg Identifier",
+                                            companyName: "Company Name Edit"
     ))
   end
 
@@ -13,9 +14,9 @@ RSpec.describe "registrations/edit", type: :view do
 
     assert_select "form[action=?][method=?]", registration_path(@registration), "post" do
 
-      assert_select "input#registration_reg_identifier[name=?]", "registration[reg_identifier]"
+      assert_select "input#registration_regIdentifier[name=?]", "registration[regIdentifier]"
 
-      assert_select "input#registration_company_name[name=?]", "registration[company_name]"
+      assert_select "input#registration_companyName[name=?]", "registration[companyName]"
     end
   end
 end
