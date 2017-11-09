@@ -5,10 +5,7 @@ class RegistrationsController < ApplicationController
   # GET /registrations.json
   def index
     # Only loading 50 for now
-    @registrations = Registration.all #.limit(50)
-    # This is a Mongoid::Criteria object. Its documents are empty
-    puts @registrations.class
-    puts @registrations.documents.is_a?(Array)
+    @registrations = Registration.all.limit(50)
   end
 
   # GET /registrations/1
