@@ -15,7 +15,6 @@ class Registration
                                 :convictionSearchResult,
                                 :convictionSignOff
 
-  # Fields
   field :uuid,                    type: String
   field :tier,                    type: String
   field :registrationType,        type: String
@@ -35,7 +34,6 @@ class Registration
   field :regIdentifier,           type: String
   field :expiresOn,               type: DateTime
 
-  # Validations
   validates :regIdentifier,
             presence: true
 end

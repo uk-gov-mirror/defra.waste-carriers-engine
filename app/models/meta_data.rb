@@ -11,4 +11,7 @@ class MetaData
   field :lastModified,    type: DateTime
   field :revokedReason,   type: String
   field :distance,        type: String # This appears to always be n/a. What is this for?
+
+  validates :status,
+            presence: true
 end
