@@ -16,5 +16,7 @@
 # end
 
 ActiveSupport::Inflector.inflections do |inflect|
+  inflect.singular("financialDetails", "financialDetails")
+  inflect.plural("keyPerson", "keyPeople")
   inflect.singular("metaData", "metaData")
 end
