@@ -15,7 +15,7 @@ class KeyPerson
   field :dob_month,   type: Integer
   field :dob_year,    type: Integer
   field :dob,         type: DateTime
-  field :person_type, type: String # Why would you add an irrelevant person?
+  field :person_type, type: String # "Key" by default, but why would you add an irrelevant person?
 
   validates :first_name, :last_name, :position, :dob, :person_type,
             presence: true

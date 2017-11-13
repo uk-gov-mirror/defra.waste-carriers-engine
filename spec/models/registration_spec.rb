@@ -1,11 +1,122 @@
 require "rails_helper"
 
 RSpec.describe Registration, type: :model do
+  describe "#regIdentifier" do
+    context "when a registration has no regIdentifier" do
+      let(:registration) { build(:registration, :has_required_data, regIdentifier: nil) }
+
+      it "is not valid" do
+        expect(registration).to_not be_valid
+      end
+    end
+  end
+
+  describe "#keyPeople" do
+    context "when a registration has one key person" do
+      let(:key_person) { build(:keyPerson, :has_required_data) }
+      let(:registration) do
+        build(:registration,
+              :has_required_data,
+              :has_required_relations,
+              keyPeople: [key_person])
+      end
+
+      it "is valid" do
+        expect(registration.keyPeople.length).to eq(1)
+        expect(registration).to be_valid
+      end
+    end
+
+    context "when a registration has multiple key people" do
+      let(:key_person_a) { build(:keyPerson, :has_required_data) }
+      let(:key_person_b) { build(:keyPerson, :has_required_data) }
+      let(:key_person_c) { build(:keyPerson, :has_required_data) }
+      let(:key_person_d) { build(:keyPerson, :has_required_data) }
+      let(:registration) do
+        build(:registration,
+              :has_required_data,
+              :has_required_relations,
+              keyPeople: [key_person_a,
+                          key_person_b,
+                          key_person_c,
+                          key_person_d])
+      end
+
+      it "is valid" do
+        expect(registration.keyPeople.length).to eq(4)
+        expect(registration).to be_valid
+      end
+    end
+
+    describe "#first_name" do
+      context "when a registration's key person does not have a first_name" do
+        let(:key_person) { build(:keyPerson, :has_required_data, first_name: nil) }
+        let(:registration) { build(:registration, :has_required_data, keyPeople: [key_person]) }
+
+        it "is not valid" do
+          expect(registration).to_not be_valid
+        end
+      end
+    end
+
+    describe "#last_name" do
+      context "when a registration's key person does not have a last_name" do
+        let(:key_person) { build(:keyPerson, :has_required_data, last_name: nil) }
+        let(:registration) { build(:registration, :has_required_data, keyPeople: [key_person]) }
+
+        it "is not valid" do
+          expect(registration).to_not be_valid
+        end
+      end
+    end
+
+    describe "#position" do
+      context "when a registration's key person does not have a position" do
+        let(:key_person) { build(:keyPerson, :has_required_data, position: nil) }
+        let(:registration) { build(:registration, :has_required_data, keyPeople: [key_person]) }
+
+        it "is not valid" do
+          expect(registration).to_not be_valid
+        end
+      end
+    end
+
+    describe "#dob" do
+      context "when a registration's key person does not have a dob" do
+        let(:key_person) { build(:keyPerson, :has_required_data, dob: nil) }
+        let(:registration) { build(:registration, :has_required_data, keyPeople: [key_person]) }
+
+        it "is not valid" do
+          expect(registration).to_not be_valid
+        end
+      end
+    end
+
+    describe "#person_type" do
+      context "when a registration's key person does not have a person_type" do
+        let(:key_person) { build(:keyPerson, :has_required_data, person_type: nil) }
+        let(:registration) { build(:registration, :has_required_data, keyPeople: [key_person]) }
+
+        it "is not valid" do
+          expect(registration).to_not be_valid
+        end
+      end
+    end
+  end
 
   describe "#metaData" do
+    context "when a registration has no metaData" do
+      let(:registration) { build(:registration, :has_required_data, metaData: nil) }
+
+      it "is not valid" do
+        expect(registration).to_not be_valid
+      end
+    end
+
     describe "#status" do
       context "when a registration is created" do
-        let(:registration) { build(:registration, :has_required_data) }
+        let(:metaData) { build(:metaData) }
+        let(:registration) { build(:registration, :has_required_data, metaData: metaData) }
 
         it "has 'pending' status" do
           expect(registration.metaData).to have_state(:pending)
@@ -185,92 +296,6 @@ RSpec.describe Registration, type: :model do
           expect(registration.metaData).to_not allow_transition_to(:pending)
           expect(registration.metaData).to_not allow_transition_to(:refused)
           expect(registration.metaData).to_not allow_transition_to(:revoked)
-        end
-      end
-    end
-  end
-
-  describe "#keyPeople" do
-    context "when a registration has one key person" do
-      let(:key_person) { build(:keyPerson, :has_required_data) }
-      let(:registration) { build(:registration, :has_required_data, keyPeople: [key_person]) }
-
-      it "is valid" do
-        expect(registration).to be_valid
-      end
-    end
-
-    context "when a registration has multiple key people" do
-      let(:key_person_a) { build(:keyPerson, :has_required_data) }
-      let(:key_person_b) { build(:keyPerson, :has_required_data) }
-      let(:key_person_c) { build(:keyPerson, :has_required_data) }
-      let(:key_person_d) { build(:keyPerson, :has_required_data) }
-      let(:registration) do
-        build(:registration,
-              :has_required_data,
-              keyPeople: [key_person_a,
-                          key_person_b,
-                          key_person_c,
-                          key_person_d])
-      end
-
-      it "is valid" do
-        expect(registration).to be_valid
-      end
-    end
-
-    describe "#first_name" do
-      context "when a registration's key person has the required data" do
-        let(:key_person) { build(:keyPerson, :has_required_data) }
-        let(:registration) { build(:registration, :has_required_data, keyPeople: [key_person]) }
-
-        it "is not valid" do
-          expect(registration).to be_valid
-        end
-      end
-
-      context "when a registration's key person has no first name" do
-        let(:key_person) { build(:keyPerson) }
-        let(:registration) { build(:registration, :has_required_data, keyPeople: [key_person]) }
-
-        it "is not valid" do
-          expect(registration).to_not be_valid
-        end
-      end
-
-      context "when a registration's key person has no last name" do
-        let(:key_person) { build(:keyPerson) }
-        let(:registration) { build(:registration, :has_required_data, keyPeople: [key_person]) }
-
-        it "is not valid" do
-          expect(registration).to_not be_valid
-        end
-      end
-
-      context "when a registration's key person has no position" do
-        let(:key_person) { build(:keyPerson) }
-        let(:registration) { build(:registration, :has_required_data, keyPeople: [key_person]) }
-
-        it "is not valid" do
-          expect(registration).to_not be_valid
-        end
-      end
-
-      context "when a registration's key person has no date of birth" do
-        let(:key_person) { build(:keyPerson) }
-        let(:registration) { build(:registration, :has_required_data, keyPeople: [key_person]) }
-
-        it "is not valid" do
-          expect(registration).to_not be_valid
-        end
-      end
-
-      context "when a registration's key person has no person type" do
-        let(:key_person) { build(:keyPerson) }
-        let(:registration) { build(:registration, :has_required_data, keyPeople: [key_person]) }
-
-        it "is not valid" do
-          expect(registration).to_not be_valid
         end
       end
     end
