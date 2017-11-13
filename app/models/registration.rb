@@ -35,6 +35,7 @@ class Registration
   field :expiresOn,               type: DateTime
 
   validates :regIdentifier,
+            :addresses,
             :metaData,
             presence: true
 end

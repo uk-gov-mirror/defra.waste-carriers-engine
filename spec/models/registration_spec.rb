@@ -11,6 +11,57 @@ RSpec.describe Registration, type: :model do
     end
   end
 
+  describe "#address" do
+    context "when a registration has one address" do
+      let(:address) { build(:address, :has_required_data) }
+      let(:registration) do
+        build(:registration,
+              :has_required_data,
+              :has_required_relations,
+              addresses: [address])
+      end
+
+      it "is valid" do
+        expect(registration).to be_valid
+      end
+    end
+
+    context "when a registration has multiple addresses" do
+      let(:address_a) { build(:address, :has_required_data) }
+      let(:address_b) { build(:address, :has_required_data) }
+      let(:registration) do
+        build(:registration,
+              :has_required_data,
+              :has_required_relations,
+              addresses: [address_a,
+                          address_b])
+      end
+
+      it "is valid" do
+        expect(registration).to be_valid
+      end
+    end
+
+    context "when a registration has no addresses" do
+      let(:registration) { build(:registration, :has_required_data, :has_required_relations, addresses: []) }
+
+      it "is not valid" do
+        expect(registration).to_not be_valid
+      end
+    end
+
+    describe "#first_name" do
+      context "when a registration's key person does not have a first_name" do
+        let(:key_person) { build(:keyPerson, :has_required_data, first_name: nil) }
+        let(:registration) { build(:registration, :has_required_data, keyPeople: [key_person]) }
+
+        it "is not valid" do
+          expect(registration).to_not be_valid
+        end
+      end
+    end
+  end
+
   describe "#keyPeople" do
     context "when a registration has one key person" do
       let(:key_person) { build(:keyPerson, :has_required_data) }
@@ -22,7 +73,6 @@ RSpec.describe Registration, type: :model do
       end
 
       it "is valid" do
-        expect(registration.keyPeople.length).to eq(1)
         expect(registration).to be_valid
       end
     end
@@ -30,20 +80,15 @@ RSpec.describe Registration, type: :model do
     context "when a registration has multiple key people" do
       let(:key_person_a) { build(:keyPerson, :has_required_data) }
       let(:key_person_b) { build(:keyPerson, :has_required_data) }
-      let(:key_person_c) { build(:keyPerson, :has_required_data) }
-      let(:key_person_d) { build(:keyPerson, :has_required_data) }
       let(:registration) do
         build(:registration,
               :has_required_data,
               :has_required_relations,
               keyPeople: [key_person_a,
-                          key_person_b,
-                          key_person_c,
-                          key_person_d])
+                          key_person_b])
       end
 
       it "is valid" do
-        expect(registration.keyPeople.length).to eq(4)
         expect(registration).to be_valid
       end
     end

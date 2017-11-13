@@ -6,6 +6,7 @@ FactoryBot.define do
 
     trait :has_required_relations do
       metaData { build(:metaData) }
+      addresses { [build(:address)] }
     end
 
     trait :has_expiresOn do
