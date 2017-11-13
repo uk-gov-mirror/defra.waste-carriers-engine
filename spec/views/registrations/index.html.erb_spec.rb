@@ -5,13 +5,13 @@ RSpec.describe "registrations/index", type: :view do
     assign(:registrations, [
              create(
                :registration,
-               :has_required_relations,
+               :has_required_data,
                regIdentifier: "Reg Identifier",
                companyName: "Company Name Index"
              ),
              create(
                :registration,
-               :has_required_relations,
+               :has_required_data,
                regIdentifier: "Reg Identifier",
                companyName: "Company Name Index"
              )

@@ -17,7 +17,6 @@ RSpec.describe Registration, type: :model do
       let(:registration) do
         build(:registration,
               :has_required_data,
-              :has_required_relations,
               addresses: [address])
       end
 
@@ -32,7 +31,6 @@ RSpec.describe Registration, type: :model do
       let(:registration) do
         build(:registration,
               :has_required_data,
-              :has_required_relations,
               addresses: [address_a,
                           address_b])
       end
@@ -43,20 +41,148 @@ RSpec.describe Registration, type: :model do
     end
 
     context "when a registration has no addresses" do
-      let(:registration) { build(:registration, :has_required_data, :has_required_relations, addresses: []) }
+      let(:registration) { build(:registration, :has_required_data, addresses: []) }
 
       it "is not valid" do
         expect(registration).to_not be_valid
       end
     end
 
-    describe "#first_name" do
-      context "when a registration's key person does not have a first_name" do
-        let(:key_person) { build(:keyPerson, :has_required_data, first_name: nil) }
-        let(:registration) { build(:registration, :has_required_data, keyPeople: [key_person]) }
+    context "when registration has an address which has a location" do
+      let(:location) { build(:location) }
+      let(:address) { build(:address, :has_required_data, location: location) }
+      let(:registration) do
+        build(:registration,
+              :has_required_data,
+              addresses: [address])
+      end
+
+      it "is valid" do
+        expect(registration).to be_valid
+      end
+    end
+  end
+
+  describe "#financeDetails" do
+    context "when a registration has a financeDetails" do
+      let(:financeDetails) { build(:financeDetails, :has_required_data) }
+      let(:registration) do
+        build(:registration,
+              :has_required_data,
+              financeDetails: financeDetails)
+      end
+
+      it "is valid" do
+        expect(registration).to be_valid
+      end
+    end
+
+    describe "#balance" do
+      context "when a registration has a financeDetails which has no balance" do
+        let(:financeDetails) { build(:financeDetails, balance: nil) }
+        let(:registration) do
+          build(:registration,
+                :has_required_data,
+                financeDetails: financeDetails)
+        end
 
         it "is not valid" do
           expect(registration).to_not be_valid
+        end
+      end
+    end
+
+    describe "#orders" do
+      context "when a registration has a financeDetails which has one order" do
+        let(:order) { build(:order) }
+        let(:financeDetails) { build(:financeDetails, :has_required_data, orders: [order]) }
+        let(:registration) do
+          build(:registration,
+                :has_required_data,
+                financeDetails: financeDetails)
+        end
+
+        it "is valid" do
+          expect(registration).to be_valid
+        end
+      end
+
+      context "when a registration has a financeDetails which has multiple orders" do
+        let(:order_a) { build(:order) }
+        let(:order_b) { build(:order) }
+        let(:financeDetails) { build(:financeDetails, :has_required_data, orders: [order_a, order_b]) }
+        let(:registration) do
+          build(:registration,
+                :has_required_data,
+                financeDetails: financeDetails)
+        end
+
+        it "is valid" do
+          expect(registration).to be_valid
+        end
+      end
+
+      describe "#orderItems" do
+        context "when a registration has a financeDetails which has an order which has an orderItem" do
+          let(:orderItem) { build(:orderItem) }
+          let(:order) { build(:order, orderItems: [orderItem]) }
+          let(:financeDetails) { build(:financeDetails, :has_required_data, orders: [order]) }
+          let(:registration) do
+            build(:registration,
+                  :has_required_data,
+                  financeDetails: financeDetails)
+          end
+
+          it "is valid" do
+            expect(registration).to be_valid
+          end
+        end
+
+        context "when a registration has a financeDetails which has an order which has multiple orderItems" do
+          let(:orderItem_a) { build(:orderItem) }
+          let(:orderItem_b) { build(:orderItem) }
+          let(:order) { build(:order, orderItems: [orderItem_a, orderItem_b]) }
+          let(:financeDetails) { build(:financeDetails, :has_required_data, orders: [order]) }
+          let(:registration) do
+            build(:registration,
+                  :has_required_data,
+                  financeDetails: financeDetails)
+          end
+
+          it "is valid" do
+            expect(registration).to be_valid
+          end
+        end
+      end
+    end
+
+    describe "#payments" do
+      context "when a registration has a financeDetails which has one payment" do
+        let(:payment) { build(:payment) }
+        let(:financeDetails) { build(:financeDetails, :has_required_data, payments: [payment]) }
+        let(:registration) do
+          build(:registration,
+                :has_required_data,
+                financeDetails: financeDetails)
+        end
+
+        it "is valid" do
+          expect(registration).to be_valid
+        end
+      end
+
+      context "when a registration has a financeDetails which has multiple payments" do
+        let(:payment_a) { build(:payment) }
+        let(:payment_b) { build(:payment) }
+        let(:financeDetails) { build(:financeDetails, :has_required_data, payments: [payment_a, payment_b]) }
+        let(:registration) do
+          build(:registration,
+                :has_required_data,
+                financeDetails: financeDetails)
+        end
+
+        it "is valid" do
+          expect(registration).to be_valid
         end
       end
     end
@@ -68,7 +194,6 @@ RSpec.describe Registration, type: :model do
       let(:registration) do
         build(:registration,
               :has_required_data,
-              :has_required_relations,
               keyPeople: [key_person])
       end
 
@@ -83,7 +208,6 @@ RSpec.describe Registration, type: :model do
       let(:registration) do
         build(:registration,
               :has_required_data,
-              :has_required_relations,
               keyPeople: [key_person_a,
                           key_person_b])
       end

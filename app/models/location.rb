@@ -1,4 +1,4 @@
-class Address
+class Location
   include Mongoid::Document
 
   embedded_in :address

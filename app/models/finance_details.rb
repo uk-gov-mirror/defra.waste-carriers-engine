@@ -8,5 +8,8 @@ class FinanceDetails
   accepts_nested_attributes_for :orders, :payments
 
   # TODO: Confirm types
-  field :balance, Type: BigDecimal
+  field :balance, type: BigDecimal
+
+  validates :balance,
+            presence: true
 end
