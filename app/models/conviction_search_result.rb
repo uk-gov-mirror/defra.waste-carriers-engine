@@ -1,7 +1,8 @@
 class ConvictionSearchResult
   include Mongoid::Document
 
-  embedded_in :registration, :keyPerson
+  embedded_in :registration
+  embedded_in :keyPerson
 
   # TODO: Confirm types
   field :match_result, type: String

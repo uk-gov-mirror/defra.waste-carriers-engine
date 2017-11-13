@@ -4,6 +4,8 @@ class KeyPerson
   embedded_in :registration
   embeds_one :convictionSearchResult
 
+  accepts_nested_attributes_for :convictionSearchResult
+
   # TODO: Confirm types
   field :first_name,  type: String
   field :last_name,   type: String
