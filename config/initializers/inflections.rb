@@ -14,3 +14,9 @@
 # ActiveSupport::Inflector.inflections(:en) do |inflect|
 #   inflect.acronym 'RESTful'
 # end
+
+ActiveSupport::Inflector.inflections do |inflect|
+  inflect.singular("financeDetails", "financeDetails")
+  inflect.plural("keyPerson", "keyPeople")
+  inflect.singular("metaData", "metaData")
+end

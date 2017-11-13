@@ -26,22 +26,22 @@ test:
       username: <%= ENV['WCRS_REGSDB_USERNAME'] || 'mongoUser' %>
       password: <%= ENV['WCRS_REGSDB_PASSWORD'] || 'password1234' %>
       hosts:
-        - <%= ENV['WCRS_REGSDB_URL1'] %>
+        - <%= ENV['WCRS_REGSDB_URL1'] || 'localhost:27017' %>
       options:
-        read: primary
         # In the test environment we lower the retries and retry interval to
         # low amounts for fast failures.
         max_retries: 1
         retry_interval: 0
     users:
       # Details for the user database
-      database: <%= ENV['WCRS_USERSDB_NAME'] || 'waste-carriers-users-test'%>
+      database: <%= ENV['WCRS_USERSDB_NAME'] || 'waste-carriers-users-test' %>
       username: <%= ENV['WCRS_USERSDB_USERNAME'] || 'mongoUser' %>
       password: <%= ENV['WCRS_USERSDB_PASSWORD'] || 'password1234' %>
       hosts:
-        - <%= ENV['WCRS_USERSDB_URL1'] %>
+        - <%= ENV['WCRS_REGSDB_URL1'] || 'localhost:27017' %>
       options:
-        read: primary
+        # In the test environment we lower the retries and retry interval to
+        # low amounts for fast failures.
         max_retries: 1
         retry_interval: 0
   options:
