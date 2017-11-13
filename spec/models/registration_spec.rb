@@ -63,6 +63,36 @@ RSpec.describe Registration, type: :model do
     end
   end
 
+  describe "#convictionSearchResult" do
+    context "when a registration has a convictionSearchResult" do
+      let(:convictionSearchResult) { build(:convictionSearchResult) }
+      let(:registration) do
+        build(:registration,
+              :has_required_data,
+              convictionSearchResult: convictionSearchResult)
+      end
+
+      it "is valid" do
+        expect(registration).to be_valid
+      end
+    end
+  end
+
+  describe "#convictionSignOffs" do
+    context "when a registration has one conviction_sign_off" do
+      let(:conviction_sign_off) { build(:conviction_sign_off) }
+      let(:registration) do
+        build(:registration,
+              :has_required_data,
+              conviction_sign_offs: [conviction_sign_off])
+      end
+
+      it "is valid" do
+        expect(registration).to be_valid
+      end
+    end
+  end
+
   describe "#financeDetails" do
     context "when a registration has a financeDetails" do
       let(:financeDetails) { build(:financeDetails, :has_required_data) }
@@ -268,6 +298,22 @@ RSpec.describe Registration, type: :model do
 
         it "is not valid" do
           expect(registration).to_not be_valid
+        end
+      end
+    end
+
+    describe "#convictionSearchResult" do
+      context "when a registration's key person has a convictionSearchResult" do
+        let(:convictionSearchResult) { build(:convictionSearchResult) }
+        let(:key_person) { build(:keyPerson, :has_required_data, convictionSearchResult: convictionSearchResult) }
+        let(:registration) do
+          build(:registration,
+                :has_required_data,
+                keyPeople: [key_person])
+        end
+
+        it "is valid" do
+          expect(registration).to be_valid
         end
       end
     end

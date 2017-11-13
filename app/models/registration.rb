@@ -6,14 +6,14 @@ class Registration
   embeds_many :keyPeople
   embeds_one :financeDetails
   embeds_one :convictionSearchResult
-  embeds_one :convictionSignOff
+  embeds_many :conviction_sign_offs
 
   accepts_nested_attributes_for :metaData,
                                 :addresses,
                                 :keyPeople,
                                 :financeDetails,
                                 :convictionSearchResult,
-                                :convictionSignOff
+                                :conviction_sign_offs
 
   field :uuid,                    type: String
   field :tier,                    type: String
