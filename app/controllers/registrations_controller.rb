@@ -1,5 +1,5 @@
 class RegistrationsController < ApplicationController
-  before_action :set_registration, only: [:show, :edit, :update, :destroy]
+  before_action :set_registration, only: %i[show edit update destroy]
 
   # GET /registrations
   # GET /registrations.json
@@ -10,8 +10,7 @@ class RegistrationsController < ApplicationController
 
   # GET /registrations/1
   # GET /registrations/1.json
-  def show
-  end
+  def show; end
 
   # GET /registrations/new
   def new
@@ -19,8 +18,7 @@ class RegistrationsController < ApplicationController
   end
 
   # GET /registrations/1/edit
-  def edit
-  end
+  def edit; end
 
   # POST /registrations
   # POST /registrations.json
