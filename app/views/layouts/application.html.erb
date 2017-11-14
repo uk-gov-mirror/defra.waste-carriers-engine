@@ -1,1 +1,12 @@
+<% content_for(:head) do %>
+  <%= stylesheet_link_tag "application", media: "all" %>
+  <!--[if IE 8]><%= stylesheet_link_tag "ie8" %><![endif]-->
+<% end %>
+
+<% content_for(:content) do %>
+  <main id="content" role="main">
+    <%= yield %>
+  </main>
+<% end %>
+
 <%= render file: 'layouts/govuk_template' %>

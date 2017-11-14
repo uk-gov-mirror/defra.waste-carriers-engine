@@ -35,6 +35,8 @@ gem "sdoc", "~> 0.4.0", group: :doc
 # Use AASM to manage states and transitions
 gem "aasm", "~> 4.12"
 
+# GOV.UK styling
+gem "govuk_elements_rails"
 gem "govuk_template"
 
 group :development, :test do

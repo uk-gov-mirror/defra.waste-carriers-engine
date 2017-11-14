@@ -65,6 +65,13 @@ GEM
     ffi (1.9.18)
     globalid (0.4.1)
       activesupport (>= 4.2.0)
+    govuk_elements_rails (3.1.2)
+      govuk_frontend_toolkit (>= 6.0.2)
+      rails (>= 4.1.0)
+      sass (>= 3.2.0)
+    govuk_frontend_toolkit (7.2.0)
+      railties (>= 3.1.0)
+      sass (>= 3.2.0)
     govuk_template (0.23.0)
       rails (>= 3.1)
     i18n (0.9.0)
@@ -199,6 +206,7 @@ DEPENDENCIES
   byebug
   coffee-rails (~> 4.1.0)
   factory_bot_rails
+  govuk_elements_rails
   govuk_template
   jbuilder (~> 2.0)
   jquery-rails
@@ -214,4 +222,4 @@ DEPENDENCIES
   web-console (~> 2.0)
 
 BUNDLED WITH
-   1.15.4
+   1.16.0.pre.3
