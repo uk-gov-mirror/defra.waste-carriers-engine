@@ -1,6 +1,7 @@
 ---
 en:
   global_proposition_header: Register as a waste carrier
+  back_link: Back
   layouts:
     application:
       beta: BETA
