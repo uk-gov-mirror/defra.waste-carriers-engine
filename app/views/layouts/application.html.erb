@@ -3,10 +3,40 @@
   <!--[if IE 8]><%= stylesheet_link_tag "ie8" %><![endif]-->
 <% end %>
 
+<% content_for :page_title, t(:global_proposition_header) %>
+
+<% content_for :header_class, "with-proposition" %>
+<% content_for :proposition_header do %>
+  <div class="header-proposition">
+    <div class="content">
+      <nav id="proposition-menu">
+        <%= link_to t(:global_proposition_header), "/", id: "proposition-name" %>
+      </nav>
+    </div>
+  </div>
+<% end %>
+
 <% content_for(:content) do %>
   <main id="content" role="main">
+    <div class="phase-banner-beta">
+      <p>
+        <strong class="phase-tag"><%= t(".beta")  %></strong>
+        <span>
+          <%= t(
+                ".feedback",
+                link: link_to(
+                  t(".feedback_link"),
+                  t(".feedback_url"),
+                  target: "_blank"
+                )
+              ).html_safe
+          %>
+        </span>
+      </p>
+    </div>
+
     <%= yield %>
   </main>
 <% end %>
 
-<%= render file: 'layouts/govuk_template' %>
+<%= render file: "layouts/govuk_template" %>
