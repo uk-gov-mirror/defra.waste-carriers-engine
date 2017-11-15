@@ -35,9 +35,12 @@ gem "sdoc", "~> 0.4.0", group: :doc
 # Use AASM to manage states and transitions
 gem "aasm", "~> 4.12"
 
+# Use Devise for user authentication
+gem "devise", "~> 4.3"
+
 # GOV.UK styling
-gem "govuk_elements_rails"
-gem "govuk_template"
+gem "govuk_elements_rails", "~> 3.1"
+gem "govuk_template", "~> 0.23"
 
 group :development, :test do
   # Call "byebug" anywhere in the code to stop execution and get a debugger console
