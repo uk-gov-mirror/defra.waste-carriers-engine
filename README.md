@@ -50,6 +50,14 @@ The renewals application also has 2 separate test databases. Currently you will 
 
 If you get a permissions error when trying to create the databases, you may need to remove the auth requirements in `/etc/mongodb.conf`. Restart Mongo after doing this for changes to take effect.
 
+## Seed data
+
+The renewals application relies on users being created as part of waste-carriers-frontend. However, you can seed the database with a test user so you can log in and access the features. (This won't work in production.)
+
+Seed the databases with:
+
+`bundle exec rake db:seed`
+
 ## Running the application
 
 Start the application with:
