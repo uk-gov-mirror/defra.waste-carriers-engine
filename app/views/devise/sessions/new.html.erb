@@ -1,10 +1,14 @@
-<p id="notice"><%= notice %></p>
-<p id="notice"><%= alert %></p>
-
 <h1 class="heading-large">Log in</h1>
 
+<% if alert || notice %>
+  <div class="error-summary" role="alert">
+    <%= alert %>
+    <%= notice %>
+  </div>
+<% end %>
+
 <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-  <%= devise_error_messages! %>
+    <%= render("shared/errors", object: resource) %>
 
   <div class="form-group">
     <%= f.label :email, class: "form-label" %>
