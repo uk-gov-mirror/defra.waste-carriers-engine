@@ -1,5 +1,6 @@
 class RegistrationsController < ApplicationController
   before_action :set_registration, only: %i[show edit update destroy]
+  before_action :authenticate_user!
 
   # GET /registrations
   # GET /registrations.json

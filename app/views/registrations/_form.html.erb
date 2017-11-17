@@ -1,15 +1,5 @@
 <%= form_for(@registration) do |f| %>
-  <% if @registration.errors.any? %>
-    <div class="error-summary" role="alert">
-      <h2 class="heading-medium error-summary-heading"><%= pluralize(@registration.errors.count, "error") %> prohibited this registration from being saved:</h2>
-
-      <ul class="error-summary-list">
-      <% @registration.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
+  <%= render("shared/errors", object: @registration) %>
 
   <div class="form-group">
     <%= f.label :regIdentifier, class: "form-label" %>
