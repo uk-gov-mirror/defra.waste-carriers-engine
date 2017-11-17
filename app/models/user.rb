@@ -29,4 +29,17 @@ class User
   field :failed_attempts, type: Integer, default: 0 # Only if lock strategy is :failed_attempts
   field :unlock_token,    type: String # Only if unlock strategy is :email or :both
   field :locked_at,       type: Time
+
+  validates :password, presence: true, length: { in: 8..128 }
+  validate :password_must_have_lowercase_uppercase_and_numeric
+
+  private
+
+  def password_must_have_lowercase_uppercase_and_numeric
+    has_lowercase = (password =~ /[a-z]/)
+    has_uppercase = (password =~ /[A-Z]/)
+    has_numeric = (password =~ /[0-9]/)
+    return true if has_lowercase && has_uppercase && has_numeric
+    errors.add(:password, I18n.t("errors.messages.weakPassword"))
+  end
 end
