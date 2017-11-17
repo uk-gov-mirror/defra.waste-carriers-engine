@@ -50,9 +50,11 @@ The renewals application also has 2 separate test databases. Currently you will 
 
 If you get a permissions error when trying to create the databases, you may need to remove the auth requirements in `/etc/mongodb.conf`. Restart Mongo after doing this for changes to take effect.
 
-## Seed data
+### Seed data
 
-The renewals application relies on users being created as part of waste-carriers-frontend. However, you can seed the database with a test user so you can log in and access the features. (This won't work in production.)
+The renewals application relies on users being created as part of waste-carriers-frontend. You should not be able to create a new user as part of a renewal.
+
+However, you can seed the database with a test user so you can log in and access the features. (This won't work in production.)
 
 Seed the databases with:
 
@@ -60,9 +62,13 @@ Seed the databases with:
 
 ## Running the application
 
+Make sure the Vagrant image with the databases is up and running.
+
 Start the application with:
 
-`bundle exec rails s`
+`bundle exec rails s p 3001`
+
+The port change is to avoid a clash with waste-carriers-frontend.
 
 ## Testing the app
 
@@ -71,3 +77,25 @@ The test suite is written in RSpec.
 To run all the tests, use:
 
 `bundle exec rspec`
+
+## Contributing to this project
+
+If you have an idea you'd like to contribute please log an issue.
+
+All contributions should be submitted via a pull request.
+
+## License
+
+THIS INFORMATION IS LICENSED UNDER THE CONDITIONS OF THE OPEN GOVERNMENT LICENCE found at:
+
+http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3
+
+The following attribution statement MUST be cited in your products and applications when using this information.
+
+> Contains public sector information licensed under the Open Government license v3
+
+### About the license
+
+The Open Government Licence (OGL) was developed by the Controller of Her Majesty's Stationery Office (HMSO) to enable information providers in the public sector to license the use and re-use of their information under a common open licence.
+
+It is designed to encourage use and re-use of information freely and flexibly, with only a few conditions.
