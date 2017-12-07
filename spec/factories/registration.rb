@@ -1,14 +1,14 @@
 FactoryBot.define do
   factory :registration do
     trait :has_required_data do
-      regIdentifier "CBDU1"
+      reg_identifier "CBDU1"
 
       metaData { build(:metaData) }
       addresses { [build(:address)] }
     end
 
-    trait :has_expiresOn do
-      expiresOn 2.years.from_now
+    trait :has_expires_on do
+      expires_on 2.years.from_now
     end
 
     trait :is_pending do

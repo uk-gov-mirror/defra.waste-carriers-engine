@@ -4,7 +4,7 @@ FactoryBot.define do
       first_name "Kate"
       last_name "Franklin"
       position "Director"
-      dob Date.new
+      date_of_birth Date.new
       person_type "Relevant"
     end
   end
