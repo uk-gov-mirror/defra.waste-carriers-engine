@@ -20,7 +20,7 @@ module CanChangeWorkflowStatus
       state :company_postcode_form
       state :company_address_form
 
-      state :key_people_director_form
+      state :key_people_form
 
       state :declare_convictions_form
       state :conviction_details_form
@@ -60,6 +60,10 @@ module CanChangeWorkflowStatus
                     to: :renewal_information_form
 
         transitions from: :renewal_information_form,
+                    to: :company_name_form,
+                    if: :skip_registration_number?
+
+        transitions from: :renewal_information_form,
                     to: :registration_number_form
 
         transitions from: :registration_number_form,
@@ -72,9 +76,9 @@ module CanChangeWorkflowStatus
                     to: :company_address_form
 
         transitions from: :company_address_form,
-                    to: :key_people_director_form
+                    to: :key_people_form
 
-        transitions from: :key_people_director_form,
+        transitions from: :key_people_form,
                     to: :declare_convictions_form
 
         transitions from: :declare_convictions_form,
@@ -125,6 +129,10 @@ module CanChangeWorkflowStatus
                     to: :renewal_information_form
 
         transitions from: :company_name_form,
+                    to: :renewal_information_form,
+                    if: :skip_registration_number?
+
+        transitions from: :company_name_form,
                     to: :registration_number_form
 
         transitions from: :company_postcode_form,
@@ -133,11 +141,11 @@ module CanChangeWorkflowStatus
         transitions from: :company_address_form,
                     to: :company_postcode_form
 
-        transitions from: :key_people_director_form,
+        transitions from: :key_people_form,
                     to: :company_address_form
 
         transitions from: :declare_convictions_form,
-                    to: :key_people_director_form
+                    to: :key_people_form
 
         transitions from: :conviction_details_form,
                     to: :declare_convictions_form
@@ -170,5 +178,11 @@ module CanChangeWorkflowStatus
                     to: :business_type_form
       end
     end
+  end
+
+  private
+
+  def skip_registration_number?
+    business_type == "soleTrader"
   end
 end
