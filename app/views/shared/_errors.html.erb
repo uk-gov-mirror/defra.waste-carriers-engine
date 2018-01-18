@@ -3,8 +3,8 @@
     <h2 class="heading-medium error-summary-heading"><%= pluralize(object.errors.count, "error") %> prohibited this from being saved:</h2>
 
     <ul class="error-summary-list">
-    <% object.errors.full_messages.each do |message| %>
-      <li><%= message %></li>
+    <% object.errors.each do |field, message| %>
+      <li><a href="#<%= field %>"><%= message %></a></li>
     <% end %>
     </ul>
   </div>

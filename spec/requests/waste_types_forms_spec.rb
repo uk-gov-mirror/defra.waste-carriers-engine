@@ -1,7 +1,7 @@
 require "rails_helper"
 
-RSpec.describe "SmartAnswersForms", type: :request do
-  describe "GET new_smart_answers_path" do
+RSpec.describe "WasteTypesForms", type: :request do
+  describe "GET new_waste_types_path" do
     context "when a valid user is signed in" do
       let(:user) { create(:user) }
       before(:each) do
@@ -13,11 +13,11 @@ RSpec.describe "SmartAnswersForms", type: :request do
           create(:transient_registration,
                  :has_required_data,
                  account_email: user.email,
-                 workflow_state: "smart_answers_form")
+                 workflow_state: "waste_types_form")
         end
 
         it "returns a success response" do
-          get new_smart_answers_form_path(transient_registration[:reg_identifier])
+          get new_waste_types_form_path(transient_registration[:reg_identifier])
           expect(response).to have_http_status(200)
         end
       end
@@ -31,14 +31,14 @@ RSpec.describe "SmartAnswersForms", type: :request do
         end
 
         it "redirects to the form for the current state" do
-          get new_business_type_form_path(transient_registration[:reg_identifier])
+          get new_waste_types_form_path(transient_registration[:reg_identifier])
           expect(response).to redirect_to(new_renewal_start_form_path(transient_registration[:reg_identifier]))
         end
       end
     end
   end
 
-  describe "POST smart_answers_forms_path" do
+  describe "POST waste_types_forms_path" do
     context "when a valid user is signed in" do
       let(:user) { create(:user) }
       before(:each) do
@@ -50,27 +50,29 @@ RSpec.describe "SmartAnswersForms", type: :request do
           create(:transient_registration,
                  :has_required_data,
                  account_email: user.email,
-                 workflow_state: "smart_answers_form")
+                 workflow_state: "waste_types_form")
         end
 
         context "when valid params are submitted" do
           let(:valid_params) {
             {
-              reg_identifier: transient_registration[:reg_identifier]
+              reg_identifier: transient_registration[:reg_identifier],
+              only_amf: "true"
             }
           }
 
           it "updates the transient registration" do
-            # TODO: Add test once data is submitted through the form
+            post waste_types_forms_path, waste_types_form: valid_params
+            expect(transient_registration.reload[:only_amf]).to eq(true)
           end
 
           it "returns a 302 response" do
-            post smart_answers_forms_path, smart_answers_form: valid_params
+            post waste_types_forms_path, waste_types_form: valid_params
             expect(response).to have_http_status(302)
           end
 
           it "redirects to the cbd_type form" do
-            post smart_answers_forms_path, smart_answers_form: valid_params
+            post waste_types_forms_path, waste_types_form: valid_params
             expect(response).to redirect_to(new_cbd_type_form_path(transient_registration[:reg_identifier]))
           end
         end
@@ -78,18 +80,18 @@ RSpec.describe "SmartAnswersForms", type: :request do
         context "when invalid params are submitted" do
           let(:invalid_params) {
             {
-              reg_identifier: "foo"
+              only_amf: "foo"
             }
           }
 
           it "returns a 302 response" do
-            post smart_answers_forms_path, smart_answers_form: invalid_params
+            post waste_types_forms_path, waste_types_form: invalid_params
             expect(response).to have_http_status(302)
           end
 
           it "does not update the transient registration" do
-            post smart_answers_forms_path, smart_answers_form: invalid_params
-            expect(transient_registration.reload[:reg_identifier]).to_not eq(invalid_params[:reg_identifier])
+            post waste_types_forms_path, waste_types_form: invalid_params
+            expect(transient_registration.reload[:only_amf]).to_not eq(invalid_params[:only_amf])
           end
         end
       end
@@ -104,29 +106,30 @@ RSpec.describe "SmartAnswersForms", type: :request do
 
         let(:valid_params) {
           {
-            reg_identifier: transient_registration[:reg_identifier]
+            reg_identifier: transient_registration[:reg_identifier],
+            only_amf: "false"
           }
         }
 
         it "does not update the transient registration" do
-          # TODO: Add test once data is submitted through the form
+          post waste_types_forms_path, waste_types_form: valid_params
+          expect(transient_registration.reload[:only_amf]).to_not eq(false)
         end
 
         it "returns a 302 response" do
-          post smart_answers_forms_path, smart_answers_form: valid_params
+          post waste_types_forms_path, waste_types_form: valid_params
           expect(response).to have_http_status(302)
         end
 
         it "redirects to the correct form for the state" do
-          post smart_answers_forms_path, smart_answers_form: valid_params
+          post waste_types_forms_path, waste_types_form: valid_params
           expect(response).to redirect_to(new_renewal_start_form_path(transient_registration[:reg_identifier]))
         end
       end
     end
   end
 
-
-  describe "GET back_smart_answers_forms_path" do
+  describe "GET back_waste_types_forms_path" do
     context "when a valid user is signed in" do
       let(:user) { create(:user) }
       before(:each) do
@@ -138,18 +141,18 @@ RSpec.describe "SmartAnswersForms", type: :request do
           create(:transient_registration,
                  :has_required_data,
                  account_email: user.email,
-                 workflow_state: "smart_answers_form")
+                 workflow_state: "waste_types_form")
         end
 
         context "when the back action is triggered" do
           it "returns a 302 response" do
-            get back_smart_answers_forms_path(transient_registration[:reg_identifier])
+            get back_waste_types_forms_path(transient_registration[:reg_identifier])
             expect(response).to have_http_status(302)
           end
 
-          it "redirects to the business type form" do
-            get back_smart_answers_forms_path(transient_registration[:reg_identifier])
-            expect(response).to redirect_to(new_business_type_form_path(transient_registration[:reg_identifier]))
+          it "redirects to the service_provided form" do
+            get back_waste_types_forms_path(transient_registration[:reg_identifier])
+            expect(response).to redirect_to(new_service_provided_form_path(transient_registration[:reg_identifier]))
           end
         end
       end
@@ -164,12 +167,12 @@ RSpec.describe "SmartAnswersForms", type: :request do
 
         context "when the back action is triggered" do
           it "returns a 302 response" do
-            get back_business_type_forms_path(transient_registration[:reg_identifier])
+            get back_waste_types_forms_path(transient_registration[:reg_identifier])
             expect(response).to have_http_status(302)
           end
 
           it "redirects to the correct form for the state" do
-            get back_business_type_forms_path(transient_registration[:reg_identifier])
+            get back_waste_types_forms_path(transient_registration[:reg_identifier])
             expect(response).to redirect_to(new_renewal_start_form_path(transient_registration[:reg_identifier]))
           end
         end
