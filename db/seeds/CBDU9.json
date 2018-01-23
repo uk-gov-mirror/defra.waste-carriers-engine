@@ -1,11 +1,11 @@
 {
   "tier": "UPPER",
   "registrationType": "carrier_broker_dealer",
-  "businessType": "partnership",
+  "businessType": "other",
   "otherBusinesses": "yes",
   "isMainService": "yes",
   "onlyAMF": "no",
-  "companyName": "Partnership Seed",
+  "companyName": "Other Seed",
   "companyNo": 1234567,
   "firstName": "Test",
   "lastName": "User",
@@ -37,33 +37,21 @@
     }
   ],
   "keyPeople": [{
-      "firstName": "Test",
-      "lastName": "Employee",
-      "dateOfBirth": "1978-01-01",
-      "position": "Partner",
-      "personType": "KEY",
-      "convictionSearchResult": {
-        "matchResult": "NO",
-        "searchedAt": "2015-07-16 00:00:00Z",
-        "confirmed": "no"
-      }
-    },
-    {
-      "firstName": "Another",
-      "lastName": "Employee",
-      "dateOfBirth": "1968-01-01",
-      "position": "Partner",
-      "personType": "KEY",
-      "convictionSearchResult": {
-        "matchResult": "NO",
-        "searchedAt": "2015-07-16 00:00:00Z",
-        "confirmed": "no"
-      }
+    "firstName": "Test",
+    "lastName": "Employee",
+    "dateOfBirth": "1978-01-01",
+    "position": "Partner",
+    "personType": "KEY",
+    "convictionSearchResult": {
+      "matchResult": "NO",
+      "searchedAt": "2015-07-16 00:00:00Z",
+      "confirmed": "no"
     }
-  ],
+  }],
   "accountEmail": "user@waste-exemplar.gov.uk",
   "declaredConvictions": "no",
   "declaration": 1,
+  "regIdentifier": "CBDU9",
   "expires_on": "2018-07-15 00:00:00Z",
   "metaData": {
     "dateRegistered": "2015-07-15 00:00:00Z",
