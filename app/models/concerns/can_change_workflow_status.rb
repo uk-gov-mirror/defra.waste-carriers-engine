@@ -47,7 +47,7 @@ module CanChangeWorkflowStatus
 
       state :cannot_renew_lower_tier_form
       state :cannot_renew_type_change_form
-      state :cannot_renew_reg_number_change_form
+      state :cannot_renew_company_no_change_form
 
       # Transitions
       event :next do
@@ -106,6 +106,10 @@ module CanChangeWorkflowStatus
 
         transitions from: :renewal_information_form,
                     to: :registration_number_form
+
+        transitions from: :registration_number_form,
+                    to: :cannot_renew_company_no_change_form,
+                    if: :require_new_registration_based_on_company_no?
 
         transitions from: :registration_number_form,
                     to: :company_name_form
@@ -201,6 +205,9 @@ module CanChangeWorkflowStatus
         transitions from: :registration_number_form,
                     to: :renewal_information_form
 
+        transitions from: :cannot_renew_company_no_change_form,
+                    to: :registration_number_form
+
         transitions from: :company_name_form,
                     to: :renewal_information_form,
                     if: :skip_registration_number?
@@ -293,6 +300,14 @@ module CanChangeWorkflowStatus
     return true if other_businesses == true && is_main_service == false && construction_waste == false
     return true if other_businesses == true && is_main_service == true && only_amf == true
     false
+  end
+
+  def require_new_registration_based_on_company_no?
+    old_company_no = Registration.where(reg_identifier: reg_identifier).first.company_no.to_s
+    # It was previously valid to have company_nos with less than 8 digits
+    # The form prepends 0s to make up the length, so we should do this for the old number to match
+    old_company_no = "0#{old_company_no}" while old_company_no.length < 8
+    old_company_no != company_no
   end
 
   def only_carries_own_waste?
