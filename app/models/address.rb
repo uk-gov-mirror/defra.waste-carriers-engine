@@ -25,6 +25,25 @@ class Address
   field :firstOrOnlyEasting, as: :first_or_only_easting,              type: Integer
   field :firstOrOnlyNorthing, as: :first_or_only_northing,            type: Integer
 
+  def self.create_from_manual_entry(params, business_type)
+    address = Address.new
+
+    address[:address_mode] = if business_type == "overseas"
+                               "manual-foreign"
+                             else
+                               "manual-uk"
+                             end
+
+    address[:house_number] = params[:house_number]
+    address[:address_line_1] = params[:address_line_1]
+    address[:address_line_2] = params[:address_line_2]
+    address[:town_city] = params[:town_city]
+    address[:postcode] = params[:postcode]
+    address[:country] = params[:country]
+
+    address
+  end
+
   def self.create_from_os_places_data(data)
     address = Address.new
 
@@ -56,5 +75,9 @@ class Address
 
     # Assign lines one at a time until we run out of lines to assign
     write_attribute(address_attributes.shift, lines.shift) until lines.empty?
+  end
+
+  def manually_entered?
+    address_mode == "manual-foreign" || address_mode == "manual-uk"
   end
 end

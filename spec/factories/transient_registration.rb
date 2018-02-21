@@ -5,12 +5,12 @@ FactoryBot.define do
       initialize_with { new(reg_identifier: create(:registration, :has_required_data, :expires_soon).reg_identifier) }
     end
 
-    trait :has_postcode do
-      temp_postcode "BS1 5AH"
+    trait :has_addresses do
+      addresses { [build(:address, :has_required_data, :registered), build(:address, :has_required_data, :contact)] }
     end
 
-    trait :has_addresses do
-      addresses { [build(:address, :has_required_data, :registered)] }
+    trait :has_postcode do
+      temp_postcode "BS1 5AH"
     end
   end
 end

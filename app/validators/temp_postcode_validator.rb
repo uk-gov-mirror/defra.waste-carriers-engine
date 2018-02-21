@@ -26,8 +26,8 @@ class TempPostcodeValidator < ActiveModel::Validator
       record.errors.add(:temp_postcode, :no_results)
       false
     when :error
-      record.errors.add(:temp_postcode, :os_places_error)
-      false
+      record.transient_registration.temp_os_places_error = true
+      true
     else
       true
     end

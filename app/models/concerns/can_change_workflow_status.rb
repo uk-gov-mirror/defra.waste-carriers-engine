@@ -26,7 +26,7 @@ module CanChangeWorkflowStatus
       state :company_name_form
       state :company_postcode_form
       state :company_address_form
-      state :company_address_overseas_form
+      state :company_address_manual_form
 
       state :key_people_form
 
@@ -115,20 +115,32 @@ module CanChangeWorkflowStatus
                     to: :company_name_form
 
         transitions from: :company_name_form,
-                    to: :company_address_overseas_form,
+                    to: :company_address_manual_form,
                     if: :overseas_address?
 
         transitions from: :company_name_form,
                     to: :company_postcode_form
 
+        # Registered address
+
+        transitions from: :company_postcode_form,
+                    to: :company_address_manual_form,
+                    if: :skip_to_manual_address?
+
         transitions from: :company_postcode_form,
                     to: :company_address_form
 
         transitions from: :company_address_form,
+                    to: :company_address_manual_form,
+                    if: :skip_to_manual_address?
+
+        transitions from: :company_address_form,
                     to: :key_people_form
 
-        transitions from: :company_address_overseas_form,
+        transitions from: :company_address_manual_form,
                     to: :key_people_form
+
+        # End registered address
 
         transitions from: :key_people_form,
                     to: :declare_convictions_form
@@ -215,21 +227,29 @@ module CanChangeWorkflowStatus
         transitions from: :company_name_form,
                     to: :registration_number_form
 
+        # Registered address
+
         transitions from: :company_postcode_form,
                     to: :company_name_form
 
         transitions from: :company_address_form,
                     to: :company_postcode_form
 
-        transitions from: :company_address_overseas_form,
-                    to: :company_name_form
+        transitions from: :company_address_manual_form,
+                    to: :company_name_form,
+                    if: :overseas_address?
+
+        transitions from: :company_address_manual_form,
+                    to: :company_postcode_form
 
         transitions from: :key_people_form,
-                    to: :company_address_overseas_form,
-                    if: :overseas_address?
+                    to: :company_address_manual_form,
+                    if: :registered_address_was_manually_entered?
 
         transitions from: :key_people_form,
                     to: :company_address_form
+
+        # End registered address
 
         transitions from: :declare_convictions_form,
                     to: :key_people_form
@@ -281,6 +301,14 @@ module CanChangeWorkflowStatus
         transitions from: :cannot_renew_lower_tier_form,
                     to: :construction_demolition_form
       end
+
+      event :skip_to_manual_address do
+        transitions from: :company_postcode_form,
+                    to: :company_address_manual_form
+
+        transitions from: :company_address_form,
+                    to: :company_address_manual_form
+      end
     end
   end
 
@@ -320,5 +348,14 @@ module CanChangeWorkflowStatus
 
   def overseas_address?
     business_type == "overseas"
+  end
+
+  def registered_address_was_manually_entered?
+    return unless registered_address
+    registered_address.manually_entered?
+  end
+
+  def skip_to_manual_address?
+    temp_os_places_error
   end
 end
