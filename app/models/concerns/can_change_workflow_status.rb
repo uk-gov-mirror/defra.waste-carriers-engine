@@ -10,9 +10,13 @@ module CanChangeWorkflowStatus
     aasm column: :workflow_state do
       # States / forms
       state :renewal_start_form, initial: true
-      state :business_type_form
 
-      state :smart_answers_form
+      state :location_form
+      state :register_in_northern_ireland_form
+      state :register_in_scotland_form
+      state :register_in_wales_form
+
+      state :business_type_form
 
       state :other_businesses_form
       state :service_provided_form
@@ -52,7 +56,39 @@ module CanChangeWorkflowStatus
       # Transitions
       event :next do
         transitions from: :renewal_start_form,
+                    to: :location_form
+
+        # Location
+
+        transitions from: :location_form,
+                    to: :register_in_northern_ireland_form,
+                    if: :should_register_in_northern_ireland?
+
+        transitions from: :location_form,
+                    to: :register_in_scotland_form,
+                    if: :should_register_in_scotland?
+
+        transitions from: :location_form,
+                    to: :register_in_wales_form,
+                    if: :should_register_in_wales?
+
+        transitions from: :location_form,
+                    to: :other_businesses_form,
+                    if: :based_overseas?
+
+        transitions from: :location_form,
                     to: :business_type_form
+
+        transitions from: :register_in_northern_ireland_form,
+                    to: :business_type_form
+
+        transitions from: :register_in_scotland_form,
+                    to: :business_type_form
+
+        transitions from: :register_in_wales_form,
+                    to: :business_type_form
+
+        # End location
 
         transitions from: :business_type_form,
                     to: :cannot_renew_lower_tier_form,
@@ -116,7 +152,7 @@ module CanChangeWorkflowStatus
 
         transitions from: :company_name_form,
                     to: :company_address_manual_form,
-                    if: :overseas_address?
+                    if: :based_overseas?
 
         transitions from: :company_name_form,
                     to: :company_postcode_form
@@ -177,10 +213,42 @@ module CanChangeWorkflowStatus
       end
 
       event :back do
-        transitions from: :business_type_form,
+        # Location
+
+        transitions from: :location_form,
                     to: :renewal_start_form
 
+        transitions from: :register_in_northern_ireland_form,
+                    to: :location_form
+
+        transitions from: :register_in_scotland_form,
+                    to: :location_form
+
+        transitions from: :register_in_wales_form,
+                    to: :location_form
+
+        # End location
+
+        transitions from: :business_type_form,
+                    to: :register_in_northern_ireland_form,
+                    if: :should_register_in_northern_ireland?
+
+        transitions from: :business_type_form,
+                    to: :register_in_scotland_form,
+                    if: :should_register_in_scotland?
+
+        transitions from: :business_type_form,
+                    to: :register_in_wales_form,
+                    if: :should_register_in_wales?
+
+        transitions from: :business_type_form,
+                    to: :location_form
+
         # Smart answers
+
+        transitions from: :other_businesses_form,
+                    to: :location_form,
+                    if: :based_overseas?
 
         transitions from: :other_businesses_form,
                     to: :business_type_form
@@ -237,7 +305,7 @@ module CanChangeWorkflowStatus
 
         transitions from: :company_address_manual_form,
                     to: :company_name_form,
-                    if: :overseas_address?
+                    if: :based_overseas?
 
         transitions from: :company_address_manual_form,
                     to: :company_postcode_form
@@ -315,7 +383,8 @@ module CanChangeWorkflowStatus
   private
 
   def skip_registration_number?
-    %w[localAuthority overseas partnership soleTrader].include?(business_type)
+    return true if overseas?
+    %w[localAuthority partnership soleTrader].include?(business_type)
   end
 
   # Charity registrations should be lower tier
@@ -346,8 +415,8 @@ module CanChangeWorkflowStatus
     is_main_service == true
   end
 
-  def overseas_address?
-    business_type == "overseas"
+  def based_overseas?
+    overseas?
   end
 
   def registered_address_was_manually_entered?
@@ -357,5 +426,17 @@ module CanChangeWorkflowStatus
 
   def skip_to_manual_address?
     temp_os_places_error
+  end
+
+  def should_register_in_northern_ireland?
+    location == "northern_ireland"
+  end
+
+  def should_register_in_scotland?
+    location == "scotland"
+  end
+
+  def should_register_in_wales?
+    location == "wales"
   end
 end

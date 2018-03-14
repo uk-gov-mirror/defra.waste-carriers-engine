@@ -21,6 +21,7 @@ module CanHaveRegistrationAttributes
     field :uuid,                                            type: String
     field :tier,                                            type: String
     field :registrationType, as: :registration_type,        type: String
+    field :location,                                        type: String
     field :businessType, as: :business_type,                type: String
     field :otherBusinesses, as: :other_businesses,          type: Boolean
     field :isMainService, as: :is_main_service,             type: Boolean
@@ -46,6 +47,10 @@ module CanHaveRegistrationAttributes
     def registered_address
       return nil unless addresses.present?
       addresses.where(address_type: "REGISTERED").first
+    end
+
+    def overseas?
+      location == "overseas"
     end
   end
 end
