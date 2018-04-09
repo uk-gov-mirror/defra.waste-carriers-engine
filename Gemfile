@@ -61,6 +61,7 @@ gem "secure_headers", "~> 5.0"
 # Validations
 gem "phonelib", require: false
 gem "uk_postcode", require: false
+gem "validates_email_format_of", require: false
 
 group :development, :test do
   # Call "byebug" anywhere in the code to stop execution and get a debugger console
