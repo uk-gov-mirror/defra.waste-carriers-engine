@@ -1,6 +1,6 @@
 module ApplicationHelper
   def self.feedback_survey_url(current_title)
-    survey_url = "https://www.smartsurvey.co.uk/s/floodexemptions/?"
+    survey_url = "https://www.smartsurvey.co.uk/s/waste-carriers/?"
     survey_params = { referringpage: current_title }
     survey_url + survey_params.to_query
   end
@@ -10,6 +10,26 @@ module ApplicationHelper
     # Remove empty elements, for example if no specific title is set
     title_elements.delete_if(&:empty?)
     title_elements.join(" - ")
+  end
+
+  def current_git_commit
+    @current_git_commit ||= begin
+      sha =
+        if Rails.env.development?
+          `git rev-parse HEAD`
+        else
+          heroku_file = Rails.root.join ".source_version"
+          capistrano_file = Rails.root.join "REVISION"
+
+          if File.exist? capistrano_file
+            File.open(capistrano_file, &:gets)
+          elsif File.exist? heroku_file
+            File.open(heroku_file, &:gets)
+          end
+        end
+
+      sha[0...7] if sha.present?
+    end
   end
 
   private
