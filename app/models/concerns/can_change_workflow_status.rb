@@ -50,6 +50,7 @@ module CanChangeWorkflowStatus
       state :cards_form
       state :payment_summary_form
       state :worldpay_form
+      state :bank_transfer_form
 
       state :renewal_complete_form
 
@@ -246,9 +247,16 @@ module CanChangeWorkflowStatus
                     to: :payment_summary_form
 
         transitions from: :payment_summary_form,
-                    to: :worldpay_form
+                    to: :worldpay_form,
+                    if: :paying_by_card?
+
+        transitions from: :payment_summary_form,
+                    to: :bank_transfer_form
 
         transitions from: :worldpay_form,
+                    to: :renewal_complete_form
+
+        transitions from: :bank_transfer_form,
                     to: :renewal_complete_form
       end
 
@@ -421,6 +429,9 @@ module CanChangeWorkflowStatus
         transitions from: :worldpay_form,
                     to: :payment_summary_form
 
+        transitions from: :bank_transfer_form,
+                    to: :payment_summary_form
+
         # Exit routes from renewals process
 
         transitions from: :cannot_renew_type_change_form,
@@ -529,5 +540,9 @@ module CanChangeWorkflowStatus
 
   def declared_convictions?
     declared_convictions == true
+  end
+
+  def paying_by_card?
+    temp_payment_method == "card"
   end
 end

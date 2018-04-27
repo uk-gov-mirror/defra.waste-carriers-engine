@@ -1,10 +1,9 @@
-class RenewalInformationForm < BaseForm
-  attr_accessor :type_change, :total_fee
+class BankTransferForm < BaseForm
+  attr_accessor :total_to_pay
 
   def initialize(transient_registration)
     super
-    self.type_change = @transient_registration.registration_type_changed?
-    self.total_fee = @transient_registration.fee_including_possible_type_change
+    self.total_to_pay = @transient_registration.total_to_pay
   end
 
   def submit(params)

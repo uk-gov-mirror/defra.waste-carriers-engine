@@ -1,7 +1,7 @@
 require "rails_helper"
 
-RSpec.describe "PaymentSummaryForms", type: :request do
-  describe "GET new_payment_summary_path" do
+RSpec.describe "BankTransferForms", type: :request do
+  describe "GET new_bank_transfer_path" do
     context "when a valid user is signed in" do
       let(:user) { create(:user) }
       before(:each) do
@@ -13,11 +13,11 @@ RSpec.describe "PaymentSummaryForms", type: :request do
           create(:transient_registration,
                  :has_required_data,
                  account_email: user.email,
-                 workflow_state: "payment_summary_form")
+                 workflow_state: "bank_transfer_form")
         end
 
         it "returns a success response" do
-          get new_payment_summary_form_path(transient_registration[:reg_identifier])
+          get new_bank_transfer_form_path(transient_registration[:reg_identifier])
           expect(response).to have_http_status(200)
         end
       end
@@ -31,14 +31,14 @@ RSpec.describe "PaymentSummaryForms", type: :request do
         end
 
         it "redirects to the form for the current state" do
-          get new_payment_summary_form_path(transient_registration[:reg_identifier])
+          get new_bank_transfer_form_path(transient_registration[:reg_identifier])
           expect(response).to redirect_to(new_renewal_start_form_path(transient_registration[:reg_identifier]))
         end
       end
     end
   end
 
-  describe "POST payment_summary_forms_path" do
+  describe "POST bank_transfer_forms_path" do
     context "when a valid user is signed in" do
       let(:user) { create(:user) }
       before(:each) do
@@ -50,60 +50,46 @@ RSpec.describe "PaymentSummaryForms", type: :request do
           create(:transient_registration,
                  :has_required_data,
                  account_email: user.email,
-                 workflow_state: "payment_summary_form")
+                 workflow_state: "bank_transfer_form")
         end
 
         context "when valid params are submitted" do
           let(:valid_params) {
             {
-              reg_identifier: transient_registration[:reg_identifier],
-              temp_payment_method: "card"
+              reg_identifier: transient_registration[:reg_identifier]
             }
           }
 
           it "updates the transient registration" do
-            post payment_summary_forms_path, payment_summary_form: valid_params
-            expect(transient_registration.reload[:temp_payment_method]).to eq(valid_params[:temp_payment_method])
+            # TODO: Add test once data is submitted through the form
           end
 
           it "returns a 302 response" do
-            post payment_summary_forms_path, payment_summary_form: valid_params
+            post bank_transfer_forms_path, bank_transfer_form: valid_params
             expect(response).to have_http_status(302)
           end
 
-          context "when the payment method is card" do
-            it "redirects to the worldpay form" do
-              post payment_summary_forms_path, payment_summary_form: valid_params
-              expect(response).to redirect_to(new_worldpay_form_path(transient_registration[:reg_identifier]))
-            end
-          end
-
-          context "when the payment method is bank transfer" do
-            before(:each) { valid_params[:temp_payment_method] = "bank_transfer" }
-
-            it "redirects to the bank_transfer form" do
-              post payment_summary_forms_path, payment_summary_form: valid_params
-              expect(response).to redirect_to(new_bank_transfer_form_path(transient_registration[:reg_identifier]))
-            end
+          it "redirects to the renewal_complete form" do
+            post bank_transfer_forms_path, bank_transfer_form: valid_params
+            expect(response).to redirect_to(new_renewal_complete_form_path(transient_registration[:reg_identifier]))
           end
         end
 
         context "when invalid params are submitted" do
           let(:invalid_params) {
             {
-              reg_identifier: "foo",
-              temp_payment_method: "foo"
+              reg_identifier: "foo"
             }
           }
 
           it "returns a 302 response" do
-            post payment_summary_forms_path, payment_summary_form: invalid_params
+            post bank_transfer_forms_path, bank_transfer_form: invalid_params
             expect(response).to have_http_status(302)
           end
 
           it "does not update the transient registration" do
-            post payment_summary_forms_path, payment_summary_form: invalid_params
-            expect(transient_registration.reload[:temp_payment_method]).to_not eq(invalid_params[:temp_payment_method])
+            post bank_transfer_forms_path, bank_transfer_form: invalid_params
+            expect(transient_registration.reload[:reg_identifier]).to_not eq(invalid_params[:reg_identifier])
           end
         end
       end
@@ -118,30 +104,28 @@ RSpec.describe "PaymentSummaryForms", type: :request do
 
         let(:valid_params) {
           {
-            reg_identifier: transient_registration[:reg_identifier],
-            temp_payment_method: "card"
+            reg_identifier: transient_registration[:reg_identifier]
           }
         }
 
         it "does not update the transient registration" do
-          post payment_summary_forms_path, payment_summary_form: valid_params
-          expect(transient_registration.reload[:temp_payment_method]).to_not eq(valid_params[:temp_payment_method])
+          # TODO: Add test once data is submitted through the form
         end
 
         it "returns a 302 response" do
-          post payment_summary_forms_path, payment_summary_form: valid_params
+          post bank_transfer_forms_path, bank_transfer_form: valid_params
           expect(response).to have_http_status(302)
         end
 
         it "redirects to the correct form for the state" do
-          post payment_summary_forms_path, payment_summary_form: valid_params
+          post bank_transfer_forms_path, bank_transfer_form: valid_params
           expect(response).to redirect_to(new_renewal_start_form_path(transient_registration[:reg_identifier]))
         end
       end
     end
   end
 
-  describe "GET back_payment_summary_forms_path" do
+  describe "GET back_bank_transfer_forms_path" do
     context "when a valid user is signed in" do
       let(:user) { create(:user) }
       before(:each) do
@@ -153,18 +137,18 @@ RSpec.describe "PaymentSummaryForms", type: :request do
           create(:transient_registration,
                  :has_required_data,
                  account_email: user.email,
-                 workflow_state: "payment_summary_form")
+                 workflow_state: "bank_transfer_form")
         end
 
         context "when the back action is triggered" do
           it "returns a 302 response" do
-            get back_payment_summary_forms_path(transient_registration[:reg_identifier])
+            get back_bank_transfer_forms_path(transient_registration[:reg_identifier])
             expect(response).to have_http_status(302)
           end
 
-          it "redirects to the cards form" do
-            get back_payment_summary_forms_path(transient_registration[:reg_identifier])
-            expect(response).to redirect_to(new_cards_form_path(transient_registration[:reg_identifier]))
+          it "redirects to the payment_summary form" do
+            get back_bank_transfer_forms_path(transient_registration[:reg_identifier])
+            expect(response).to redirect_to(new_payment_summary_form_path(transient_registration[:reg_identifier]))
           end
         end
       end
@@ -179,12 +163,12 @@ RSpec.describe "PaymentSummaryForms", type: :request do
 
         context "when the back action is triggered" do
           it "returns a 302 response" do
-            get back_payment_summary_forms_path(transient_registration[:reg_identifier])
+            get back_bank_transfer_forms_path(transient_registration[:reg_identifier])
             expect(response).to have_http_status(302)
           end
 
           it "redirects to the correct form for the state" do
-            get back_payment_summary_forms_path(transient_registration[:reg_identifier])
+            get back_bank_transfer_forms_path(transient_registration[:reg_identifier])
             expect(response).to redirect_to(new_renewal_start_form_path(transient_registration[:reg_identifier]))
           end
         end
