@@ -53,6 +53,7 @@ module CanChangeWorkflowStatus
       state :bank_transfer_form
 
       state :renewal_complete_form
+      state :renewal_received_form
 
       state :cannot_renew_lower_tier_form
       state :cannot_renew_type_change_form
@@ -254,10 +255,14 @@ module CanChangeWorkflowStatus
                     to: :bank_transfer_form
 
         transitions from: :worldpay_form,
+                    to: :renewal_received_form,
+                    if: :pending_convictions_check?
+
+        transitions from: :worldpay_form,
                     to: :renewal_complete_form
 
         transitions from: :bank_transfer_form,
-                    to: :renewal_complete_form
+                    to: :renewal_received_form
       end
 
       event :back do
@@ -544,5 +549,9 @@ module CanChangeWorkflowStatus
 
   def paying_by_card?
     temp_payment_method == "card"
+  end
+
+  def pending_convictions_check?
+    conviction_check_required?
   end
 end
