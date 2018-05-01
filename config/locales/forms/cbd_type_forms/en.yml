@@ -2,9 +2,9 @@ en:
   cbd_type_forms:
     new:
       title: Registration type
-      heading: Do you carry the waste yourselves, or arrange for others to do it?
+      heading: Do you carry the waste?
       options:
-        carrier_dealer: We carry the waste ourselves (carrier and dealer)
+        carrier_dealer: We carry the waste (carrier and dealer)
         broker_dealer: We arrange for others to carry it (broker and dealer)
         carrier_broker_dealer: We do both (carrier, broker and dealer)
       cbd_detail_subheading: What is a carrier, broker or dealer?

@@ -3,8 +3,8 @@ en:
     new:
       title: Check your tier
       heading: You are renewing an upper tier registration
-      paragraph_1: "If you're not sure if you should be upper or lower tier, you can answer a few questions about your business's activities to check."
-      paragraph_2: The questions only relate to your business activities and what type of waste you currently deal with.
+      paragraph_1: "If you’re not sure whether you should be upper or lower tier, you can check by answering a few questions about your business activities."
+      paragraph_2: "We’ll only use your answers to determine what tier your registration should be. Your answers don't affect what you can do as a registered waste carrier, or license you to perform certain activities."
       paragraph_3: "Upper tier registrations need to be renewed every 3 years for a cost. Lower tier registrations are free and don’t expire."
       tier_details_subheading: "What’s the difference between upper and lower tier?"
       tier_details_paragraph_1: This depends on what waste you deal with and who creates it.
@@ -18,8 +18,8 @@ en:
         - item: "You ONLY deal with waste you produce in the course of carrying out your business – for example, a hairdresser dealing with hair clippings. This does not include construction or demolition waste"
         - item: "You ONLY deal with waste from mines or quarries, from agricultural premises, or animal by-products"
       options:
-        "true": I want to check if my tier is correct before renewing
-        "false": I am happy to skip this check
+        "false": I know I need an upper tier registration (continue)
+        "true": I want to check my tier is correct before renewing
       error_heading: Something is wrong
       next_button: Continue
   activemodel:
