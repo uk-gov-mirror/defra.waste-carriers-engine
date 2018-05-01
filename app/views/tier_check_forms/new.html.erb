@@ -48,12 +48,12 @@
         <% end %>
 
         <div class="multiple-choice">
-          <%= f.radio_button :temp_tier_check, "true" %>
-          <%= f.label :temp_tier_check, t(".options.true"), value: "true" %>
-        </div>
-        <div class="multiple-choice">
           <%= f.radio_button :temp_tier_check, "false" %>
           <%= f.label :temp_tier_check, t(".options.false"), value: "false" %>
+        </div>
+        <div class="multiple-choice">
+          <%= f.radio_button :temp_tier_check, "true" %>
+          <%= f.label :temp_tier_check, t(".options.true"), value: "true" %>
         </div>
       </fieldset>
     </div>
