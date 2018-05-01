@@ -1,4 +1,3 @@
-<%= render("shared/back", back_path: back_cards_forms_path(@cards_form.reg_identifier)) %>
 
 <div class="text">
   <%= form_for(@cards_form) do |f| %>
@@ -9,7 +8,6 @@
     <p><%= t(".paragraph_1", card_charge: Rails.configuration.card_charge) %></p>
     <%= image_tag "example_card.jpg", alt: t(".card_alt_text") %>
     <p><%= t(".paragraph_2") %></p>
-    <p><%= t(".paragraph_3") %></p>
 
     <% if @cards_form.errors[:temp_cards].any? %>
     <div class="form-group form-group-error">
