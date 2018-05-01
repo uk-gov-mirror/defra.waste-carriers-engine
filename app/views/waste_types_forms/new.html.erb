@@ -7,9 +7,9 @@
     <h1 class="heading-large"><%= t(".heading") %></h1>
 
     <ul class="list list-bullet">
-      <li><%= t(".waste_type_1") %></li>
-      <li><%= t(".waste_type_2") %></li>
-      <li><%= t(".waste_type_3") %></li>
+      <% t(".waste_types").each do |list_item| %>
+      <li><%= list_item %></li>
+      <% end %>
     </ul>
 
     <% if @waste_types_form.errors[:only_amf].any? %>
