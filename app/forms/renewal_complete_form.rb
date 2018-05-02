@@ -12,6 +12,13 @@ class RenewalCompleteForm < BaseForm
   # Override BaseForm method as users shouldn't be able to submit this form
   def submit; end
 
+  def dashboard_link(current_user)
+    return unless current_user.present?
+    id = current_user.id
+    root = Rails.configuration.wcrs_frontend_url
+    "#{root}/user/#{id}/registrations"
+  end
+
   private
 
   def build_certificate_link
@@ -19,6 +26,6 @@ class RenewalCompleteForm < BaseForm
     return unless registration.present?
     id = registration.id
     root = Rails.configuration.wcrs_frontend_url
-    "#{root}/registrations/#{id}/view?locale=en"
+    "#{root}/registrations/#{id}/view"
   end
 end
