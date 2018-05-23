@@ -1,4 +1,6 @@
 class ContactPhoneForm < BaseForm
+  include CanNavigateFlexibly
+
   attr_accessor :phone_number
 
   def initialize(transient_registration)
@@ -14,5 +16,5 @@ class ContactPhoneForm < BaseForm
     super(attributes, params[:reg_identifier])
   end
 
-  validates_with PhoneNumberValidator
+  validates :phone_number, phone_number: true
 end

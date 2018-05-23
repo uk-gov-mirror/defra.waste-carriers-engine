@@ -1,4 +1,6 @@
 class ContactPostcodeForm < PostcodeForm
+  include CanNavigateFlexibly
+
   attr_accessor :temp_contact_postcode
 
   def initialize(transient_registration)
@@ -18,5 +20,5 @@ class ContactPostcodeForm < PostcodeForm
     super(attributes, params[:reg_identifier])
   end
 
-  validates_with PostcodeValidator, fields: [:temp_contact_postcode]
+  validates :temp_contact_postcode, postcode: true
 end

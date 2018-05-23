@@ -1,15 +1,18 @@
 require "rails_helper"
 
 RSpec.describe CompanyPostcodeForm, type: :model do
+  before do
+    example_json = { postcode: "BS1 5AH" }
+    allow_any_instance_of(AddressFinderService).to receive(:search_by_postcode).and_return(example_json)
+  end
+
   describe "#submit" do
     context "when the form is valid" do
       let(:company_postcode_form) { build(:company_postcode_form, :has_required_data) }
       let(:valid_params) { { reg_identifier: company_postcode_form.reg_identifier, temp_company_postcode: "BS1 5AH" } }
 
       it "should submit" do
-        VCR.use_cassette("company_postcode_form_valid_postcode") do
-          expect(company_postcode_form.submit(valid_params)).to eq(true)
-        end
+        expect(company_postcode_form.submit(valid_params)).to eq(true)
       end
 
       context "when the postcode is lowercase" do
@@ -18,10 +21,8 @@ RSpec.describe CompanyPostcodeForm, type: :model do
         end
 
         it "upcases it" do
-          VCR.use_cassette("company_postcode_form_modified_postcode") do
-            company_postcode_form.submit(valid_params)
-            expect(company_postcode_form.temp_company_postcode).to eq("BS1 6AH")
-          end
+          company_postcode_form.submit(valid_params)
+          expect(company_postcode_form.temp_company_postcode).to eq("BS1 6AH")
         end
       end
 
@@ -31,10 +32,8 @@ RSpec.describe CompanyPostcodeForm, type: :model do
         end
 
         it "removes them" do
-          VCR.use_cassette("company_postcode_form_modified_postcode") do
-            company_postcode_form.submit(valid_params)
-            expect(company_postcode_form.temp_company_postcode).to eq("BS1 6AH")
-          end
+          company_postcode_form.submit(valid_params)
+          expect(company_postcode_form.temp_company_postcode).to eq("BS1 6AH")
         end
       end
     end
@@ -49,107 +48,5 @@ RSpec.describe CompanyPostcodeForm, type: :model do
     end
   end
 
-  context "when a form with a valid transient registration exists" do
-    let(:company_postcode_form) { build(:company_postcode_form, :has_required_data) }
-
-    describe "#reg_identifier" do
-      context "when a reg_identifier meets the requirements" do
-        it "is valid" do
-          VCR.use_cassette("company_postcode_form_valid_postcode") do
-            expect(company_postcode_form).to be_valid
-          end
-        end
-      end
-
-      context "when a reg_identifier is blank" do
-        before(:each) do
-          company_postcode_form.reg_identifier = ""
-        end
-
-        it "is not valid" do
-          VCR.use_cassette("company_postcode_form_valid_postcode") do
-            expect(company_postcode_form).to_not be_valid
-          end
-        end
-      end
-    end
-
-    describe "#company_postcode" do
-      context "when a temp_company_postcode meets the requirements" do
-        it "is valid" do
-          VCR.use_cassette("company_postcode_form_valid_postcode") do
-            expect(company_postcode_form).to be_valid
-          end
-        end
-      end
-
-      context "when a temp_company_postcode is blank" do
-        before(:each) do
-          company_postcode_form.temp_company_postcode = ""
-        end
-
-        it "is not valid" do
-          expect(company_postcode_form).to_not be_valid
-        end
-      end
-
-      context "when a temp_company_postcode is in the wrong format" do
-        before(:each) do
-          company_postcode_form.temp_company_postcode = "foo"
-        end
-
-        it "is not valid" do
-          expect(company_postcode_form).to_not be_valid
-        end
-      end
-
-      context "when a temp_company_postcode has no matches" do
-        before(:each) do
-          company_postcode_form.temp_company_postcode = "AA1 1AA"
-        end
-
-        it "is not valid" do
-          VCR.use_cassette("company_postcode_form_no_matches_postcode") do
-            expect(company_postcode_form).to_not be_valid
-          end
-        end
-      end
-
-      context "when a postcode search returns an error" do
-        before(:each) do
-          allow_any_instance_of(AddressFinderService).to receive(:search_by_postcode).and_return(:error)
-        end
-
-        it "is valid" do
-          expect(company_postcode_form).to be_valid
-        end
-      end
-    end
-  end
-
-  describe "#transient_registration" do
-    context "when the transient registration is invalid" do
-      let(:transient_registration) do
-        build(:transient_registration,
-              workflow_state: "company_postcode_form")
-      end
-      # Don't use FactoryBot for this as we need to make sure it initializes with a specific object
-      let(:company_postcode_form) { CompanyPostcodeForm.new(transient_registration) }
-
-      before(:each) do
-        # Make reg_identifier valid for the form, but not the transient object
-        company_postcode_form.reg_identifier = transient_registration.reg_identifier
-        transient_registration.reg_identifier = "foo"
-      end
-
-      it "is not valid" do
-        expect(company_postcode_form).to_not be_valid
-      end
-
-      it "inherits the errors from the transient_registration" do
-        company_postcode_form.valid?
-        expect(company_postcode_form.errors[:base]).to include(I18n.t("mongoid.errors.models.transient_registration.attributes.reg_identifier.invalid_format"))
-      end
-    end
-  end
+  include_examples "validate postcode", form = :company_postcode_form, field = :temp_company_postcode
 end

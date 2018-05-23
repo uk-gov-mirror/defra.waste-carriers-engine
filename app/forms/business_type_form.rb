@@ -1,4 +1,6 @@
 class BusinessTypeForm < BaseForm
+  include CanNavigateFlexibly
+
   attr_accessor :business_type
 
   def initialize(transient_registration)
@@ -14,10 +16,5 @@ class BusinessTypeForm < BaseForm
     super(attributes, params[:reg_identifier])
   end
 
-  validates :business_type, inclusion: { in: %w[charity
-                                                limitedCompany
-                                                limitedLiabilityPartnership
-                                                localAuthority
-                                                partnership
-                                                soleTrader] }
+  validates :business_type, business_type: true
 end

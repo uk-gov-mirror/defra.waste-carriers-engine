@@ -1,4 +1,6 @@
 class RegistrationNumberForm < BaseForm
+  include CanNavigateFlexibly
+
   attr_accessor :company_no, :business_type
 
   def initialize(transient_registration)
@@ -18,7 +20,7 @@ class RegistrationNumberForm < BaseForm
     super(attributes, params[:reg_identifier])
   end
 
-  validates_with CompanyNoValidator
+  validates :company_no, company_no: true
 
   private
 

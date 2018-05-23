@@ -1,4 +1,6 @@
 class WasteTypesForm < BaseForm
+  include CanNavigateFlexibly
+
   attr_accessor :only_amf
 
   def initialize(transient_registration)
@@ -14,5 +16,5 @@ class WasteTypesForm < BaseForm
     super(attributes, params[:reg_identifier])
   end
 
-  validates :only_amf, inclusion: { in: [true, false] }
+  validates :only_amf, boolean: true
 end

@@ -1,4 +1,6 @@
 class CbdTypeForm < BaseForm
+  include CanNavigateFlexibly
+
   attr_accessor :registration_type
 
   def initialize(transient_registration)
@@ -14,7 +16,5 @@ class CbdTypeForm < BaseForm
     super(attributes, params[:reg_identifier])
   end
 
-  validates :registration_type, inclusion: { in: %w[carrier_dealer
-                                                    broker_dealer
-                                                    carrier_broker_dealer] }
+  validates :registration_type, registration_type: true
 end

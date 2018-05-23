@@ -1,4 +1,6 @@
 class CompanyNameForm < BaseForm
+  include CanNavigateFlexibly
+
   attr_accessor :business_type, :company_name
 
   def initialize(transient_registration)
@@ -16,5 +18,5 @@ class CompanyNameForm < BaseForm
     super(attributes, params[:reg_identifier])
   end
 
-  validates :company_name, presence: true, length: { maximum: 255 }
+  validates :company_name, company_name: true
 end

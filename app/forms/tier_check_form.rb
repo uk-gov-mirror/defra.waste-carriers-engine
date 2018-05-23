@@ -1,4 +1,6 @@
 class TierCheckForm < BaseForm
+  include CanNavigateFlexibly
+
   attr_accessor :temp_tier_check
 
   def initialize(transient_registration)
@@ -14,5 +16,5 @@ class TierCheckForm < BaseForm
     super(attributes, params[:reg_identifier])
   end
 
-  validates :temp_tier_check, inclusion: { in: [true, false] }
+  validates :temp_tier_check, boolean: true
 end

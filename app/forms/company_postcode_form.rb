@@ -1,4 +1,6 @@
 class CompanyPostcodeForm < PostcodeForm
+  include CanNavigateFlexibly
+
   attr_accessor :business_type, :temp_company_postcode
 
   def initialize(transient_registration)
@@ -20,5 +22,5 @@ class CompanyPostcodeForm < PostcodeForm
     super(attributes, params[:reg_identifier])
   end
 
-  validates_with PostcodeValidator, fields: [:temp_company_postcode]
+  validates :temp_company_postcode, postcode: true
 end

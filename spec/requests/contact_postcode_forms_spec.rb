@@ -1,42 +1,7 @@
 require "rails_helper"
 
 RSpec.describe "ContactPostcodeForms", type: :request do
-  describe "GET new_contact_postcode_path" do
-    context "when a valid user is signed in" do
-      let(:user) { create(:user) }
-      before(:each) do
-        sign_in(user)
-      end
-
-      context "when a valid transient registration exists" do
-        let(:transient_registration) do
-          create(:transient_registration,
-                 :has_required_data,
-                 account_email: user.email,
-                 workflow_state: "contact_postcode_form")
-        end
-
-        it "returns a success response" do
-          get new_contact_postcode_form_path(transient_registration[:reg_identifier])
-          expect(response).to have_http_status(200)
-        end
-      end
-
-      context "when a transient registration is in a different state" do
-        let(:transient_registration) do
-          create(:transient_registration,
-                 :has_required_data,
-                 account_email: user.email,
-                 workflow_state: "renewal_start_form")
-        end
-
-        it "redirects to the form for the current state" do
-          get new_contact_postcode_form_path(transient_registration[:reg_identifier])
-          expect(response).to redirect_to(new_renewal_start_form_path(transient_registration[:reg_identifier]))
-        end
-      end
-    end
-  end
+  include_examples "GET flexible form", form = "contact_postcode_form"
 
   describe "POST contact_postcode_forms_path" do
     context "when a valid user is signed in" do
@@ -61,25 +26,24 @@ RSpec.describe "ContactPostcodeForms", type: :request do
             }
           }
 
+          before do
+            example_json = { postcode: "BS1 6AH" }
+            allow_any_instance_of(AddressFinderService).to receive(:search_by_postcode).and_return(example_json)
+          end
+
           it "returns a 302 response" do
-            VCR.use_cassette("contact_postcode_form_modified_postcode") do
-              post contact_postcode_forms_path, contact_postcode_form: valid_params
-              expect(response).to have_http_status(302)
-            end
+            post contact_postcode_forms_path, contact_postcode_form: valid_params
+            expect(response).to have_http_status(302)
           end
 
           it "updates the transient registration" do
-            VCR.use_cassette("contact_postcode_form_modified_postcode") do
-              post contact_postcode_forms_path, contact_postcode_form: valid_params
-              expect(transient_registration.reload[:temp_contact_postcode]).to eq(valid_params[:temp_contact_postcode])
-            end
+            post contact_postcode_forms_path, contact_postcode_form: valid_params
+            expect(transient_registration.reload[:temp_contact_postcode]).to eq(valid_params[:temp_contact_postcode])
           end
 
           it "redirects to the contact_address form" do
-            VCR.use_cassette("contact_postcode_form_modified_postcode") do
-              post contact_postcode_forms_path, contact_postcode_form: valid_params
-              expect(response).to redirect_to(new_contact_address_form_path(transient_registration[:reg_identifier]))
-            end
+            post contact_postcode_forms_path, contact_postcode_form: valid_params
+            expect(response).to redirect_to(new_contact_address_form_path(transient_registration[:reg_identifier]))
           end
 
           context "when a postcode search returns an error" do
