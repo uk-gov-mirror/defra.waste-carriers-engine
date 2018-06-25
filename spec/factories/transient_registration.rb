@@ -15,8 +15,8 @@ FactoryBot.define do
 
     trait :has_key_people do
       keyPeople do
-        [build(:key_person, :has_required_data, :main),
-         build(:key_person, :has_required_data, :relevant)]
+        [build(:key_person, :has_required_data, :unmatched_conviction_search_result, :main),
+         build(:key_person, :has_required_data, :unmatched_conviction_search_result, :relevant)]
       end
     end
 
@@ -35,6 +35,10 @@ FactoryBot.define do
       end
     end
 
+    trait :has_conviction_search_result do
+      convictionSearchResult { build(:convictionSearchResult, :match_result_no) }
+    end
+
     # Overseas registrations
 
     trait :has_required_overseas_data do
@@ -50,6 +54,15 @@ FactoryBot.define do
       addresses do
         [build(:address, :has_required_data, :registered, :manual_foreign),
          build(:address, :has_required_data, :contact, :manual_foreign)]
+      end
+    end
+
+    trait :has_matching_convictions do
+      company_name "Test Waste Services"
+      company_no "12345678"
+
+      keyPeople do
+        [build(:key_person, :has_matching_conviction, :main)]
       end
     end
   end
