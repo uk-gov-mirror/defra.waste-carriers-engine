@@ -1,16 +1,17 @@
 en:
-  contact_address_manual_forms:
-    new:
-      title: Contact address
-      heading: What's the contact address?
-      os_places_error_heading: Our address finder isn't working
-      os_places_error_text: Please enter the address below.
-      error_heading: Something is wrong
-      next_button: Continue
+  waste_carriers_engine:
+    contact_address_manual_forms:
+      new:
+        title: Contact address
+        heading: What's the contact address?
+        os_places_error_heading: Our address finder isn't working
+        os_places_error_text: Please enter the address below.
+        error_heading: Something is wrong
+        next_button: Continue
   activemodel:
     errors:
       models:
-        contact_address_manual_form:
+        waste_carriers_engine/contact_address_manual_form:
           attributes:
             house_number:
               blank: "Enter the building name or number"

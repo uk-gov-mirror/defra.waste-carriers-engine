@@ -1,0 +1,39 @@
+<%= render("waste_carriers_engine/shared/back", back_path: back_service_provided_forms_path(@service_provided_form.reg_identifier)) %>
+
+<div class="text">
+  <%= form_for(@service_provided_form) do |f| %>
+    <%= render("waste_carriers_engine/shared/errors", object: @service_provided_form) %>
+
+    <h1 class="heading-large"><%= t(".heading") %></h1>
+
+    <% if @service_provided_form.errors[:is_main_service].any? %>
+    <div class="form-group form-group-error">
+    <% else %>
+    <div class="form-group">
+    <% end %>
+      <fieldset class="inline" id="is_main_service">
+        <legend class="visuallyhidden">
+          <%= t(".heading") %>
+        </legend>
+
+        <% if @service_provided_form.errors[:is_main_service].any? %>
+        <span class="error-message"><%= @service_provided_form.errors[:is_main_service].join(", ") %></span>
+        <% end %>
+
+        <div class="multiple-choice">
+          <%= f.radio_button :is_main_service, "false" %>
+          <%= f.label :is_main_service, t(".option_false"), value: "false" %>
+        </div>
+        <div class="multiple-choice">
+          <%= f.radio_button :is_main_service, "true" %>
+          <%= f.label :is_main_service, t(".option_true"), value: "true" %>
+        </div>
+      </fieldset>
+    </div>
+
+    <%= f.hidden_field :reg_identifier, value: @service_provided_form.reg_identifier %>
+    <div class="form-group">
+      <%= f.submit t(".next_button"), class: "button" %>
+    </div>
+  <% end %>
+</div>

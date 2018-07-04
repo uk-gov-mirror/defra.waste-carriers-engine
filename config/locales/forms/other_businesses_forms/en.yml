@@ -1,16 +1,17 @@
 en:
-  other_businesses_forms:
-    new:
-      title: Waste from other people
-      heading: Do you ever deal with waste from other businesses or households?
-      option_true: "Yes"
-      option_false: "No"
-      error_heading: Something is wrong
-      next_button: Continue
+  waste_carriers_engine:
+    other_businesses_forms:
+      new:
+        title: Waste from other people
+        heading: Do you ever deal with waste from other businesses or households?
+        option_true: "Yes"
+        option_false: "No"
+        error_heading: Something is wrong
+        next_button: Continue
   activemodel:
     errors:
       models:
-        other_businesses_form:
+        waste_carriers_engine/other_businesses_form:
           attributes:
             other_businesses:
               inclusion: "You must answer this question"

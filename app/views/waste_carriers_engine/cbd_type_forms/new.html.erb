@@ -1,0 +1,61 @@
+<%= render("waste_carriers_engine/shared/back", back_path: back_cbd_type_forms_path(@cbd_type_form.reg_identifier)) %>
+
+<div class="text">
+  <%= form_for(@cbd_type_form) do |f| %>
+    <%= render("waste_carriers_engine/shared/errors", object: @cbd_type_form) %>
+
+    <h1 class="heading-large"><%= t(".heading") %></h1>
+
+    <% if @cbd_type_form.errors[:registration_type].any? %>
+    <div class="form-group form-group-error">
+    <% else %>
+    <div class="form-group">
+    <% end %>
+      <fieldset id="registration_type">
+        <legend class="visuallyhidden">
+          <%= t(".heading") %>
+        </legend>
+
+        <% if @cbd_type_form.errors[:registration_type].any? %>
+        <span class="error-message"><%= @cbd_type_form.errors[:registration_type].join(", ") %></span>
+        <% end %>
+
+        <div class="multiple-choice">
+          <%= f.radio_button :registration_type, "carrier_dealer" %>
+          <%= f.label :registration_type, t(".options.carrier_dealer"), value: "carrier_dealer" %>
+        </div>
+        <div class="multiple-choice">
+          <%= f.radio_button :registration_type, "broker_dealer" %>
+          <%= f.label :registration_type, t(".options.broker_dealer"), value: "broker_dealer" %>
+        </div>
+        <p class="form-block">or</p>
+        <div class="multiple-choice">
+          <%= f.radio_button :registration_type, "carrier_broker_dealer" %>
+          <%= f.label :registration_type, t(".options.carrier_broker_dealer"), value: "carrier_broker_dealer" %>
+        </div>
+      </fieldset>
+    </div>
+
+    <div class="form-group">
+      <details>
+        <summary>
+          <span class="summary"><%= t(".cbd_detail_subheading") %></span>
+        </summary>
+        <div class="panel panel-border-narrow">
+          <p><%= t(".cbd_detail_paragraph_1") %></p>
+          <ul class="list list-bullet">
+            <li><%= t(".cbd_detail_list_item_1") %></li>
+            <li><%= t(".cbd_detail_list_item_2") %></li>
+            <li><%= t(".cbd_detail_list_item_3") %></li>
+          </ul>
+          <p><%= t(".cbd_detail_paragraph_2") %></p>
+        </div>
+      </details>
+    </div>
+
+    <%= f.hidden_field :reg_identifier, value: @cbd_type_form.reg_identifier %>
+    <div class="form-group">
+      <%= f.submit t(".next_button"), class: "button" %>
+    </div>
+  <% end %>
+</div>

@@ -1,16 +1,17 @@
 en:
-  contact_phone_forms:
-    new:
-      title: Contact telephone number
-      heading: What’s the contact telephone number?
-      phone_number_label: Telephone number
-      phone_number_hint: This can be a landline or mobile
-      error_heading: Something is wrong
-      next_button: Continue
+  waste_carriers_engine:
+    contact_phone_forms:
+      new:
+        title: Contact telephone number
+        heading: What’s the contact telephone number?
+        phone_number_label: Telephone number
+        phone_number_hint: This can be a landline or mobile
+        error_heading: Something is wrong
+        next_button: Continue
   activemodel:
     errors:
       models:
-        contact_phone_form:
+        waste_carriers_engine/contact_phone_form:
           attributes:
             phone_number:
               blank: "Enter a telephone number"

@@ -30,7 +30,7 @@ RSpec.shared_examples "POST form" do |form, valid_params, invalid_params, test_a
 
       it "does not create a transient registration" do
         post_with_params(form, params)
-        matching_transient_regs = TransientRegistration.where(reg_identifier: registration.reg_identifier)
+        matching_transient_regs = WasteCarriersEngine::TransientRegistration.where(reg_identifier: registration.reg_identifier)
         expect(matching_transient_regs.length).to eq(0)
       end
     end
@@ -103,7 +103,7 @@ RSpec.shared_examples "POST form" do |form, valid_params, invalid_params, test_a
 
           it "redirects to the invalid reg_identifier error page" do
             post_with_params(form, valid_params)
-            expect(response).to redirect_to("/errors/invalid")
+            expect(response).to redirect_to(page_path("invalid"))
           end
         end
 
@@ -112,7 +112,7 @@ RSpec.shared_examples "POST form" do |form, valid_params, invalid_params, test_a
             # Params are otherwise valid
             valid_params[:reg_identifier] = transient_registration.reg_identifier
             # But the registration is now expired
-            registration = Registration.where(reg_identifier: transient_registration.reg_identifier).first
+            registration = WasteCarriersEngine::Registration.where(reg_identifier: transient_registration.reg_identifier).first
             registration.metaData.expire!
           end
 
@@ -124,7 +124,7 @@ RSpec.shared_examples "POST form" do |form, valid_params, invalid_params, test_a
 
           it "redirects to the unrenewable error page" do
             post_with_params(form, valid_params)
-            expect(response).to redirect_to("/errors/unrenewable")
+            expect(response).to redirect_to(page_path("unrenewable"))
           end
         end
       end

@@ -1,10 +1,8 @@
-Rails.application.routes.draw do
-  devise_for :users
+WasteCarriersEngine::Engine.routes.draw do
+  devise_for :users, class_name: "WasteCarriersEngine::User", module: :devise
   devise_scope :user do
     get "/users/sign_out" => "devise/sessions#destroy"
   end
-
-  root "registrations#index"
 
   resources :registrations, only: [:index]
 
@@ -294,14 +292,14 @@ Rails.application.routes.draw do
             end
 
   resources :contact_address_manual_forms,
-    only: [:new, :create],
-    path: "contact-address-manual",
-    path_names: { new: "/:reg_identifier" } do
-      get "back/:reg_identifier",
-      to: "contact_address_manual_forms#go_back",
-      as: "back",
-      on: :collection
-    end
+            only: [:new, :create],
+            path: "contact-address-manual",
+            path_names: { new: "/:reg_identifier" } do
+              get "back/:reg_identifier",
+              to: "contact_address_manual_forms#go_back",
+              as: "back",
+              on: :collection
+            end
 
   resources :check_your_answers_forms,
             only: [:new, :create],
@@ -407,4 +405,7 @@ Rails.application.routes.draw do
               as: "back",
               on: :collection
             end
+
+  # Static pages with HighVoltage - don't include "/pages/" in the path
+  resources :pages, only: [:show], controller: "pages", path: ""
 end

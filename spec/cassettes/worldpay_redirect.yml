@@ -46,7 +46,7 @@ http_interactions:
       Authorization:
       - Basic <API_KEY>
       Content-Length:
-      - '1136'
+      - '1134'
       Host:
       - secure-test.worldpay.com
   response:

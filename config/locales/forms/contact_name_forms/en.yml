@@ -1,17 +1,18 @@
 en:
-  contact_name_forms:
-    new:
-      title: Person to contact
-      heading: Who should we contact about this registration?
-      description: Tell us who to contact if we need to confirm any details.
-      first_name_label: First name
-      last_name_label: Last name
-      error_heading: Something is wrong
-      next_button: Continue
+  waste_carriers_engine:
+    contact_name_forms:
+      new:
+        title: Person to contact
+        heading: Who should we contact about this registration?
+        description: Tell us who to contact if we need to confirm any details.
+        first_name_label: First name
+        last_name_label: Last name
+        error_heading: Something is wrong
+        next_button: Continue
   activemodel:
     errors:
       models:
-        contact_name_form:
+        waste_carriers_engine/contact_name_form:
           attributes:
             first_name:
               blank: "You must enter a first name"

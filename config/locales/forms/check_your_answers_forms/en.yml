@@ -1,78 +1,79 @@
 en:
-  check_your_answers_forms:
-    new:
-      title: Check your details
-      heading: Check your details before renewing your registration
-      error_heading: Something is wrong
-      error_description_1: "We're missing some of the information we need to renew your registration:"
-      error_description_2: "Please go back and make sure all the required questions have been answered."
-      paragraph_1_html: "Renewing this <span class=\"strong\">upper tier registration</span> will extend its expiry date to %{expiry_date}."
-      paragraph_2: The renewal charge is £%{renewal_charge}.
-      paragraph_3: Because your registration type has changed, there will also be a £%{type_change_charge} charge.
-      subheading_1: "You told us:"
-      reg_identifier_html: "your registration number is <span class=\"strong\">%{reg_identifier}</span>"
-      location:
-        england_html: "your principal place of business is in <span class=\"strong\">England</span>"
-        northern_ireland_html: "your principal place of business is in <span class=\"strong\">Northern Ireland</span>"
-        overseas_html: "your principal place of business is not in the <span class=\"strong\">United Kingdom</span>"
-        scotland_html: "your principal place of business is in <span class=\"strong\">Scotland</span>"
-        wales_html: "your principal place of business is in <span class=\"strong\">Wales</span>"
-      business_type:
-        charity_html: "you are a <span class=\"strong\">charity or trust</span>"
-        limitedCompany_html: "you are a <span class=\"strong\">limited company</span>"
-        limitedLiabilityPartnership_html: "you are a <span class=\"strong\">limited liability partnership</span>"
-        localAuthority_html: "you are a <span class=\"strong\">local authority or public body</span>"
-        partnership_html: "you are a <span class=\"strong\">partnership</span>"
-        soleTrader_html: "you are a <span class=\"strong\">individual or sole trader</span>"
-      subheading_2: Registration type
-      registration_type:
-        carrier_dealer_html: "Your registration type is <span class=\"strong\">carrier and dealer</span> (you carry the waste yourselves)"
-        broker_dealer_html: "Your registration type is <span class=\"strong\">broker and dealer</span> (you arrange for others to carry the waste)"
-        carrier_broker_dealer_html: "Your registration type is <span class=\"strong\">carrier, broker and dealer</span> (you carry waste yourselves and arrange for others to carry it)"
-      subheading_3:
-        limitedCompany: Company name
-        limitedLiabilityPartnership: Partnership name
-        localAuthority: Local authority or public body name
-        overseas: Business or organisation name
-        partnership: Partnership name
-        soleTrader: Business or organisation name
-      subheading_4: Companies House number
-      subheading_5:
-        limitedCompany: Company address
-        limitedLiabilityPartnership: Partnership address
-        localAuthority: Local authority or public body address
-        overseas: Business or organisation address
-        partnership: Partnership address
-        soleTrader: Business or organisation address
-      subheading_6:
-        limitedCompany:
-          one: Director
-          other: Directors
-        limitedLiabilityPartnership:
-          one: Partner
-          other: Partners
-        localAuthority:
-          one: Chief executive
-          other: Chief executives
-        overseas:
-          one: Business or organisation owner
-          other: Business or organisation owners
-        partnership:
-          one: Partner
-          other: Partners
-        soleTrader:
-          one: Business or organisation owner
-          other: Business or organisation owners
-      subheading_7: Relevant convictions
-      declared_convictions:
-        "true": You told us you have relevant people with convictions in your business or organisation.
-        "false": You told us there are no relevant people with convictions in your business or organisation.
-      subheading_8: Contact details
-      next_button: Continue
+  waste_carriers_engine:
+    check_your_answers_forms:
+      new:
+        title: Check your details
+        heading: Check your details before renewing your registration
+        error_heading: Something is wrong
+        error_description_1: "We're missing some of the information we need to renew your registration:"
+        error_description_2: "Please go back and make sure all the required questions have been answered."
+        paragraph_1_html: "Renewing this <span class=\"strong\">upper tier registration</span> will extend its expiry date to %{expiry_date}."
+        paragraph_2: The renewal charge is £%{renewal_charge}.
+        paragraph_3: Because your registration type has changed, there will also be a £%{type_change_charge} charge.
+        subheading_1: "You told us:"
+        reg_identifier_html: "your registration number is <span class=\"strong\">%{reg_identifier}</span>"
+        location:
+          england_html: "your principal place of business is in <span class=\"strong\">England</span>"
+          northern_ireland_html: "your principal place of business is in <span class=\"strong\">Northern Ireland</span>"
+          overseas_html: "your principal place of business is not in the <span class=\"strong\">United Kingdom</span>"
+          scotland_html: "your principal place of business is in <span class=\"strong\">Scotland</span>"
+          wales_html: "your principal place of business is in <span class=\"strong\">Wales</span>"
+        business_type:
+          charity_html: "you are a <span class=\"strong\">charity or trust</span>"
+          limitedCompany_html: "you are a <span class=\"strong\">limited company</span>"
+          limitedLiabilityPartnership_html: "you are a <span class=\"strong\">limited liability partnership</span>"
+          localAuthority_html: "you are a <span class=\"strong\">local authority or public body</span>"
+          partnership_html: "you are a <span class=\"strong\">partnership</span>"
+          soleTrader_html: "you are a <span class=\"strong\">individual or sole trader</span>"
+        subheading_2: Registration type
+        registration_type:
+          carrier_dealer_html: "Your registration type is <span class=\"strong\">carrier and dealer</span> (you carry the waste yourselves)"
+          broker_dealer_html: "Your registration type is <span class=\"strong\">broker and dealer</span> (you arrange for others to carry the waste)"
+          carrier_broker_dealer_html: "Your registration type is <span class=\"strong\">carrier, broker and dealer</span> (you carry waste yourselves and arrange for others to carry it)"
+        subheading_3:
+          limitedCompany: Company name
+          limitedLiabilityPartnership: Partnership name
+          localAuthority: Local authority or public body name
+          overseas: Business or organisation name
+          partnership: Partnership name
+          soleTrader: Business or organisation name
+        subheading_4: Companies House number
+        subheading_5:
+          limitedCompany: Company address
+          limitedLiabilityPartnership: Partnership address
+          localAuthority: Local authority or public body address
+          overseas: Business or organisation address
+          partnership: Partnership address
+          soleTrader: Business or organisation address
+        subheading_6:
+          limitedCompany:
+            one: Director
+            other: Directors
+          limitedLiabilityPartnership:
+            one: Partner
+            other: Partners
+          localAuthority:
+            one: Chief executive
+            other: Chief executives
+          overseas:
+            one: Business or organisation owner
+            other: Business or organisation owners
+          partnership:
+            one: Partner
+            other: Partners
+          soleTrader:
+            one: Business or organisation owner
+            other: Business or organisation owners
+        subheading_7: Relevant convictions
+        declared_convictions:
+          "true": You told us you have relevant people with convictions in your business or organisation.
+          "false": You told us there are no relevant people with convictions in your business or organisation.
+        subheading_8: Contact details
+        next_button: Continue
   activemodel:
     errors:
       models:
-        check_your_answers_form:
+        waste_carriers_engine/check_your_answers_form:
           invalid_main_person: "Enter a valid main person"
           invalid_relevant_person: "Enter a valid person with a relevant conviction"
           not_enough_main_people:
