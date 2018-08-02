@@ -6,7 +6,8 @@
     <%= render("waste_carriers_engine/shared/errors", object: @conviction_details_form) %>
 
     <h1 class="heading-large"><%= t(".heading") %></h1>
-
+    <p><%= t(".paragraph_1") %></p>
+    
     <%= render("waste_carriers_engine/shared/person_name", form: @conviction_details_form, f: f) %>
 
     <% if @conviction_details_form.errors[:position].any? %>
