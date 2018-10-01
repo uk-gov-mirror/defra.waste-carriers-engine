@@ -19,7 +19,7 @@ module WasteCarriersEngine
 
       order = find_order_by_code(params[:orderKey])
 
-      if valid_worldpay_success_response?(params, order)
+      if new_worldpay_service(params, order).valid_success?
         @transient_registration.next!
         redirect_to_correct_form
       else
@@ -29,17 +29,19 @@ module WasteCarriersEngine
     end
 
     def failure
-      return unless set_up_valid_transient_registration?(params[:reg_identifier])
+      respond_to_unsuccessful_payment(:failure)
+    end
 
-      order = find_order_by_code(params[:orderKey])
+    def cancel
+      respond_to_unsuccessful_payment(:cancel)
+    end
 
-      if valid_worldpay_failure_response?(params, order)
-        flash[:error] = I18n.t(".waste_carriers_engine.worldpay_forms.failure.message.#{params[:paymentStatus]}")
-      else
-        flash[:error] = I18n.t(".waste_carriers_engine.worldpay_forms.failure.invalid_response")
-      end
+    def error
+      respond_to_unsuccessful_payment(:error)
+    end
 
-      go_back
+    def pending
+      respond_to_unsuccessful_payment(:pending)
     end
 
     private
@@ -49,6 +51,18 @@ module WasteCarriersEngine
       order = @transient_registration.finance_details.orders.first
       worldpay_service = WorldpayService.new(@transient_registration, order, current_user)
       worldpay_service.prepare_for_payment
+    end
+
+    def respond_to_unsuccessful_payment(action)
+      return unless set_up_valid_transient_registration?(params[:reg_identifier])
+
+      flash[:error] = if unsuccessful_response_is_valid?(action, params)
+                        I18n.t(".waste_carriers_engine.worldpay_forms.#{action}.message")
+                      else
+                        I18n.t(".waste_carriers_engine.worldpay_forms.#{action}.invalid_response")
+                      end
+
+      go_back
     end
 
     def set_up_valid_transient_registration?(reg_identifier)
@@ -70,14 +84,15 @@ module WasteCarriersEngine
       order_key.match(/[0-9]{10}$/).to_s
     end
 
-    def valid_worldpay_success_response?(params, order)
-      worldpay_service = WorldpayService.new(@transient_registration, order, current_user, params)
-      worldpay_service.valid_success?
+    def unsuccessful_response_is_valid?(action, params)
+      order = find_order_by_code(params[:orderKey])
+      valid_method = "valid_#{action}?".to_sym
+
+      new_worldpay_service(params, order).public_send(valid_method)
     end
 
-    def valid_worldpay_failure_response?(params, order)
-      worldpay_service = WorldpayService.new(@transient_registration, order, current_user, params)
-      worldpay_service.valid_failure?
+    def new_worldpay_service(params, order)
+      WorldpayService.new(@transient_registration, order, current_user, params)
     end
   end
 end

@@ -18,14 +18,30 @@ module WasteCarriersEngine
     end
 
     def valid_success?
-      valid_order? && valid_params? && valid_success_payment_status?
+      valid?(:success)
     end
 
     def valid_failure?
-      valid_order? && valid_params? && valid_failure_payment_status?
+      valid?(:failure)
+    end
+
+    def valid_pending?
+      valid?(:pending)
+    end
+
+    def valid_cancel?
+      valid?(:cancel)
+    end
+
+    def valid_error?
+      valid?(:error)
     end
 
     private
+
+    def valid?(action)
+      valid_order? && valid_params? && valid_status?(action)
+    end
 
     def valid_order?
       return true if @order.present?
@@ -90,21 +106,17 @@ module WasteCarriersEngine
       false
     end
 
-    def valid_success_payment_status?
-      return true if @status == "AUTHORISED"
+    def valid_status?(expected_status)
+      allowed_statuses = {
+        success: ["AUTHORISED"],
+        failure: ["EXPIRED", "REFUSED"],
+        pending: ["SENT_FOR_AUTHORISATION", "SHOPPER_REDIRECTED"],
+        cancel: ["CANCELLED"],
+        error: ["ERROR"]
+      }
+      return true if allowed_statuses[expected_status].include?(@status)
 
-      Rails.logger.error "Invalid WorldPay response: #{@status} is not valid payment status for success"
-      false
-    end
-
-    def valid_failure_payment_status?
-      statuses = %w[CANCELLED
-                    ERROR
-                    EXPIRED
-                    REFUSED]
-      return true if statuses.include?(@status)
-
-      Rails.logger.error "Invalid WorldPay response: #{@status} is not valid payment status for failure"
+      Rails.logger.error "Invalid WorldPay response: #{@status} is not valid payment status for #{expected_status}"
       false
     end
   end

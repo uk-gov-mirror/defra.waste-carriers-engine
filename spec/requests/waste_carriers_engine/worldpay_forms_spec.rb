@@ -113,46 +113,23 @@ module WasteCarriersEngine
             end
           end
         end
-
-        describe "#failure" do
-          before do
-            FinanceDetails.new_finance_details(transient_registration, :worldpay, user)
-          end
-
-          let(:order) do
-            transient_registration.finance_details.orders.first
-          end
-
-          let(:params) do
-            {
-              orderKey: "#{Rails.configuration.worldpay_admin_code}^#{Rails.configuration.worldpay_merchantcode}^#{order.order_code}",
-              reg_identifier: reg_id
-            }
-          end
-
-          context "when the params are valid" do
-            before do
-              allow_any_instance_of(WorldpayService).to receive(:valid_failure?).and_return(true)
-            end
-
-            it "redirects to payment_summary_form" do
-              get failure_worldpay_forms_path(reg_id), params
-              expect(response).to redirect_to(new_payment_summary_form_path(reg_id))
-            end
-          end
-
-          context "when the params are not valid" do
-            before do
-              allow_any_instance_of(WorldpayService).to receive(:valid_failure?).and_return(false)
-            end
-
-            it "redirects to payment_summary_form" do
-              get failure_worldpay_forms_path(reg_id), params
-              expect(response).to redirect_to(new_payment_summary_form_path(reg_id))
-            end
-          end
-        end
       end
+    end
+
+    describe "#cancel" do
+      it_should_behave_like "GET unsuccessful Worldpay response", :cancel
+    end
+
+    describe "#error" do
+      it_should_behave_like "GET unsuccessful Worldpay response", :error
+    end
+
+    describe "#failure" do
+      it_should_behave_like "GET unsuccessful Worldpay response", :failure
+    end
+
+    describe "#pending" do
+      it_should_behave_like "GET unsuccessful Worldpay response", :pending
     end
   end
 end
