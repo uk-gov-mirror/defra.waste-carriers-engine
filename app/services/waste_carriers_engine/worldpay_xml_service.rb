@@ -2,9 +2,10 @@ require "countries"
 
 module WasteCarriersEngine
   class WorldpayXmlService
-    def initialize(transient_registration, order)
+    def initialize(transient_registration, order, current_user)
       @transient_registration = transient_registration
       @order = order
+      @current_user = current_user
     end
 
     def build_xml
@@ -61,7 +62,7 @@ module WasteCarriersEngine
     end
 
     def build_shopper(xml)
-      email = @transient_registration.account_email
+      email = get_email
 
       xml.shopper do
         xml.shopperEmailAddress email
@@ -98,6 +99,14 @@ module WasteCarriersEngine
       # If we didn't provide a country or no match was found, use GB as default
       return "GB" if country.nil?
       country.alpha2
+    end
+
+    def get_email
+      if @current_user.email == @transient_registration.account_email
+        @transient_registration.account_email
+      else
+        @transient_registration.contact_email
+      end
     end
   end
 end
