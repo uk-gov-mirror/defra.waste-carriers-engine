@@ -55,7 +55,6 @@ module WasteCarriersEngine
 
       address[:uprn] = data["uprn"]
       address[:address_mode] = "address-results"
-      address[:house_number] = data["buildingNumber"]
       address[:dependent_locality] = data["dependentLocality"]
       address[:administrative_area] = data["administrativeArea"]
       address[:town_city] = data["town"]
@@ -67,22 +66,19 @@ module WasteCarriersEngine
       address[:easting] = data["easting"]
       address[:northing] = data["northing"]
 
-      address.assign_address_lines(data)
+      address.assign_house_number_and_address_lines(data)
 
       address
     end
 
-    def assign_address_lines(data)
-      lines = []
-      lines << data["organisationName"]
-      lines << data["subBuildingName"]
-      lines << data["buildingName"]
-      lines << [data["buildingNumber"], data["thoroughfareName"]].join(" ")
-      address_attributes = %i[address_line_1
+    def assign_house_number_and_address_lines(data)
+      lines = data["lines"]
+      address_attributes = %i[house_number
+                              address_line_1
                               address_line_2
                               address_line_3
                               address_line_4]
-      lines.reject!(&:empty?)
+      lines.reject!(&:blank?)
 
       # Assign lines one at a time until we run out of lines to assign
       write_attribute(address_attributes.shift, lines.shift) until lines.empty?
