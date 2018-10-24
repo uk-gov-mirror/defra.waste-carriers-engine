@@ -4,6 +4,7 @@
 
 **Implemented enhancements:**
 
+- Allow renewals that expire after submission to complete [\#287](https://github.com/DEFRA/waste-carriers-renewals/pull/287) ([irisfaraway](https://github.com/irisfaraway))
 - Add ability to generate a CHANGELOG.md [\#286](https://github.com/DEFRA/waste-carriers-renewals/pull/286) ([Cruikshanks](https://github.com/Cruikshanks))
 - Send WorldPay emails to contact\_email for AD renewals [\#278](https://github.com/DEFRA/waste-carriers-renewals/pull/278) ([irisfaraway](https://github.com/irisfaraway))
 - Log WorldPay responses [\#275](https://github.com/DEFRA/waste-carriers-renewals/pull/275) ([irisfaraway](https://github.com/irisfaraway))
@@ -117,6 +118,7 @@
 
 **Fixed bugs:**
 
+- Fix broken HighVoltage routing [\#288](https://github.com/DEFRA/waste-carriers-renewals/pull/288) ([irisfaraway](https://github.com/irisfaraway))
 - Escape URIs when sending conviction check requests [\#285](https://github.com/DEFRA/waste-carriers-renewals/pull/285) ([irisfaraway](https://github.com/irisfaraway))
 - Rescue StandardErrors in request services [\#284](https://github.com/DEFRA/waste-carriers-renewals/pull/284) ([irisfaraway](https://github.com/irisfaraway))
 -  Assign house\_number and address\_lines consistently [\#281](https://github.com/DEFRA/waste-carriers-renewals/pull/281) ([irisfaraway](https://github.com/irisfaraway))
@@ -190,6 +192,7 @@
 
 **Merged pull requests:**
 
+- Bump rspec-rails from 3.8.0 to 3.8.1 [\#289](https://github.com/DEFRA/waste-carriers-renewals/pull/289) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Update VCR cassettes [\#283](https://github.com/DEFRA/waste-carriers-renewals/pull/283) ([irisfaraway](https://github.com/irisfaraway))
 - Bump phonelib from 0.6.25 to 0.6.26 [\#282](https://github.com/DEFRA/waste-carriers-renewals/pull/282) ([dependabot[bot]](https://github.com/apps/dependabot))
 - \[Security\] Bump nokogiri from 1.8.4 to 1.8.5 [\#277](https://github.com/DEFRA/waste-carriers-renewals/pull/277) ([dependabot[bot]](https://github.com/apps/dependabot))
