@@ -595,8 +595,36 @@ module WasteCarriersEngine
             expect(registration.metaData).to have_state(:EXPIRED)
           end
 
-          it "cannot be renewed" do
-            expect(registration.metaData).to_not allow_event :renew
+          context "and when dealing with the 'grace window'" do
+            before { allow(Rails.configuration).to receive(:grace_window).and_return(3) }
+
+            let(:registration) { build(:registration, :has_required_data, :is_expired, expires_on: Date.today) }
+
+            context "when outside it" do
+              it "cannot be renewed" do
+                Timecop.freeze(registration.expires_on + Rails.configuration.grace_window) do
+                  expect(registration.metaData).to_not allow_event :renew
+                end
+              end
+            end
+
+            context "when inside it" do
+              it "can be renewed" do
+                Timecop.freeze((registration.expires_on + Rails.configuration.grace_window) - 1.day) do
+                  expect(registration.metaData).to allow_event :renew
+                end
+              end
+            end
+
+            context "when there is no 'grace window'" do
+              before { allow(Rails.configuration).to receive(:grace_window).and_return(0) }
+
+              it "cannot be renewed" do
+                Timecop.freeze(registration.expires_on + Rails.configuration.grace_window) do
+                  expect(registration.metaData).to_not allow_event :renew
+                end
+              end
+            end
           end
 
           context "when a transient registration exists" do

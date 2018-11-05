@@ -76,9 +76,10 @@ module WasteCarriersEngine
     # Guards
     def renewal_allowed?
       return true if renewal_application_submitted?
+      return true if in_expiry_grace_window?
 
-      # The only time an expired registration can be renewed is if the application has previously been submitted -
-      # otherwise expiry is an automatic no
+      # The only time an expired registration can be renewed is if the application has previously been submitted,
+      # or it is withion the grace window - otherwise expiry is an automatic no
       return false if EXPIRED?
 
       close_to_expiry_date? && should_not_be_expired?
@@ -92,7 +93,7 @@ module WasteCarriersEngine
     end
 
     def close_to_expiry_date?
-      expiry_day = registration.expires_on.to_date
+      expiry_day = expiry_time_adjusted_for_daylight_savings.to_date
       expiry_day < Rails.configuration.renewal_window.months.from_now
     end
 
@@ -100,7 +101,23 @@ module WasteCarriersEngine
       expiry_day = expiry_time_adjusted_for_daylight_savings.to_date
       # We store dates and times in UTC, but want to use the current date in the UK, not necessarily UTC
       current_day = Time.now.in_time_zone("London").to_date
+
       current_day < expiry_day
+    end
+
+    # Its important to note that a registration is expired on its expires_on date.
+    # For example if the expires_on date is Oct 1, then the registration was
+    # ACTIVE Sept 30, and EXPIRED Oct 1. If the grace window is 3 days, just
+    # adding 3 days to that date would give the impression the grace window lasts
+    # till Oct 4 (i.e. 1 + 3) when in fact we need to include the 1st as one of
+    # our grace window days.
+    def in_expiry_grace_window?
+      expiry_day = expiry_time_adjusted_for_daylight_savings.to_date
+      # We store dates and times in UTC, but want to use the current date in the UK, not necessarily UTC
+      current_day = Time.now.in_time_zone("London").to_date
+      last_day_of_grace_window = (expiry_day + Rails.configuration.grace_window) - 1.day
+
+      current_day >= expiry_day && current_day <= last_day_of_grace_window
     end
 
     # expires_on is stored as a Time in UTC and then converted to a Date.
