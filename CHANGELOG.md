@@ -4,6 +4,7 @@
 
 **Implemented enhancements:**
 
+- Add a grace window for expired regs to renew [\#290](https://github.com/DEFRA/waste-carriers-renewals/pull/290) ([Cruikshanks](https://github.com/Cruikshanks))
 - Allow renewals that expire after submission to complete [\#287](https://github.com/DEFRA/waste-carriers-renewals/pull/287) ([irisfaraway](https://github.com/irisfaraway))
 - Add ability to generate a CHANGELOG.md [\#286](https://github.com/DEFRA/waste-carriers-renewals/pull/286) ([Cruikshanks](https://github.com/Cruikshanks))
 - Send WorldPay emails to contact\_email for AD renewals [\#278](https://github.com/DEFRA/waste-carriers-renewals/pull/278) ([irisfaraway](https://github.com/irisfaraway))
@@ -118,6 +119,7 @@
 
 **Fixed bugs:**
 
+- Fix conviction check to handle grace window [\#296](https://github.com/DEFRA/waste-carriers-renewals/pull/296) ([Cruikshanks](https://github.com/Cruikshanks))
 - Fix broken HighVoltage routing [\#288](https://github.com/DEFRA/waste-carriers-renewals/pull/288) ([irisfaraway](https://github.com/irisfaraway))
 - Escape URIs when sending conviction check requests [\#285](https://github.com/DEFRA/waste-carriers-renewals/pull/285) ([irisfaraway](https://github.com/irisfaraway))
 - Rescue StandardErrors in request services [\#284](https://github.com/DEFRA/waste-carriers-renewals/pull/284) ([irisfaraway](https://github.com/irisfaraway))
@@ -192,6 +194,13 @@
 
 **Merged pull requests:**
 
+- Update VCR cassettes [\#299](https://github.com/DEFRA/waste-carriers-renewals/pull/299) ([irisfaraway](https://github.com/irisfaraway))
+- Bump govuk\_template from 0.24.1 to 0.25.0 [\#298](https://github.com/DEFRA/waste-carriers-renewals/pull/298) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Update rubocop config [\#297](https://github.com/DEFRA/waste-carriers-renewals/pull/297) ([Cruikshanks](https://github.com/Cruikshanks))
+- Bump jbuilder from 2.7.0 to 2.8.0 [\#295](https://github.com/DEFRA/waste-carriers-renewals/pull/295) ([dependabot[bot]](https://github.com/apps/dependabot))
+- \[Security\] Bump rack from 1.6.10 to 1.6.11 [\#294](https://github.com/DEFRA/waste-carriers-renewals/pull/294) ([dependabot[bot]](https://github.com/apps/dependabot))
+- \[Security\] Bump loofah from 2.2.2 to 2.2.3 [\#292](https://github.com/DEFRA/waste-carriers-renewals/pull/292) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Update VCR cassettes [\#291](https://github.com/DEFRA/waste-carriers-renewals/pull/291) ([irisfaraway](https://github.com/irisfaraway))
 - Bump rspec-rails from 3.8.0 to 3.8.1 [\#289](https://github.com/DEFRA/waste-carriers-renewals/pull/289) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Update VCR cassettes [\#283](https://github.com/DEFRA/waste-carriers-renewals/pull/283) ([irisfaraway](https://github.com/irisfaraway))
 - Bump phonelib from 0.6.25 to 0.6.26 [\#282](https://github.com/DEFRA/waste-carriers-renewals/pull/282) ([dependabot[bot]](https://github.com/apps/dependabot))
