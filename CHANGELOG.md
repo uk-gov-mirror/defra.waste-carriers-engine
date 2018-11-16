@@ -4,6 +4,7 @@
 
 **Implemented enhancements:**
 
+- Allow expired renewal to complete post declaration [\#300](https://github.com/DEFRA/waste-carriers-renewals/pull/300) ([Cruikshanks](https://github.com/Cruikshanks))
 - Add a grace window for expired regs to renew [\#290](https://github.com/DEFRA/waste-carriers-renewals/pull/290) ([Cruikshanks](https://github.com/Cruikshanks))
 - Allow renewals that expire after submission to complete [\#287](https://github.com/DEFRA/waste-carriers-renewals/pull/287) ([irisfaraway](https://github.com/irisfaraway))
 - Add ability to generate a CHANGELOG.md [\#286](https://github.com/DEFRA/waste-carriers-renewals/pull/286) ([Cruikshanks](https://github.com/Cruikshanks))
@@ -194,6 +195,7 @@
 
 **Merged pull requests:**
 
+- Bump phonelib from 0.6.26 to 0.6.27 [\#301](https://github.com/DEFRA/waste-carriers-renewals/pull/301) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Update VCR cassettes [\#299](https://github.com/DEFRA/waste-carriers-renewals/pull/299) ([irisfaraway](https://github.com/irisfaraway))
 - Bump govuk\_template from 0.24.1 to 0.25.0 [\#298](https://github.com/DEFRA/waste-carriers-renewals/pull/298) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Update rubocop config [\#297](https://github.com/DEFRA/waste-carriers-renewals/pull/297) ([Cruikshanks](https://github.com/Cruikshanks))
