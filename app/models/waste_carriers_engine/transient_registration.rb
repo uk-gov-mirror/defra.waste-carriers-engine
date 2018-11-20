@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module WasteCarriersEngine
   class TransientRegistration
     include Mongoid::Document
@@ -23,10 +25,22 @@ module WasteCarriersEngine
     field :temp_payment_method, type: String
     field :temp_tier_check, type: String # 'yes' or 'no' - should refactor to boolean
 
+    scope :search_term, ->(term) {
+      any_of({ reg_identifier: /\A#{term}\z/i },
+             { company_name: /#{term}/i },
+             { last_name: /#{term}/i },
+             "addresses.postcode": /#{term}/i)
+    }
+    scope :in_progress, -> { where(:workflow_state.nin => %w[renewal_complete_form renewal_received_form]) }
+    scope :submitted, -> { where(:workflow_state.in => %w[renewal_complete_form renewal_received_form]) }
+    scope :pending_payment, -> { submitted.where(:"financeDetails.balance".gt => 0) }
+    scope :pending_approval, -> { submitted.where("conviction_sign_offs.0.confirmed": "no") }
+
     # Check if the user has changed the registration type, as this incurs an additional 40GBP charge
     def registration_type_changed?
       # Don't compare registration types if the new one hasn't been set
       return false unless registration_type
+
       original_registration_type = Registration.where(reg_identifier: reg_identifier).first.registration_type
       original_registration_type != registration_type
     end
@@ -41,6 +55,7 @@ module WasteCarriersEngine
 
     def projected_renewal_end_date
       return unless expires_on.present?
+
       expiry_date_after_renewal(expires_on.to_date)
     end
 
@@ -53,6 +68,7 @@ module WasteCarriersEngine
 
     def total_registration_card_charge
       return 0 unless temp_cards.present?
+
       temp_cards * Rails.configuration.card_charge
     end
 
@@ -63,6 +79,7 @@ module WasteCarriersEngine
     # Some business types should not have a company_no
     def company_no_required?
       return false if overseas?
+
       %w[limitedCompany limitedLiabilityPartnership].include?(business_type)
     end
 
@@ -102,6 +119,7 @@ module WasteCarriersEngine
     def pending_manual_conviction_check?
       registration = Registration.where(reg_identifier: reg_identifier).first
       return false unless registration.metaData.may_renew?
+
       renewal_application_submitted? && conviction_check_required?
     end
 
@@ -142,6 +160,7 @@ module WasteCarriersEngine
     def remove_invalid_phone_numbers
       validator = PhoneNumberValidator.new(attributes: :phone_number)
       return if validator.validate_each(self, :phone_number, phone_number)
+
       self.phone_number = nil
     end
 
@@ -153,6 +172,7 @@ module WasteCarriersEngine
     # multiple renewals in progress at once
     def no_renewal_in_progress?
       return unless TransientRegistration.where(reg_identifier: reg_identifier).exists?
+
       errors.add(:reg_identifier, :renewal_in_progress)
     end
   end
