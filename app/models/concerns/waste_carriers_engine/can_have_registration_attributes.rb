@@ -85,8 +85,19 @@ module WasteCarriersEngine
         addresses.where(address_type: "REGISTERED").first
       end
 
+      def charity?
+        business_type == "charity"
+      end
+
       def overseas?
         location == "overseas"
+      end
+
+      # Some business types should not have a company_no
+      def company_no_required?
+        return false if overseas?
+
+        %w[limitedCompany limitedLiabilityPartnership].include?(business_type)
       end
 
       def main_people
