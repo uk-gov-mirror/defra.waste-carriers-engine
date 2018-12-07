@@ -263,13 +263,6 @@ module WasteCarriersEngine
     end
 
     describe "#can_be_renewed?" do
-      context "when the declaration is confirmed" do
-        it "returns true" do
-          transient_registration.declaration = 1
-          expect(transient_registration.can_be_renewed?).to eq(true)
-        end
-      end
-
       context "when a registration is neither active or expired" do
         let(:revoked_transient_registration) { build(:transient_registration, :has_revoked_registration) }
 
@@ -278,40 +271,38 @@ module WasteCarriersEngine
         end
       end
 
-      context "when a registration is active" do
+      context "when the declaration is confirmed" do
         it "returns true" do
+          transient_registration.declaration = 1
           expect(transient_registration.can_be_renewed?).to eq(true)
         end
+      end
 
-        context "and when dealing with the 'renewal window'" do
-          before { allow(Rails.configuration).to receive(:renewal_window).and_return(3) }
+      context "when a registration is active" do
+        context "when it is within the grace window" do
+          before { allow_any_instance_of(ExpiryCheckService).to receive(:in_expiry_grace_window?).and_return(true) }
 
-          context "when it expires in the 'renewal window'" do
+          it "returns true" do
+            expect(transient_registration.can_be_renewed?).to eq(true)
+          end
+        end
+
+        context "when it is not within the grace window" do
+          before { allow_any_instance_of(ExpiryCheckService).to receive(:in_expiry_grace_window?).and_return(false) }
+
+          context "and when it is within the renewal window" do
+            before { allow_any_instance_of(ExpiryCheckService).to receive(:in_renewal_window?).and_return(true) }
+
             it "returns true" do
-              freeze_date = transient_registration.expires_on - 1.month
-              Timecop.freeze(freeze_date) do
-                expect(transient_registration.can_be_renewed?).to eq(true)
-              end
+              expect(transient_registration.can_be_renewed?).to eq(true)
             end
           end
 
-          context "when it expires outside the 'renewal window'" do
+          context "and when it is not within the renewal window" do
+            before { allow_any_instance_of(ExpiryCheckService).to receive(:in_renewal_window?).and_return(false) }
+
             it "returns false" do
-              freeze_date = transient_registration.expires_on - 4.month
-              Timecop.freeze(freeze_date) do
-                expect(transient_registration.can_be_renewed?).to eq(false)
-              end
-            end
-          end
-
-          context "when there is no 'renewal window'" do
-            before { allow(Rails.configuration).to receive(:renewal_window).and_return(0) }
-
-            it "returns true" do
-              freeze_date = transient_registration.expires_on
-              Timecop.freeze(freeze_date) do
-                expect(transient_registration.can_be_renewed?).to eq(true)
-              end
+              expect(transient_registration.can_be_renewed?).to eq(false)
             end
           end
         end
@@ -320,116 +311,34 @@ module WasteCarriersEngine
       context "when a registration is expired" do
         let(:expired_transient_registration) { build(:transient_registration, :has_expired) }
 
-        it "returns false" do
-          expect(expired_transient_registration.can_be_renewed?).to eq(false)
-        end
+        context "when a registration is active" do
+          context "when it is within the grace window" do
+            before { allow_any_instance_of(ExpiryCheckService).to receive(:in_expiry_grace_window?).and_return(true) }
 
-        context "and when dealing with the 'grace window'" do
-          before { allow(Rails.configuration).to receive(:grace_window).and_return(3) }
-
-          let(:expired_today_transient_registration) { build(:transient_registration, :has_expired_today) }
-
-          context "when outside it" do
-            it "returns false" do
-              freeze_date = expired_today_transient_registration.expires_on + Rails.configuration.grace_window
-              Timecop.freeze(freeze_date) do
-                expect(expired_today_transient_registration.can_be_renewed?).to eq(false)
-              end
-            end
-          end
-
-          context "when inside it" do
             it "returns true" do
-              freeze_date = (expired_today_transient_registration.expires_on + Rails.configuration.grace_window) - 1.day
-              Timecop.freeze(freeze_date) do
-                expect(expired_today_transient_registration.can_be_renewed?).to eq(true)
-              end
+              expect(transient_registration.can_be_renewed?).to eq(true)
             end
           end
 
-          context "when there is no 'grace window'" do
-            before { allow(Rails.configuration).to receive(:grace_window).and_return(0) }
+          context "when it is not within the grace window" do
+            before { allow_any_instance_of(ExpiryCheckService).to receive(:in_expiry_grace_window?).and_return(false) }
 
-            it "returns false" do
-              freeze_date = expired_today_transient_registration.expires_on + Rails.configuration.grace_window
-              Timecop.freeze(freeze_date) do
-                expect(expired_today_transient_registration.can_be_renewed?).to eq(false)
+            context "and when it is within the renewal window" do
+              before { allow_any_instance_of(ExpiryCheckService).to receive(:in_renewal_window?).and_return(true) }
+
+              it "returns true" do
+                expect(transient_registration.can_be_renewed?).to eq(true)
+              end
+            end
+
+            context "and when it is not within the renewal window" do
+              before { allow_any_instance_of(ExpiryCheckService).to receive(:in_renewal_window?).and_return(false) }
+
+              it "returns false" do
+                expect(transient_registration.can_be_renewed?).to eq(false)
               end
             end
           end
-        end
-      end
-
-      context "when the registration was created in BST and expires in GMT" do
-        before { allow(Rails.configuration).to receive(:grace_window).and_return(3) }
-
-        # Registration is made during British Summer Time (BST)
-        # UK local time is 00:30 on 28 March 2017
-        # UTC time is 23:30 on 27 March 2017
-        # Registration should expire on 28 March 2020
-        let!(:bst_transient_registration) do
-          registration = create(:registration, :has_required_data)
-          registration.metaData.status = "EXPIRED"
-          registration.metaData.date_registered = Time.find_zone("London").local(2017, 3, 28, 0, 30)
-          registration.expires_on = registration.metaData.date_registered + 3.years
-          registration.save!
-          TransientRegistration.new(reg_identifier: registration.reg_identifier)
-        end
-
-        it "does not expire a day early due to the time difference" do
-          # Skip ahead to the end of the last day the reg should be active
-          Timecop.freeze(Time.find_zone("London").local(2020, 3, 27, 23, 59)) do
-            # GMT is now in effect (not BST)
-            # UK local time & UTC are both 23:59 on 27 March 2020
-            expect(bst_transient_registration.can_be_renewed?).to eq(true)
-          end
-        end
-
-        it "cannot be renewed when it reaches the expiry date plus 'grace window' in the UK" do
-          # Skip ahead to the start of the day a reg should expire, plus the
-          # grace window
-          Timecop.freeze(Time.find_zone("London").local(2020, 3, 31, 0, 1)) do
-            # GMT is now in effect (not BST)
-            # UK local time & UTC are both 00:01 on 28 March 2020
-            expect(bst_transient_registration.can_be_renewed?).to eq(false)
-          end
-        end
-      end
-    end
-
-    context "when the registration was created in GMT and expires in BST" do
-      before { allow(Rails.configuration).to receive(:grace_window).and_return(3) }
-
-      # Registration is made in during Greenwich Mean Time (GMT)
-      # UK local time & UTC are both 23:30 on 27 October 2015
-      # Registration should expire on 27 October 2018
-      let!(:gmt_registration) do
-        registration = build(:registration, :has_required_data)
-        registration.metaData.status = "EXPIRED"
-        registration.metaData.date_registered = Time.find_zone("London").local(2015, 10, 27, 23, 30)
-        registration.expires_on = registration.metaData.date_registered + 3.years
-        registration.save!
-        TransientRegistration.new(reg_identifier: registration.reg_identifier)
-      end
-
-      it "does not expire a day early due to the time difference" do
-        # Skip ahead to the end of the last day the reg should be active
-        Timecop.freeze(Time.find_zone("London").local(2018, 10, 26, 23, 59)) do
-          # BST is now in effect (not GMT)
-          # UK local time is 23:59 on 26 October 2018
-          # UTC time is 22:59 on 26 October 2018
-          expect(gmt_registration.can_be_renewed?).to eq(true)
-        end
-      end
-
-      it "cannot be renewed when it reaches the expiry date plus 'grace window' in the UK" do
-        # Skip ahead to the start of the day a reg should expire, plus the
-        # grace window
-        Timecop.freeze(Time.find_zone("London").local(2018, 10, 30, 0, 1)) do
-          # BST is now in effect (not GMT)
-          # UK local time is 00:01 on 27 October 2018
-          # UTC time is 23:01 on 26 October 2018
-          expect(gmt_registration.can_be_renewed?).to eq(false)
         end
       end
     end
@@ -441,6 +350,7 @@ module WasteCarriersEngine
           expect(transient_registration.ready_to_complete?).to eq(true)
         end
       end
+
       context "when the transient registration is not ready to complete" do
         context "because it is not submitted" do
           let(:transient_registration) { build(:transient_registration, workflow_state: "bank_transfer_form") }
@@ -448,11 +358,13 @@ module WasteCarriersEngine
             expect(transient_registration.ready_to_complete?).to eq(false)
           end
         end
+
         context "because it has outstanding payments" do
           it "returns false" do
             expect(transient_registration.ready_to_complete?).to eq(false)
           end
         end
+
         context "because it has outstanding conviction checks" do
           it "returns false" do
             expect(transient_registration.ready_to_complete?).to eq(false)
