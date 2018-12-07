@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 FactoryBot.define do
   factory :transient_registration, class: WasteCarriersEngine::TransientRegistration do
     trait :has_required_data do
@@ -33,6 +35,10 @@ FactoryBot.define do
       after(:build, :create) do |transient_registration|
         WasteCarriersEngine::FinanceDetails.new_finance_details(transient_registration, :worldpay, build(:user))
       end
+    end
+
+    trait :has_paid_order do
+      finance_details { build(:finance_details, :has_paid_order_and_payment) }
     end
 
     trait :has_conviction_search_result do
@@ -87,8 +93,25 @@ FactoryBot.define do
 
     trait :has_revoked_registration do
       # Create a new registration when initializing so we can copy its data
-      initialize_with { new(reg_identifier: create(:registration, :has_required_data,
-      metaData: build(:metaData, revoked_reason: "foo")).reg_identifier) }
+      initialize_with do
+        new(reg_identifier: create(:registration, :has_required_data, :is_revoked).reg_identifier)
+      end
+    end
+
+    trait :has_expired do
+      # Create a new registration when initializing so we can copy its data
+      initialize_with { new(reg_identifier: create(:registration, :has_required_data, :expired_one_month_ago).reg_identifier) }
+    end
+
+    trait :has_expired_today do
+      # Create a new registration when initializing so we can copy its data
+      initialize_with { new(reg_identifier: create(:registration, :has_required_data, :expires_today).reg_identifier) }
+    end
+
+    trait :is_ready_to_complete do
+      has_required_data
+      has_paid_order
+      workflow_state { "renewal_received_form" }
     end
   end
 end

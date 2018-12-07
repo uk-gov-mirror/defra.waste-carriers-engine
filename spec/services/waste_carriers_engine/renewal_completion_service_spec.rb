@@ -1,30 +1,39 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 module WasteCarriersEngine
   RSpec.describe RenewalCompletionService do
     let(:transient_registration) do
-       create(:transient_registration,
-              :has_required_data,
-              :has_addresses,
-              :has_key_people,
-              company_name: "FooBiz",
-              workflow_state: "renewal_complete_form")
+      create(
+        :transient_registration,
+        :has_required_data,
+        :has_addresses,
+        :has_key_people,
+        :has_paid_order,
+        company_name: "FooBiz",
+        workflow_state: "renewal_complete_form"
+      )
     end
     let(:registration) { Registration.where(reg_identifier: transient_registration.reg_identifier).first }
 
     let(:renewal_completion_service) { RenewalCompletionService.new(transient_registration) }
 
     before do
-      current_user = build(:user)
-      FinanceDetails.new_finance_details(transient_registration, :worldpay, current_user)
-      Payment.new_from_worldpay(transient_registration.finance_details.orders.first, current_user)
-      registration.update_attributes(finance_details: build(:finance_details,
-                                                            :has_required_data,
-                                                            :has_order_and_payment))
+      # We have to run this block after the transient registration creation,
+      # because it creates a new one as part of the has_required_data trait.
+      # Hence we create the transient, which in turn creates the registration
+      # and we then update it before each test
+      registration.update_attributes!(
+        finance_details: build(
+          :finance_details,
+          :has_outstanding_copy_card
+        )
+      )
     end
 
-    describe "complete_renewal" do
-      context "when the renewal is valid" do
+    describe "#complete_renewal" do
+      context "when the renewal can be complete" do
         it "creates a new past_registration" do
           number_of_past_registrations = registration.past_registrations.count
           renewal_completion_service.complete_renewal
@@ -67,9 +76,51 @@ module WasteCarriersEngine
         end
 
         it "updates the balance" do
-          old_balance = registration.finance_details.balance
+          old_reg_balance = registration.finance_details.balance
+          transient_reg_balance = transient_registration.finance_details.balance
+
           renewal_completion_service.complete_renewal
-          expect(registration.reload.finance_details.balance).to_not eq(old_balance)
+          expect(registration.reload.finance_details.balance).to eq(
+            old_reg_balance + transient_reg_balance
+          )
+        end
+
+        it "extends expires_on by 3 years" do
+          old_expiry_date = registration.expires_on
+          renewal_completion_service.complete_renewal
+          new_expiry_date = registration.reload.expires_on
+
+          expect(new_expiry_date.to_date).to eq((old_expiry_date.to_date + 3.years))
+        end
+
+        it "updates the registration's date_registered" do
+          Timecop.freeze do
+            renewal_completion_service.complete_renewal
+
+            date_registered = registration.reload.metaData.date_registered
+
+            expect(date_registered.to_time.to_s).to eq(Time.now.to_s)
+          end
+        end
+
+        it "updates the registration's date_activated" do
+          Timecop.freeze do
+            renewal_completion_service.complete_renewal
+
+            date_activated = registration.reload.metaData.date_activated
+
+            expect(date_activated.to_time.to_s).to eq(Time.now.to_s)
+          end
+        end
+
+        it "updates the registration's last_modified" do
+          Timecop.freeze do
+            renewal_completion_service.complete_renewal
+
+            last_modified = registration.reload.metaData.last_modified
+
+            expect(last_modified.to_time.to_s).to eq(Time.now.to_s)
+          end
         end
 
         # This only applies to attributes where a value could be set, but not always - for example, smart answers
@@ -82,18 +133,6 @@ module WasteCarriersEngine
             renewal_completion_service.complete_renewal
             expect(registration.reload.construction_waste).to eq(nil)
           end
-        end
-
-        it "updates the registration's expiry date" do
-          old_expiry_date = registration.expires_on
-          renewal_completion_service.complete_renewal
-          expect(registration.reload.expires_on).to eq(old_expiry_date + 3.years)
-        end
-
-        it "updates the registration's last_modified" do
-          old_last_modified = registration.metaData.last_modified
-          renewal_completion_service.complete_renewal
-          expect(registration.reload.metaData.last_modified).to_not eq(old_last_modified)
         end
 
         it "copies the first_name to the contact address" do
@@ -131,9 +170,9 @@ module WasteCarriersEngine
         end
       end
 
-      context "when the renewal is not valid" do
+      context "when the renewal cannot be completed" do
         before do
-          registration.metaData.update_attributes(status: "REJECTED")
+          registration.update_attributes!(metaData: build(:metaData, :has_required_data, status: "REVOKED"))
         end
 
         it "returns :error" do

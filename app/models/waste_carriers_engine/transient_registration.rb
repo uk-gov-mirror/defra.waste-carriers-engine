@@ -3,7 +3,6 @@
 module WasteCarriersEngine
   class TransientRegistration
     include Mongoid::Document
-    include CanCalculateRenewalDates
     include CanChangeWorkflowStatus
     include CanCheckBusinessTypeChanges
     include CanHaveRegistrationAttributes
@@ -61,7 +60,7 @@ module WasteCarriersEngine
     def projected_renewal_end_date
       return unless expires_on.present?
 
-      expiry_date_after_renewal(expires_on.to_date)
+      ExpiryCheckService.new(self).expiry_date_after_renewal
     end
 
     def total_to_pay
@@ -112,6 +111,34 @@ module WasteCarriersEngine
 
     def pending_manual_conviction_check?
       renewal_application_submitted? && conviction_check_required?
+    end
+
+    def can_be_renewed?
+      return false unless %w[ACTIVE EXPIRED].include?(metaData.status)
+
+      # The only time an expired registration can be renewed is if the
+      # application
+      # - has a confirmed declaration i.e. user reached the copy cards page
+      # - it is within the grace window
+      return true if declaration_confirmed?
+
+      check_service = ExpiryCheckService.new(self)
+      return true if check_service.in_expiry_grace_window?
+      return false if check_service.expired?
+
+      check_service.in_renewal_window?
+    end
+
+    def ready_to_complete?
+      # Though both pending_payment? and pending_manual_conviction_check? also
+      # check that the renewal has been submitted, if it hasn't they would both
+      # return false, which would mean we would not stop the renewal from
+      # completing. Hence we have to check it separately first
+      return false unless renewal_application_submitted?
+      return false if pending_payment?
+      return false if pending_manual_conviction_check?
+
+      true
     end
 
     private
