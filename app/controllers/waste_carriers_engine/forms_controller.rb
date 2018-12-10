@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module WasteCarriersEngine
   class FormsController < ApplicationController
     include ActionView::Helpers::UrlHelper
@@ -19,7 +21,7 @@ module WasteCarriersEngine
     end
 
     def go_back
-      set_transient_registration(params[:reg_identifier])
+      find_or_initialize_transient_registration(params[:reg_identifier])
 
       @transient_registration.back! if form_matches_state?
       redirect_to_correct_form
@@ -27,7 +29,7 @@ module WasteCarriersEngine
 
     private
 
-    def set_transient_registration(reg_identifier)
+    def find_or_initialize_transient_registration(reg_identifier)
       @transient_registration = TransientRegistration.where(reg_identifier: reg_identifier).first ||
                                 TransientRegistration.new(reg_identifier: reg_identifier)
     end
@@ -35,7 +37,7 @@ module WasteCarriersEngine
     # Expects a form class name (eg BusinessTypeForm), a snake_case name for the form (eg business_type_form),
     # and the reg_identifier param
     def set_up_form(form_class, form, reg_identifier, get_request = false)
-      set_transient_registration(reg_identifier)
+      find_or_initialize_transient_registration(reg_identifier)
       set_workflow_state if get_request
 
       return false unless setup_checks_pass?
@@ -92,18 +94,21 @@ module WasteCarriersEngine
 
     def transient_registration_is_valid?
       return true if @transient_registration.valid?
+
       redirect_to page_path("invalid")
       false
     end
 
     def user_has_permission?
       return true if can? :update, @transient_registration
+
       redirect_to page_path("permission")
       false
     end
 
     def state_is_correct?
       return true if form_matches_state?
+
       redirect_to_correct_form
       false
     end
@@ -114,6 +119,7 @@ module WasteCarriersEngine
 
     def can_be_renewed?
       return true if @transient_registration.can_be_renewed?
+
       redirect_to page_path("unrenewable")
       false
     end

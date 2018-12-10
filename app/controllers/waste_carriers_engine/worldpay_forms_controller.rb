@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module WasteCarriersEngine
   class WorldpayFormsController < FormsController
     def new
@@ -44,7 +46,7 @@ module WasteCarriersEngine
     end
 
     def respond_to_acceptable_payment(action)
-      return unless set_up_valid_transient_registration?(params[:reg_identifier])
+      return unless valid_transient_registration?(params[:reg_identifier])
 
       if response_is_valid?(action, params)
         log_and_send_worldpay_response(true, action)
@@ -58,7 +60,7 @@ module WasteCarriersEngine
     end
 
     def respond_to_unsuccessful_payment(action)
-      return unless set_up_valid_transient_registration?(params[:reg_identifier])
+      return unless valid_transient_registration?(params[:reg_identifier])
 
       if response_is_valid?(action, params)
         log_and_send_worldpay_response(true, action)
@@ -71,8 +73,8 @@ module WasteCarriersEngine
       go_back
     end
 
-    def set_up_valid_transient_registration?(reg_identifier)
-      set_transient_registration(reg_identifier)
+    def valid_transient_registration?(reg_identifier)
+      find_or_initialize_transient_registration(reg_identifier)
       setup_checks_pass?
     end
 
@@ -87,6 +89,7 @@ module WasteCarriersEngine
 
     def get_order_key(order_key)
       return nil unless order_key.present?
+
       order_key.match(/[0-9]{10}$/).to_s
     end
 
@@ -119,7 +122,7 @@ module WasteCarriersEngine
     end
 
     def send_worldpay_response_to_airbrake(title)
-      Airbrake.notify(title, { error_message: params })
+      Airbrake.notify(title, error_message: params)
     end
   end
 end
