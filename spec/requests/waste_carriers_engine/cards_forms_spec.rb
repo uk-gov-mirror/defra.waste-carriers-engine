@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 module WasteCarriersEngine
   RSpec.describe "CardsForms", type: :request do
-    include_examples "GET locked-in form", form = "cards_form"
+    include_examples "GET locked-in form", "cards_form"
 
     include_examples "POST form",
-                     form = "cards_form",
-                     valid_params = { temp_cards: 2 },
-                     invalid_params = { temp_cards: "foo" },
-                     test_attribute = :temp_cards
+                     "cards_form",
+                     valid_params: { temp_cards: 2 },
+                     invalid_params: { temp_cards: "foo" },
+                     test_attribute: :temp_cards
 
     describe "GET back_cards_forms_path" do
       context "when a valid user is signed in" do

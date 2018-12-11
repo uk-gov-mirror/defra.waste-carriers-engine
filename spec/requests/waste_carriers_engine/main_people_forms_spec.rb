@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 module WasteCarriersEngine
   RSpec.describe "MainPeopleForms", type: :request do
-    include_examples "GET flexible form", form = "main_people_form"
+    include_examples "GET flexible form", "main_people_form"
 
     describe "POST main_people_forms_path" do
       context "when a valid user is signed in" do
@@ -20,7 +22,7 @@ module WasteCarriersEngine
           end
 
           context "when valid params are submitted" do
-            let(:valid_params) {
+            let(:valid_params) do
               {
                 reg_identifier: transient_registration[:reg_identifier],
                 first_name: "Foo",
@@ -29,7 +31,7 @@ module WasteCarriersEngine
                 dob_month: "1",
                 dob_year: "2000"
               }
-            }
+            end
 
             it "increases the number of key_people" do
               key_people_count = transient_registration.key_people.count
@@ -136,7 +138,7 @@ module WasteCarriersEngine
           end
 
           context "when invalid params are submitted" do
-            let(:invalid_params) {
+            let(:invalid_params) do
               {
                 reg_identifier: "foo",
                 first_name: "",
@@ -145,7 +147,7 @@ module WasteCarriersEngine
                 dob_month: "02",
                 dob_year: "2000"
               }
-            }
+            end
 
             it "returns a 302 response" do
               post main_people_forms_path, main_people_form: invalid_params
@@ -180,7 +182,7 @@ module WasteCarriersEngine
           end
 
           context "when blank params are submitted" do
-            let(:blank_params) {
+            let(:blank_params) do
               {
                 reg_identifier: "foo",
                 first_name: "",
@@ -189,7 +191,7 @@ module WasteCarriersEngine
                 dob_month: "",
                 dob_year: ""
               }
-            }
+            end
 
             it "does not increase the number of key people" do
               key_people_count = transient_registration.key_people.count
@@ -207,7 +209,7 @@ module WasteCarriersEngine
                    workflow_state: "renewal_start_form")
           end
 
-          let(:valid_params) {
+          let(:valid_params) do
             {
               reg_identifier: transient_registration[:reg_identifier],
               first_name: "Foo",
@@ -216,7 +218,7 @@ module WasteCarriersEngine
               dob_month: "1",
               dob_year: "2000"
             }
-          }
+          end
 
           it "does not update the transient registration" do
             post main_people_forms_path, main_people_form: valid_params

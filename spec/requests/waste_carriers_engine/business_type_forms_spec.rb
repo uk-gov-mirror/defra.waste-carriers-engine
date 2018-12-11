@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 module WasteCarriersEngine
   RSpec.describe "BusinessTypeForms", type: :request do
-    include_examples "GET flexible form", form = "business_type_form"
+    include_examples "GET flexible form", "business_type_form"
 
     include_examples "POST form",
-                     form = "business_type_form",
-                     valid_params = { business_type: "limitedCompany" },
-                     invalid_params = { business_type: "foo" },
-                     test_attribute = :business_type
+                     "business_type_form",
+                     valid_params: { business_type: "limitedCompany" },
+                     invalid_params: { business_type: "foo" },
+                     test_attribute: :business_type
 
     describe "GET back_business_type_forms_path" do
       context "when a valid user is signed in" do

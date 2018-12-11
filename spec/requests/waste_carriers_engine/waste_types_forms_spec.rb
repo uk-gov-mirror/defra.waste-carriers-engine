@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 module WasteCarriersEngine
   RSpec.describe "WasteTypesForms", type: :request do
-    include_examples "GET flexible form", form = "waste_types_form"
+    include_examples "GET flexible form", "waste_types_form"
 
     include_examples "POST form",
-                     form = "waste_types_form",
-                     valid_params = { only_amf: "yes" },
-                     invalid_params = { only_amf: "foo" },
-                     test_attribute = :only_amf
+                     "waste_types_form",
+                     valid_params: { only_amf: "yes" },
+                     invalid_params: { only_amf: "foo" },
+                     test_attribute: :only_amf
 
     describe "GET back_waste_types_forms_path" do
       context "when a valid user is signed in" do

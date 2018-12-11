@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 module WasteCarriersEngine
@@ -8,7 +10,7 @@ module WasteCarriersEngine
       allow_any_instance_of(AddressFinderService).to receive(:search_by_postcode).and_return(address_json)
     end
 
-    include_examples "GET flexible form", form = "contact_address_form"
+    include_examples "GET flexible form", "contact_address_form"
 
     describe "POST contact_address_forms_path" do
       context "when a valid user is signed in" do
@@ -27,12 +29,12 @@ module WasteCarriersEngine
           end
 
           context "when valid params are submitted" do
-            let(:valid_params) {
+            let(:valid_params) do
               {
                 reg_identifier: transient_registration[:reg_identifier],
                 temp_address: "340116"
               }
-            }
+            end
 
             it "updates the transient registration" do
               post contact_address_forms_path, contact_address_form: valid_params
@@ -84,11 +86,11 @@ module WasteCarriersEngine
           end
 
           context "when invalid params are submitted" do
-            let(:invalid_params) {
+            let(:invalid_params) do
               {
                 reg_identifier: "foo"
               }
-            }
+            end
 
             it "returns a 302 response" do
               post contact_address_forms_path, contact_address_form: invalid_params
@@ -111,11 +113,11 @@ module WasteCarriersEngine
                    workflow_state: "renewal_start_form")
           end
 
-          let(:valid_params) {
+          let(:valid_params) do
             {
               reg_identifier: transient_registration[:reg_identifier]
             }
-          }
+          end
 
           it "does not update the transient registration" do
             post contact_address_forms_path, contact_address_form: valid_params

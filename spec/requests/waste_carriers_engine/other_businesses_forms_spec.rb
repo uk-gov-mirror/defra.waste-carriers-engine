@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 module WasteCarriersEngine
   RSpec.describe "OtherBusinessesForms", type: :request do
-    include_examples "GET flexible form", form = "other_businesses_form"
+    include_examples "GET flexible form", "other_businesses_form"
 
     include_examples "POST form",
-                     form = "other_businesses_form",
-                     valid_params = { other_businesses: "yes" },
-                     invalid_params = { other_businesses: "foo" },
-                     test_attribute = :other_businesses
+                     "other_businesses_form",
+                     valid_params: { other_businesses: "yes" },
+                     invalid_params: { other_businesses: "foo" },
+                     test_attribute: :other_businesses
 
     describe "GET back_other_businesses_forms_path" do
       context "when a valid user is signed in" do

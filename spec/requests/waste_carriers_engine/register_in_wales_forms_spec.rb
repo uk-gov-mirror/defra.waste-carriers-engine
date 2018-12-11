@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 module WasteCarriersEngine
   RSpec.describe "RegisterInWalesForms", type: :request do
-    include_examples "GET flexible form", form = "register_in_wales_form"
+    include_examples "GET flexible form", "register_in_wales_form"
 
-    include_examples "POST without params form", form = "register_in_wales_form"
+    include_examples "POST without params form", "register_in_wales_form"
 
     describe "POST register_in_wales_forms_path" do
       context "when a valid user is signed in" do
@@ -22,11 +24,11 @@ module WasteCarriersEngine
           end
 
           context "when valid params are submitted" do
-            let(:valid_params) {
+            let(:valid_params) do
               {
                 reg_identifier: transient_registration[:reg_identifier]
               }
-            }
+            end
 
             it "returns a 302 response" do
               post register_in_wales_forms_path, register_in_wales_form: valid_params
@@ -40,11 +42,11 @@ module WasteCarriersEngine
           end
 
           context "when invalid params are submitted" do
-            let(:invalid_params) {
+            let(:invalid_params) do
               {
                 reg_identifier: "foo"
               }
-            }
+            end
 
             it "returns a 302 response" do
               post register_in_wales_forms_path, register_in_wales_form: invalid_params
@@ -66,11 +68,11 @@ module WasteCarriersEngine
                    workflow_state: "renewal_start_form")
           end
 
-          let(:valid_params) {
+          let(:valid_params) do
             {
               reg_identifier: transient_registration[:reg_identifier]
             }
-          }
+          end
 
           it "returns a 302 response" do
             post register_in_wales_forms_path, register_in_wales_form: valid_params

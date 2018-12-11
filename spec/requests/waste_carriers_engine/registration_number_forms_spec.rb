@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 module WasteCarriersEngine
   RSpec.describe "RegistrationNumberForms", type: :request do
-    include_examples "GET flexible form", form = "registration_number_form"
+    include_examples "GET flexible form", "registration_number_form"
 
     describe "POST registration_number_forms_path" do
       before do
@@ -24,12 +26,12 @@ module WasteCarriersEngine
           end
 
           context "when valid params are submitted and the company_no is the same as the original registration" do
-            let(:valid_params) {
+            let(:valid_params) do
               {
                 reg_identifier: transient_registration[:reg_identifier],
                 company_no: transient_registration[:company_no]
               }
-            }
+            end
 
             it "returns a 302 response" do
               post registration_number_forms_path, registration_number_form: valid_params
@@ -60,12 +62,12 @@ module WasteCarriersEngine
           end
 
           context "when valid params are submitted and the company_no is different to the original registration" do
-            let(:valid_params) {
+            let(:valid_params) do
               {
                 reg_identifier: transient_registration[:reg_identifier],
                 company_no: "01234567"
               }
-            }
+            end
 
             it "updates the transient registration" do
               post registration_number_forms_path, registration_number_form: valid_params
@@ -84,12 +86,12 @@ module WasteCarriersEngine
           end
 
           context "when invalid params are submitted" do
-            let(:invalid_params) {
+            let(:invalid_params) do
               {
                 reg_identifier: "foo",
                 company_no: ""
               }
-            }
+            end
 
             it "returns a 302 response" do
               post registration_number_forms_path, registration_number_form: invalid_params
@@ -111,12 +113,12 @@ module WasteCarriersEngine
                    workflow_state: "renewal_start_form")
           end
 
-          let(:valid_params) {
+          let(:valid_params) do
             {
               reg_identifier: transient_registration[:reg_identifier],
               company_no: "01234567"
             }
-          }
+          end
 
           it "does not update the transient registration" do
             post registration_number_forms_path, registration_number_form: valid_params

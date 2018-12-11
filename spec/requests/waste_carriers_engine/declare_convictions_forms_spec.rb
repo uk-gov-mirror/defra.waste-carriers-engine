@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 module WasteCarriersEngine
   RSpec.describe "DeclareConvictionsForms", type: :request do
-    include_examples "GET flexible form", form = "declare_convictions_form"
+    include_examples "GET flexible form", "declare_convictions_form"
 
     include_examples "POST form",
-                     form = "declare_convictions_form",
-                     valid_params = { declared_convictions: "yes" },
-                     invalid_params = { declared_convictions: "foo" },
-                     test_attribute = :declared_convictions
+                     "declare_convictions_form",
+                     valid_params: { declared_convictions: "yes" },
+                     invalid_params: { declared_convictions: "foo" },
+                     test_attribute: :declared_convictions
 
     describe "GET back_declare_convictions_forms_path" do
       context "when a valid user is signed in" do

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 module WasteCarriersEngine
@@ -6,13 +8,13 @@ module WasteCarriersEngine
       allow_any_instance_of(RestClient::Request).to receive(:execute).and_return("foo")
     end
 
-    include_examples "GET locked-in form", form = "declaration_form"
+    include_examples "GET locked-in form", "declaration_form"
 
     include_examples "POST form",
-                     form = "declaration_form",
-                     valid_params = { declaration: 1 },
-                     invalid_params = { declaration: "foo" },
-                     test_attribute = :declaration
+                     "declaration_form",
+                     valid_params: { declaration: 1 },
+                     invalid_params: { declaration: "foo" },
+                     test_attribute: :declaration
 
     describe "POST declaration_forms_path" do
       context "when a valid user is signed in" do

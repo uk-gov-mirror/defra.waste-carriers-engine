@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 module WasteCarriersEngine
   RSpec.describe "CompanyAddressManualForms", type: :request do
-    include_examples "GET flexible form", form = "company_address_manual_form"
+    include_examples "GET flexible form", "company_address_manual_form"
 
     describe "POST company_address_manual_forms_path" do
       context "when a valid user is signed in" do
@@ -20,14 +22,14 @@ module WasteCarriersEngine
           end
 
           context "when valid params are submitted" do
-            let(:valid_params) {
+            let(:valid_params) do
               {
                 reg_identifier: transient_registration[:reg_identifier],
                 house_number: "42",
                 address_line_1: "Foo Terrace",
                 town_city: "Barton"
               }
-            }
+            end
 
             it "updates the transient registration" do
               post company_address_manual_forms_path, company_address_manual_form: valid_params
@@ -79,11 +81,11 @@ module WasteCarriersEngine
           end
 
           context "when invalid params are submitted" do
-            let(:invalid_params) {
+            let(:invalid_params) do
               {
                 reg_identifier: "foo"
               }
-            }
+            end
 
             it "returns a 302 response" do
               post company_address_manual_forms_path, company_address_manual_form: invalid_params
@@ -105,14 +107,14 @@ module WasteCarriersEngine
                    workflow_state: "renewal_start_form")
           end
 
-          let(:valid_params) {
+          let(:valid_params) do
             {
               reg_identifier: transient_registration[:reg_identifier],
               house_number: "42",
               address_line_1: "Foo Terrace",
               town_city: "Barton"
             }
-          }
+          end
 
           it "does not update the transient registration" do
             post company_address_forms_path, company_address_form: valid_params

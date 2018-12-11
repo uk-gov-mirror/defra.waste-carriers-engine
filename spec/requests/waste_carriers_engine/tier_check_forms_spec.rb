@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 module WasteCarriersEngine
   RSpec.describe "TierCheckForms", type: :request do
-    include_examples "GET flexible form", form = "tier_check_form"
+    include_examples "GET flexible form", "tier_check_form"
 
     include_examples "POST form",
-                     form = "tier_check_form",
-                     valid_params = { temp_tier_check: "yes" },
-                     invalid_params = { temp_tier_check: "foo" },
-                     test_attribute = :temp_tier_check
+                     "tier_check_form",
+                     valid_params: { temp_tier_check: "yes" },
+                     invalid_params: { temp_tier_check: "foo" },
+                     test_attribute: :temp_tier_check
 
     describe "GET back_tier_check_forms_path" do
       context "when a valid user is signed in" do

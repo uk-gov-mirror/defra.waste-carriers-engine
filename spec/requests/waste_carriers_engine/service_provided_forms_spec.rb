@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 module WasteCarriersEngine
   RSpec.describe "ServiceProvidedForms", type: :request do
-    include_examples "GET flexible form", form = "service_provided_form"
+    include_examples "GET flexible form", "service_provided_form"
 
     include_examples "POST form",
-                     form = "service_provided_form",
-                     valid_params = { is_main_service: "yes" },
-                     invalid_params = { is_main_service: "foo" },
-                     test_attribute = :is_main_service
+                     "service_provided_form",
+                     valid_params: { is_main_service: "yes" },
+                     invalid_params: { is_main_service: "foo" },
+                     test_attribute: :is_main_service
 
     describe "GET back_service_provided_forms_path" do
       context "when a valid user is signed in" do

@@ -1,14 +1,16 @@
+# frozen_string_literal: true
+
 require "rails_helper"
 
 module WasteCarriersEngine
   RSpec.describe "CbdTypeForms", type: :request do
-    include_examples "GET flexible form", form = "cbd_type_form"
+    include_examples "GET flexible form", "cbd_type_form"
 
     include_examples "POST form",
-                     form = "cbd_type_form",
-                     valid_params = { registration_type: "broker_dealer" },
-                     invalid_params = { registration_type: "foo" },
-                     test_attribute = :registration_type
+                     "cbd_type_form",
+                     valid_params: { registration_type: "broker_dealer" },
+                     invalid_params: { registration_type: "foo" },
+                     test_attribute: :registration_type
 
     describe "GET back_cbd_type_forms_path" do
       context "when a valid user is signed in" do
