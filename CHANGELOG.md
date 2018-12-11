@@ -4,6 +4,13 @@
 
 **Implemented enhancements:**
 
+- Add stuck? method to the transient registration [\#327](https://github.com/DEFRA/waste-carriers-renewals/pull/327) ([Cruikshanks](https://github.com/Cruikshanks))
+- Always send account\_email to WorldPay [\#325](https://github.com/DEFRA/waste-carriers-renewals/pull/325) ([irisfaraway](https://github.com/irisfaraway))
+- Remove may\_renew? from pending\_manual\_conviction\_check? [\#311](https://github.com/DEFRA/waste-carriers-renewals/pull/311) ([Cruikshanks](https://github.com/Cruikshanks))
+- Remove details in version page we do not use [\#308](https://github.com/DEFRA/waste-carriers-renewals/pull/308) ([Cruikshanks](https://github.com/Cruikshanks))
+- Refactor logic around can renew checks [\#307](https://github.com/DEFRA/waste-carriers-renewals/pull/307) ([Cruikshanks](https://github.com/Cruikshanks))
+- Add scopes for different conviction check states [\#304](https://github.com/DEFRA/waste-carriers-renewals/pull/304) ([irisfaraway](https://github.com/irisfaraway))
+- Add workflow states to conviction\_sign\_offs [\#303](https://github.com/DEFRA/waste-carriers-renewals/pull/303) ([irisfaraway](https://github.com/irisfaraway))
 - Improve dashboard search performance [\#302](https://github.com/DEFRA/waste-carriers-renewals/pull/302) ([Cruikshanks](https://github.com/Cruikshanks))
 - Allow expired renewal to complete post declaration [\#300](https://github.com/DEFRA/waste-carriers-renewals/pull/300) ([Cruikshanks](https://github.com/Cruikshanks))
 - Add a grace window for expired regs to renew [\#290](https://github.com/DEFRA/waste-carriers-renewals/pull/290) ([Cruikshanks](https://github.com/Cruikshanks))
@@ -121,6 +128,8 @@
 
 **Fixed bugs:**
 
+- Block renewal rejection in initial conviction check state [\#310](https://github.com/DEFRA/waste-carriers-renewals/pull/310) ([irisfaraway](https://github.com/irisfaraway))
+- Resolve warning msg about overwiting field \_id [\#306](https://github.com/DEFRA/waste-carriers-renewals/pull/306) ([Cruikshanks](https://github.com/Cruikshanks))
 - Fix conviction check to handle grace window [\#296](https://github.com/DEFRA/waste-carriers-renewals/pull/296) ([Cruikshanks](https://github.com/Cruikshanks))
 - Fix broken HighVoltage routing [\#288](https://github.com/DEFRA/waste-carriers-renewals/pull/288) ([irisfaraway](https://github.com/irisfaraway))
 - Escape URIs when sending conviction check requests [\#285](https://github.com/DEFRA/waste-carriers-renewals/pull/285) ([irisfaraway](https://github.com/irisfaraway))
@@ -191,11 +200,32 @@
 
 **Closed issues:**
 
+- Address lookup isn't rescuing 'connection refused' errors [\#140](https://github.com/DEFRA/waste-carriers-renewals/issues/140)
 - Better I18n files [\#130](https://github.com/DEFRA/waste-carriers-renewals/issues/130)
 - User sign-in breaks when upgrading to Devise 4.4.0 [\#20](https://github.com/DEFRA/waste-carriers-renewals/issues/20)
 
 **Merged pull requests:**
 
+-  Fix style issues in controller and request specs [\#335](https://github.com/DEFRA/waste-carriers-renewals/pull/335) ([irisfaraway](https://github.com/irisfaraway))
+- Fix style issues in controllers [\#334](https://github.com/DEFRA/waste-carriers-renewals/pull/334) ([irisfaraway](https://github.com/irisfaraway))
+-  Fix style issues in helpers [\#333](https://github.com/DEFRA/waste-carriers-renewals/pull/333) ([irisfaraway](https://github.com/irisfaraway))
+- Fix style issues in validators [\#332](https://github.com/DEFRA/waste-carriers-renewals/pull/332) ([irisfaraway](https://github.com/irisfaraway))
+- Fix style issues in presenters [\#331](https://github.com/DEFRA/waste-carriers-renewals/pull/331) ([irisfaraway](https://github.com/irisfaraway))
+- Fix style issues in services [\#330](https://github.com/DEFRA/waste-carriers-renewals/pull/330) ([irisfaraway](https://github.com/irisfaraway))
+- Fix style issues in mailer and mailer specs [\#329](https://github.com/DEFRA/waste-carriers-renewals/pull/329) ([irisfaraway](https://github.com/irisfaraway))
+- Update VCR cassettes [\#328](https://github.com/DEFRA/waste-carriers-renewals/pull/328) ([irisfaraway](https://github.com/irisfaraway))
+- Refactor specs around renewal checks [\#326](https://github.com/DEFRA/waste-carriers-renewals/pull/326) ([irisfaraway](https://github.com/irisfaraway))
+- Bump phonelib from 0.6.27 to 0.6.28 [\#321](https://github.com/DEFRA/waste-carriers-renewals/pull/321) ([dependabot[bot]](https://github.com/apps/dependabot))
+- Fix frozen string literal issue in a spec file [\#319](https://github.com/DEFRA/waste-carriers-renewals/pull/319) ([Cruikshanks](https://github.com/Cruikshanks))
+- Upgrade to Rails 4.2.11 [\#318](https://github.com/DEFRA/waste-carriers-renewals/pull/318) ([irisfaraway](https://github.com/irisfaraway))
+- Set valid reg id as default in request spec [\#317](https://github.com/DEFRA/waste-carriers-renewals/pull/317) ([Cruikshanks](https://github.com/Cruikshanks))
+- Add missing relationship between metaData & trans reg [\#316](https://github.com/DEFRA/waste-carriers-renewals/pull/316) ([Cruikshanks](https://github.com/Cruikshanks))
+- Add new revoked trait to trans reg factory [\#315](https://github.com/DEFRA/waste-carriers-renewals/pull/315) ([Cruikshanks](https://github.com/Cruikshanks))
+- Move methods from TransientRegistration to concern [\#314](https://github.com/DEFRA/waste-carriers-renewals/pull/314) ([Cruikshanks](https://github.com/Cruikshanks))
+- Refactor transient registration unit tests [\#313](https://github.com/DEFRA/waste-carriers-renewals/pull/313) ([Cruikshanks](https://github.com/Cruikshanks))
+- Remove redundant check in CanChangeRegistrationStatus [\#312](https://github.com/DEFRA/waste-carriers-renewals/pull/312) ([Cruikshanks](https://github.com/Cruikshanks))
+- Update VCR cassettes [\#309](https://github.com/DEFRA/waste-carriers-renewals/pull/309) ([irisfaraway](https://github.com/irisfaraway))
+- Refactor scope tests for consistency [\#305](https://github.com/DEFRA/waste-carriers-renewals/pull/305) ([irisfaraway](https://github.com/irisfaraway))
 - Bump phonelib from 0.6.26 to 0.6.27 [\#301](https://github.com/DEFRA/waste-carriers-renewals/pull/301) ([dependabot[bot]](https://github.com/apps/dependabot))
 - Update VCR cassettes [\#299](https://github.com/DEFRA/waste-carriers-renewals/pull/299) ([irisfaraway](https://github.com/irisfaraway))
 - Bump govuk\_template from 0.24.1 to 0.25.0 [\#298](https://github.com/DEFRA/waste-carriers-renewals/pull/298) ([dependabot[bot]](https://github.com/apps/dependabot))
