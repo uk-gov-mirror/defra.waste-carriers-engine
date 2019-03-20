@@ -1,4 +1,6 @@
-require File.expand_path('../boot', __FILE__)
+# frozen_string_literal: true
+
+require File.expand_path("boot", __dir__)
 
 require "active_model/railtie"
 require "action_controller/railtie"
@@ -18,7 +20,7 @@ module WasteCarriersRenewals
 
     # Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.
     # Run "rake -D time" for a list of tasks for finding time zone names. Default is UTC.
-    config.time_zone = 'UTC'
+    config.time_zone = "UTC"
 
     # The default locale is :en and all translations from config/locales/*/*.rb,yml are auto loaded.
     config.i18n.load_path += Dir["#{config.root}/config/locales/**/*.yml"]
@@ -27,18 +29,18 @@ module WasteCarriersRenewals
     # Enable the asset pipeline
     config.assets.enabled = true
 
-    config.assets.precompile += %w(
+    config.assets.precompile += %w[
       application.css
       print.css
-    )
+    ]
 
     # Don't add field_with_errors div wrapper around fields with errors
     config.action_view.field_error_proc = proc { |html_tag, _instance|
-      "#{html_tag}".html_safe
+      html_tag.to_s.html_safe
     }
 
     # Errbit config
-    config.airbrake_on = ENV["WCRS_USE_AIRBRAKE"] == "true" ? true : false
+    config.airbrake_on = ENV["WCRS_USE_AIRBRAKE"] == "true"
     config.airbrake_host = ENV["WCRS_AIRBRAKE_URL"]
     # Even though we may not want to enable airbrake, its initializer requires
     # a value for project ID and key else it errors.
@@ -76,12 +78,12 @@ module WasteCarriersRenewals
     config.worldpay_url = ENV["WCRS_WORLDPAY_URL"] || "https://secure-test.worldpay.com/jsp/merchant/xml/paymentService.jsp"
     config.worldpay_admin_code = ENV["WCRS_WORLDPAY_ADMIN_CODE"]
     config.worldpay_merchantcode = ENV["WCRS_WORLDPAY_ECOM_MERCHANTCODE"]
-    config.worldpay_username =  ENV["WCRS_WORLDPAY_ECOM_USERNAME"]
+    config.worldpay_username = ENV["WCRS_WORLDPAY_ECOM_USERNAME"]
     config.worldpay_password = ENV["WCRS_WORLDPAY_ECOM_PASSWORD"]
-    config.worldpay_macsecret =  ENV["WCRS_WORLDPAY_ECOM_MACSECRET"]
+    config.worldpay_macsecret = ENV["WCRS_WORLDPAY_ECOM_MACSECRET"]
 
     # Version info
-    config.application_version = "0.0.1".freeze
+    config.application_version = "0.0.1"
     config.application_name = "waste-carriers-renewals"
     config.git_repository_url = "https://github.com/DEFRA/#{config.application_name}"
   end
