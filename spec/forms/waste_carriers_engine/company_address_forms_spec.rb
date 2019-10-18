@@ -11,7 +11,14 @@ module WasteCarriersEngine
     describe "#submit" do
       context "when the form is valid" do
         let(:company_address_form) { build(:company_address_form, :has_required_data) }
-        let(:valid_params) { { reg_identifier: company_address_form.reg_identifier, temp_address: company_address_form.temp_address } }
+        let(:valid_params) do
+          {
+            reg_identifier: company_address_form.reg_identifier,
+            company_address: {
+              uprn: "340116"
+            }
+          }
+        end
 
         it "should submit" do
           expect(company_address_form.submit(valid_params)).to eq(true)
@@ -34,7 +41,7 @@ module WasteCarriersEngine
       describe "#addresses" do
         context "when no address is selected" do
           before(:each) do
-            company_address_form.addresses = nil
+            company_address_form.transient_registration.addresses = nil
           end
 
           it "is not valid" do
@@ -56,7 +63,7 @@ module WasteCarriersEngine
 
       describe "#temp_address" do
         it "pre-selects the address" do
-          expect(company_address_form.temp_address).to eq(transient_registration.addresses.where(address_type: "REGISTERED").first.uprn.to_s)
+          expect(company_address_form.company_address.uprn.to_s).to eq(transient_registration.addresses.where(address_type: "REGISTERED").first.uprn.to_s)
         end
       end
     end
