@@ -49,7 +49,7 @@ module WasteCarriersEngine
             context "when a renewal is in progress" do
               context "when a valid transient registration exists" do
                 let(:transient_registration) do
-                  create(:transient_registration,
+                  create(:renewing_registration,
                          :has_required_data,
                          account_email: user.email,
                          workflow_state: "renewal_start_form")
@@ -63,7 +63,7 @@ module WasteCarriersEngine
 
               context "when the transient registration is in a different state" do
                 let(:transient_registration) do
-                  create(:transient_registration,
+                  create(:renewing_registration,
                          :has_required_data,
                          account_email: user.email,
                          workflow_state: "location_form")
@@ -94,7 +94,7 @@ module WasteCarriersEngine
 
             context "when a renewal is in progress" do
               let(:transient_registration) do
-                create(:transient_registration,
+                create(:renewing_registration,
                        :has_required_data,
                        account_email: "not-#{user.email}",
                        workflow_state: "renewal_start_form")
@@ -234,7 +234,7 @@ module WasteCarriersEngine
 
           context "when a renewal is in progress" do
             let(:transient_registration) do
-              create(:transient_registration,
+              create(:renewing_registration,
                      :has_required_data,
                      account_email: user.email,
                      workflow_state: "renewal_start_form")
@@ -265,7 +265,7 @@ module WasteCarriersEngine
 
             context "when the state is different" do
               let(:transient_registration) do
-                create(:transient_registration,
+                create(:renewing_registration,
                        :has_required_data,
                        account_email: user.email,
                        workflow_state: "other_businesses_form")
@@ -315,7 +315,7 @@ module WasteCarriersEngine
 
           context "when a renewal is in progress" do
             let(:transient_registration) do
-              create(:transient_registration,
+              create(:renewing_registration,
                      :has_required_data,
                      account_email: "not-#{user.email}",
                      workflow_state: "renewal_start_form")
