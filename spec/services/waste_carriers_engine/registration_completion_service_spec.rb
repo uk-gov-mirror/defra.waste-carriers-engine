@@ -26,6 +26,10 @@ module WasteCarriersEngine
         it "activates the registration" do
           expect { service }.to change { registration.active? }.from(false).to(true)
         end
+
+        it "sends a confirmation email" do
+          expect { service }.to change { ActionMailer::Base.deliveries.count }.by(1)
+        end
       end
 
       context "when the balance is unpaid" do
@@ -41,6 +45,17 @@ module WasteCarriersEngine
 
         it "raises an error" do
           expect { service }.to raise_error(PendingConvictionsError)
+        end
+      end
+
+      context "when the mailer fails" do
+        before do
+          allow(Rails.configuration.action_mailer).to receive(:raise_delivery_errors).and_return(true)
+          allow_any_instance_of(ActionMailer::MessageDelivery).to receive(:deliver_now).and_raise(StandardError)
+        end
+
+        it "does not raise an error" do
+          expect { service }.to_not raise_error
         end
       end
     end
