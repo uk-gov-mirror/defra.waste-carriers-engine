@@ -48,6 +48,24 @@ module WasteCarriersEngine
               expect(response).to render_template("waste_carriers_engine/copy_cards_forms/new")
               expect(response.code).to eq("200")
             end
+
+            context "when an order is in progress" do
+              let!(:transient_registration) { create(:order_copy_cards_registration, :copy_cards_payment_form_state) }
+
+              context "when the token is a reg_identifier" do
+                it "redirects to the correct workflow state form" do
+                  get new_copy_cards_form_path(transient_registration.registration.reg_identifier)
+
+                  expect(response).to redirect_to(new_copy_cards_payment_form_path(transient_registration.token))
+                end
+              end
+
+              it "redirects to the correct workflow state form" do
+                get new_copy_cards_form_path(transient_registration.token)
+
+                expect(response).to redirect_to(new_copy_cards_payment_form_path(transient_registration.token))
+              end
+            end
           end
         end
       end
