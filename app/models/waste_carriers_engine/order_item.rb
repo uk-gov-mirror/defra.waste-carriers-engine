@@ -43,7 +43,10 @@ module WasteCarriersEngine
       order_item = OrderItem.base_order_item
 
       order_item[:amount] = cards * Rails.configuration.card_charge
+
       order_item[:description] = "#{cards} registration cards"
+      order_item[:description] = "1 registration card" if cards == 1
+
       order_item[:type] = TYPES[:copy_cards]
 
       order_item
