@@ -26,6 +26,15 @@ module WasteCarriersEngine
       finance_details
     end
 
+    # These amounts are used in a number of finance operations.
+    def overpaid_balance
+      @_overpaid_balance ||= balance <= 0 ? (balance * -1) : 0
+    end
+
+    def unpaid_balance
+      @_unpaid_balance ||= [0, balance].max
+    end
+
     def update_balance
       order_balance = orders.sum { |item| item[:total_amount] }
       # Select payments where the type is not WORLDPAY, or if it is, the status is AUTHORISED

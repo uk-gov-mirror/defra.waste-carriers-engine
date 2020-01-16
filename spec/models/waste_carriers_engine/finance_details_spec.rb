@@ -30,6 +30,74 @@ module WasteCarriersEngine
       end
     end
 
+    describe "overpaid_balance" do
+      let(:transient_registration) { build(:renewing_registration, :has_required_data, :has_finance_details) }
+
+      subject { transient_registration.finance_details }
+
+      before do
+        transient_registration.finance_details.balance = balance
+      end
+
+      context "when the balance is 0" do
+        let(:balance) { 0 }
+
+        it "returns 0" do
+          expect(subject.overpaid_balance).to be_zero
+        end
+      end
+
+      context "when the balance is less than 0" do
+        let(:balance) { -4 }
+
+        it "returns the balance but in positive" do
+          expect(subject.overpaid_balance).to eq(4)
+        end
+      end
+
+      context "when the balaance is more than 0" do
+        let(:balance) { 4 }
+
+        it "returns 0" do
+          expect(subject.overpaid_balance).to be_zero
+        end
+      end
+    end
+
+    describe "unpaid_balance" do
+      let(:transient_registration) { build(:renewing_registration, :has_required_data, :has_finance_details) }
+
+      subject { transient_registration.finance_details }
+
+      before do
+        transient_registration.finance_details.balance = balance
+      end
+
+      context "when the balance is 0" do
+        let(:balance) { 0 }
+
+        it "returns 0" do
+          expect(subject.unpaid_balance).to be_zero
+        end
+      end
+
+      context "when the balance is more than 0" do
+        let(:balance) { 4 }
+
+        it "returns the balance" do
+          expect(subject.unpaid_balance).to eq(4)
+        end
+      end
+
+      context "when the balaance is less than 0" do
+        let(:balance) { -4 }
+
+        it "returns 0" do
+          expect(subject.unpaid_balance).to be_zero
+        end
+      end
+    end
+
     describe "update_balance" do
       let(:finance_details) { build(:finance_details) }
 
