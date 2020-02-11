@@ -3,5 +3,81 @@ en:
     edit_forms:
       new:
         title: Edit a registration
-        heading: Edit %{reg_identifier}
-        next_button: Continue
+        heading: Edit %{reg_identifier} registration
+        edit_meta:
+          created_at: "Edit started %{created_at}."
+          warning: You need to confirm these changes if you want to keep them.
+        sections:
+          registration_and_account:
+            heading: Registration and account
+            labels:
+              tier: Tier
+              registration_type: Type
+              account_email: Account email
+          business:
+            heading: Waste carrier business details
+            labels:
+              business_type: Type
+              company_name: Name
+              company_no: Company number
+              main_people: Main people
+              registered_address: Address
+          contact:
+            heading: Contact details
+            labels:
+              contact_name: Name
+              phone_number: Phone number
+              contact_email: Email address
+              contact_address: Address
+          location:
+            heading: Principal place of business
+            labels:
+              location: Location
+        edit_links:
+          default: Change
+          no_edit: Cannot edit
+          fee: Change (£40 fee)
+          visually_hidden:
+            registration_type: registration type
+            company_name: business name
+            main_people: main people
+            registered_address: business address
+            contact_name: contact name
+            phone_number: contact phone
+            contact_email: contact email
+            contact_address: contact address
+            location: location
+        values:
+          business_type:
+            soleTrader: Individual or sole trader
+            limitedCompany: Limited company
+            partnership: Partnership
+            limitedLiabilityPartnership: Limited liability partnership
+            localAuthority: Local authority or public body
+            charity: Charity or trust
+          main_people:
+            localAuthority: chief executive
+            limitedCompany: director
+            limitedLiabilityPartnership: member
+            overseas: business owner
+            partnership: partner
+            soleTrader: business owner
+          location:
+            england: England
+            wales: Wales
+            scotland: Scotland
+            northern_ireland: Northern Ireland
+            overseas: Not in the United Kingdom
+            not_set: "n/a"
+          registration_type:
+            carrier_dealer: Carrier and dealer
+            broker_dealer: Broker and dealer
+            carrier_broker_dealer: Carrier, broker and dealer
+          tier:
+            UPPER: Upper tier
+            LOWER: Lower tier
+    shared:
+      edit_actions:
+        next_button: Confirm changes
+        button_linker: or
+        cancel_button: Cancel
