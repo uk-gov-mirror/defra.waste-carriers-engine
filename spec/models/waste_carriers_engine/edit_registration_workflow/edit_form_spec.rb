@@ -8,13 +8,62 @@ module WasteCarriersEngine
 
     describe "#workflow_state" do
       context ":edit_form state transitions" do
-        context "on next" do
-          it "can transition from a :edit_form state to a :declaration_form" do
-            edit_registration.workflow_state = :edit_form
+        current_state = :edit_form
+        non_address_editable_form_states = %i[
+          cbd_type_form
+          company_name_form
+          main_people_form
+          contact_name_form
+          contact_phone_form
+          contact_email_form
+          location_form
+        ]
+        transitionable_states = non_address_editable_form_states + %i[company_postcode_form
+                                                                      contact_postcode_form
+                                                                      declaration_form]
 
-            edit_registration.next
+        context "when an EditRegistration's state is #{current_state}" do
+          it "can only transition to the allowed states" do
+            permitted_states = Helpers::WorkflowStates.permitted_states(edit_registration)
+            expect(permitted_states).to match_array(transitionable_states)
+          end
 
-            expect(edit_registration.workflow_state).to eq("declaration_form")
+          non_address_editable_form_states.each do |expected_state|
+            state_without_form_suffix = expected_state.to_s.remove("_form")
+            event = "edit_#{state_without_form_suffix}".to_sym
+
+            it "changes to #{expected_state} after the '#{event}' event" do
+              expect(subject).to transition_from(current_state).to(expected_state).on_event(event)
+            end
+          end
+
+          context "when the registration is not overseas" do
+            before { edit_registration.location = "england" }
+            it "changes to :company_postcode_form after the 'edit_company_address' event" do
+              expect(subject).to transition_from(current_state).to(:company_postcode_form).on_event(:edit_company_address)
+            end
+
+            it "changes to :contact_postcode_form after the 'edit_contact_address' event" do
+              expect(subject).to transition_from(current_state).to(:contact_postcode_form).on_event(:edit_contact_address)
+            end
+          end
+
+          context "when the registration is overseas" do
+            before { edit_registration.location = "overseas" }
+
+            it "changes to :company_address_manual_form after the 'edit_company_address' event" do
+              expect(subject).to transition_from(current_state).to(:company_address_manual_form).on_event(:edit_company_address)
+            end
+
+            it "changes to :contact_address_manual_form after the 'edit_contact_address' event" do
+              expect(subject).to transition_from(current_state).to(:contact_address_manual_form).on_event(:edit_contact_address)
+            end
+          end
+
+          it "changes to declaration_form after the 'next' event" do
+            expected_state = :declaration_form
+            event = :next
+            expect(subject).to transition_from(current_state).to(expected_state).on_event(event)
           end
         end
       end
