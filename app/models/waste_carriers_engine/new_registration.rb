@@ -7,6 +7,10 @@ module WasteCarriersEngine
 
     field :temp_start_option, type: String
 
+    def prepare_for_payment(*_args)
+      # TODO
+    end
+
     def reg_identifier
       return unless super.present?
 
