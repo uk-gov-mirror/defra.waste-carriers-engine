@@ -31,11 +31,15 @@ WasteCarriersEngine::Engine.routes.draw do
               path: "registration-received-pending-payment",
               path_names: { new: "" }
 
+    resources :registration_completed_forms,
+              only: :new,
+              path: "registration-completed",
+              path_names: { new: "" }
+
     resources :registration_received_pending_conviction_forms,
               only: :new,
               path: "registration-received",
               path_names: { new: "" }
-
     # End of new registration flow
 
     # Order copy cards flow
