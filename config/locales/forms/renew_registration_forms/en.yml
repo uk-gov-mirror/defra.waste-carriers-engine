@@ -1,0 +1,27 @@
+en:
+  waste_carriers_engine:
+    renew_registration_forms:
+      new:
+        title: Renew your registration
+        heading: What's your waste carrier registration number?
+        temp_lookup_number_label: Waste carrier registration number
+        temp_lookup_number_hint: "Example: CBDU59475"
+        unknown_number:
+          subheading: I do not know the registration number
+          paragraph_1: Your registration number is on the email we sent you when you registered as a waste carrier. It’s also on your renewal letter.
+          paragraph_1_link_text: You can also search for it on the public register
+          paragraph_1_link_url: https://environment.data.gov.uk/public-register/view/search-waste-carriers-brokers
+          paragraph_2: "If you cannot find it, call the Environment Agency helpline on 03708 506506 (Monday to Friday, 8am to 6pm) or email"
+          paragraph_2_email: nccc-carrierbroker@environment-agency.gov.uk
+        next_button: Continue
+  activemodel:
+    errors:
+      models:
+        waste_carriers_engine/renew_registration_form:
+          attributes:
+            temp_lookup_number:
+              expired: "The registration number you entered has expired"
+              lower_tier: "This is a lower tier registration so never expires. Call our helpline on 03708 506506 if you think this is incorrect."
+              no_match: "Enter a valid registration number"
+              not_yet_renewable: "This registration is not eligible for renewal until %{date}"
+              unrenewable_status: "This number is not registered. Call our helpline on 03708 506506 if you think this is incorrect."
