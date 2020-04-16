@@ -29,6 +29,13 @@ module WasteCarriersEngine
     scope :active, -> { where("metaData.status" => "ACTIVE") }
     scope :expired_at_end_of_today, -> { where(:expires_on.lte => Time.now.in_time_zone("London").end_of_day) }
     scope :upper_tier, -> { where(tier: UPPER_TIER) }
+    scope :active_and_expired, -> { where("metaData.status" => { :$in => %w[ACTIVE EXPIRED] }) }
+
+    def self.in_grace_window
+      date = Time.now.in_time_zone("London").beginning_of_day - Rails.configuration.grace_window.days
+
+      where(:expires_on.gte => date)
+    end
 
     alias pending_manual_conviction_check? conviction_check_required?
     alias pending_payment? unpaid_balance?
