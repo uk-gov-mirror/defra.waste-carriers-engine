@@ -18,7 +18,7 @@ module WasteCarriersEngine
       # attributes are aligned. The problem is this doesn't allow us much room
       # for comments in some places, and putting them on the line above breaks
       # the formatting we have in place.
-      # rubocop:disable Metrics/LineLength
+      # rubocop:disable Layout/LineLength
       embeds_many :addresses, class_name: "WasteCarriersEngine::Address"
 
       # This is our own custom association. See CanReferenceSingleDocumentInCollection for details
@@ -63,7 +63,7 @@ module WasteCarriersEngine
       field :registrationType, as: :registration_type,                      type: String
       field :reg_uuid,                                                      type: String # Used by waste-carriers-frontend
       field :uuid,                                                          type: String
-      # rubocop:enable Metrics/LineLength
+      # rubocop:enable Layout/LineLength
 
       # Deprecated attributes
       # These are attributes which were in use during earlier stages of the
