@@ -4,7 +4,7 @@ require "rails_helper"
 
 module WasteCarriersEngine
   RSpec.describe RenewingRegistrationPermissionChecksService do
-    let(:transient_registration) { double(:transient_registration) }
+    let(:transient_registration) { double(:transient_registration, from_magic_link: false) }
     let(:user) { double(:user) }
     let(:result) { double(:result) }
     let(:params) { { transient_registration: transient_registration, user: user } }
@@ -33,8 +33,8 @@ module WasteCarriersEngine
         before do
           allow(transient_registration).to receive(:registration).and_return(registration)
 
-          expect(Ability).to receive(:new).with(user).and_return(ability)
-          expect(ability).to receive(:can?).with(:update, transient_registration).and_return(can)
+          allow(Ability).to receive(:new).with(user).and_return(ability)
+          allow(ability).to receive(:can?).with(:update, transient_registration).and_return(can)
         end
 
         context "when the user does not have the correct permissions" do
@@ -69,6 +69,16 @@ module WasteCarriersEngine
 
           context "when the transient_registration is renewable" do
             let(:renewable) { true }
+
+            context "when the transient registration is accessed through a magic link" do
+              let(:transient_registration) { double(:transient_registration, from_magic_link: true) }
+
+              it "returns a pass result" do
+                expect(result).to receive(:pass!)
+
+                expect(described_class.run(params)).to eq(result)
+              end
+            end
 
             it "returns a pass result" do
               expect(result).to receive(:pass!)
