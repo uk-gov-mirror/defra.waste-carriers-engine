@@ -2,6 +2,9 @@
 
 module WasteCarriersEngine
   class RegistrationCompletedFormsController < FormsController
+    include UnsubmittableForm
+    include CannotGoBackForm
+
     def new
       return unless super(RegistrationCompletedForm, "registration_completed_form")
 
@@ -12,10 +15,5 @@ module WasteCarriersEngine
         Rails.logger.error e
       end
     end
-
-    # Overwrite create and go_back as you shouldn't be able to submit or go back
-    def create; end
-
-    def go_back; end
   end
 end
