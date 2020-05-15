@@ -59,6 +59,10 @@ module WasteCarriersEngine
       past_registrations.where(cause: nil, :expires_on.gte => registration_window).any?
     end
 
+    def past_renewal_window?
+      check_service.expired? && !check_service.in_expiry_grace_window?
+    end
+
     def expire!
       metaData.status = "EXPIRED"
 
