@@ -11,3 +11,10 @@ en:
         heading: "That renewal has expired"
         paragraph1: "Your registration expired over 1 month ago, so you cannot renew."
         register_again: "Register again"
+      invalid_magic_link:
+        title: "We cannot find that renewal"
+        heading: "We cannot find that renewal"
+        paragraph1: "Things to try:"
+        point1: "Go back to your email and follow the link again."
+        point2: "Copy the whole link from the email and paste it into your web browser. Make sure that you include all of the characters at the end of the link."
+        point3_html: "If that does not work, <a href=\"%{link_to_new_registration}\">start a new registration</a>."
