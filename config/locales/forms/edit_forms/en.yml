@@ -37,7 +37,7 @@ en:
           receipt:
             heading: Card payment confirmation
             labels:
-              email: Email
+              email: Email address
         edit_links:
           default: Change
           no_edit: Cannot edit
