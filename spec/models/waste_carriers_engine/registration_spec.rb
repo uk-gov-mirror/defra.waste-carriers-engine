@@ -26,6 +26,52 @@ module WasteCarriersEngine
       end
     end
 
+    describe "#renew_token" do
+      context "when there is already one set" do
+        let(:registration) { create(:registration, :has_required_data, renew_token: renew_token) }
+        let(:renew_token) { "footoken" }
+
+        it "returns the existing token" do
+          expect(registration.renew_token).to eq(renew_token)
+        end
+      end
+
+      context "when one has not been set" do
+        context "and the registration can be renewed" do
+          before(:each) do
+            allow_any_instance_of(ExpiryCheckService).to receive(:in_expiry_grace_window?).and_return(true)
+          end
+
+          let(:registration) do
+            reg = create(
+              :registration,
+              :has_required_data,
+              tier: "UPPER"
+            )
+            reg.metaData.status = "ACTIVE"
+            reg
+          end
+
+          it "returns a new token" do
+            result = registration.renew_token
+
+            expect(result).to be_present
+            expect(result.length >= 20).to be_truthy
+          end
+        end
+
+        context "and the registration cannot be renewed" do
+          let(:registration) { create(:registration, :has_required_data) }
+
+          it "returns nothing" do
+            result = registration.renew_token
+
+            expect(result).to be_nil
+          end
+        end
+      end
+    end
+
     describe "#already_renewed?" do
       let(:registration) { create(:registration, :has_required_data, :expires_soon) }
 
@@ -147,25 +193,6 @@ module WasteCarriersEngine
           expect(results).to include(active_registration)
           expect(results).to_not include(cancelled_registration)
         end
-      end
-    end
-
-    describe "#generate_renew_token" do
-      let(:registration) { create(:registration, :has_required_data) }
-
-      it "generates a renew token and assign it to the registration every time it is called" do
-        old_renew_token = registration.renew_token
-
-        registration.generate_renew_token!
-
-        expect(registration.renew_token).to be_present
-        expect(registration.renew_token).to_not eq(old_renew_token)
-
-        old_renew_token = registration.renew_token
-
-        registration.generate_renew_token!
-
-        expect(registration.renew_token).to_not eq(old_renew_token)
       end
     end
 
