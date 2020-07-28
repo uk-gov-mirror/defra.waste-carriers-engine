@@ -87,36 +87,30 @@ module WasteCarriersEngine
         end
       end
 
-      context "when the source registration has a valid phone_number" do
-        let(:registration) do
-          create(:registration,
-                 :has_required_data)
-        end
-
-        it "imports it" do
-          renewing_registration = RenewingRegistration.new(reg_identifier: registration.reg_identifier)
-          expect(renewing_registration.phone_number).to eq(registration.phone_number)
-        end
-      end
-
-      context "when the source registration has an invalid phone_number" do
-        let(:registration) do
-          create(:registration,
-                 :has_required_data,
-                 phone_number: "test")
-        end
-
-        it "does not import it" do
-          renewing_registration = RenewingRegistration.new(reg_identifier: registration.reg_identifier)
-          expect(renewing_registration.phone_number).to eq(nil)
-        end
-      end
-
       context "when the source registration has a revoked_reason" do
         let(:revoked_renewing_registration) { build(:renewing_registration, :has_revoked_registration) }
 
         it "does not import it" do
           expect(revoked_renewing_registration.metaData.revoked_reason).to eq(nil)
+        end
+      end
+
+      context "when copying data from the source registration" do
+        let(:registration) do
+          create(:registration,
+                 :has_required_data,
+                 first_name: "Mary",
+                 last_name: "Wollstonecraft",
+                 phone_number: "01234 567890",
+                 contact_email: "mary@example.com")
+        end
+
+        it "does not copy over private contact information" do
+          renewing_registration = RenewingRegistration.new(reg_identifier: registration.reg_identifier)
+          expect(renewing_registration.first_name).to eq(nil)
+          expect(renewing_registration.last_name).to eq(nil)
+          expect(renewing_registration.phone_number).to eq(nil)
+          expect(renewing_registration.contact_email).to eq(nil)
         end
       end
     end

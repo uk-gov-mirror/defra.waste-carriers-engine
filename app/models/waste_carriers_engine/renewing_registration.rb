@@ -28,8 +28,12 @@ module WasteCarriersEngine
                                declaration
                                past_registrations
                                copy_cards
-                               receipt_email],
-      remove_invalid_attributes: true
+                               receipt_email
+                               firstName
+                               lastName
+                               phoneNumber
+                               contactEmail],
+      remove_revoked_reason: true
     }.freeze
 
     SUBMITTED_STATES = %w[renewal_complete_form
