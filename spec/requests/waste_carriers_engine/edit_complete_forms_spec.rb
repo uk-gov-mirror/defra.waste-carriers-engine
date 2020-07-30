@@ -91,6 +91,40 @@ module WasteCarriersEngine
                 expect(registration.finance_details.orders.count).to eq(old_orders_count + 1)
               end
             end
+
+            # A registration can be renewed or transferred after an edit is
+            # started. So when the edit completes it must not override key
+            # fields lik expiry_date and account_email
+            #
+            # See the following PR's for details of what issues this test is
+            # confirming is fixed.
+            # https://github.com/DEFRA/waste-carriers-engine/pull/879
+            # https://github.com/DEFRA/waste-carriers-engine/pull/902
+            context "when key details have been changed by other actions since the edit was started" do
+              let(:email) { "behindthescenes@example.com" }
+              let(:expires_on) { Date.today + 42.days }
+
+              it "it does not overwrite those details" do
+                # We have to be careful of lazy let() evaluation. We need to
+                # ensure the transient_registration (edit record) is created
+                # before we make our changes to the registration. So these
+                # expects not only ensure that, they also mean the transient
+                # is initialised before we then apply changes to the
+                # registration.
+                expect(transient_registration.account_email).to_not eq(email)
+                expect(transient_registration.expires_on).to_not eq(expires_on)
+
+                registration.account_email = email
+                registration.expires_on = expires_on
+                registration.save!
+
+                get new_edit_complete_form_path(transient_registration.token)
+                registration.reload
+
+                expect(registration.account_email).to eq(email)
+                expect(registration.expires_on).to eq(expires_on)
+              end
+            end
           end
 
           context "when the workflow_state is not correct" do
