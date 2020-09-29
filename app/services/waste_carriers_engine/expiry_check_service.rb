@@ -37,65 +37,29 @@ module WasteCarriersEngine
       expiry_date.to_date < Rails.configuration.renewal_window.months.from_now
     end
 
-    # Its important to note that a registration is expired on its expires_on date.
+    # It's important to note that a registration is expired on its expires_on date.
     # For example if the expires_on date is Oct 1, then the registration was
     # ACTIVE Sept 30, and EXPIRED Oct 1. If the grace window is 3 days, just
     # adding 3 days to that date would give the impression the grace window lasts
     # till Oct 4 (i.e. 1 + 3) when in fact we need to include the 1st as one of
     # our grace window days.
-    def in_expiry_grace_window?
-      # We set this variable with a method to make it easier to override in
-      # host apps when we need to extend the grace window.
-      last_day_of_grace_window = last_day_of_standard_grace_window
+    def in_expiry_grace_window?(ignore_extended_grace_window: false)
+      last_day_of_grace_window = LastDayOfGraceWindowService.run(
+        registration: registration,
+        ignore_extended_grace_window: ignore_extended_grace_window
+      )
 
       current_day_is_within_grace_window?(last_day_of_grace_window)
     end
 
-    def registration_date
-      @_registration_date ||= registration.metaData.date_registered
-    end
-
     def expiry_date
-      @_expiry_date ||= corrected_expires_on
+      @_expiry_date ||= ExpiryDateService.run(registration: registration)
     end
 
     private
 
-    # expires_on is stored as a Time in UTC and then converted to a Date.
-    # If a user first registered near midnight around the transition between GMT
-    # and BST (or the other way round), there is a risk that the UTC date will
-    # not be the same as the UK date. So compensate to avoid flagging something
-    # as expired on the wrong date.
-    def corrected_expires_on
-      return Date.new(1970, 1, 1) if expires_on.nil?
-      return expires_on + 1.hour if registered_in_bst_and_expires_in_gmt?
-      return expires_on - 1.hour if registered_in_gmt_and_expires_in_bst?
-
-      expires_on
-    end
-
-    def registered_in_bst_and_expires_in_gmt?
-      registered_in_daylight_savings? && !expires_on_in_daylight_savings?
-    end
-
-    def registered_in_gmt_and_expires_in_bst?
-      !registered_in_daylight_savings? && expires_on_in_daylight_savings?
-    end
-
-    def registered_in_daylight_savings?
-      registration_date.in_time_zone("London").dst?
-    end
-
-    def expires_on_in_daylight_savings?
-      expires_on.in_time_zone("London").dst?
-    end
-
     def current_day_is_within_grace_window?(last_day_of_grace_window)
       current_day >= expiry_date.to_date && current_day <= last_day_of_grace_window
-    end
-
-    def last_day_of_standard_grace_window
-      (expiry_date.to_date + Rails.configuration.grace_window.days) - 1.day
     end
 
     # We store dates and times in UTC, but want to use the current date in the
