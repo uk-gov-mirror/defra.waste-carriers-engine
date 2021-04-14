@@ -38,9 +38,7 @@ module WasteCarriersEngine
     end
 
     def send_confirmation_email
-      NewRegistrationMailer.registration_activated(@registration).deliver_now
-    rescue StandardError => e
-      Airbrake.notify(e, registration_no: @registration.reg_identifier) if defined?(Airbrake)
+      Notify::RegistrationActivatedService.run(registration: @registration)
     end
   end
 end
