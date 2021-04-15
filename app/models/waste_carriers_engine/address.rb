@@ -89,5 +89,20 @@ module WasteCarriersEngine
     def manually_entered?
       address_mode == "manual-foreign" || address_mode == "manual-uk"
     end
+
+    def to_s
+      # This could be smarter and treat house names and numbers differently
+      # Currently, it joins the house_number and address_line_1 with a comma
+      # e.g. 10, Downing St.
+      [
+        house_number,
+        address_line_1,
+        address_line_2,
+        address_line_3,
+        address_line_4,
+        town_city,
+        postcode
+      ].reject(&:blank?).join(", ")
+    end
   end
 end

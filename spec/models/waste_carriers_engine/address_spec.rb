@@ -4,9 +4,9 @@ require "rails_helper"
 
 module WasteCarriersEngine
   RSpec.describe Address, type: :model do
-    let(:address) { build(:address) }
-
     describe "assign_house_number_and_address_lines" do
+      let(:address) { build(:address) }
+
       context "when it is given address data" do
         let(:data) do
           {
@@ -54,6 +54,16 @@ module WasteCarriersEngine
             expect(address[:address_line_4].present?).to eq(false)
           end
         end
+      end
+    end
+
+    describe "#to_s" do
+      let(:address) { build(:address, :has_required_data) }
+
+      subject { address.to_s }
+
+      it "formats the address as a comma-separated string" do
+        expect(subject).to eq("42, Foo Gardens, Baz City, FA1 1KE")
       end
     end
   end
