@@ -27,7 +27,7 @@ module WasteCarriersEngine
             first_name: @registration.first_name,
             last_name: @registration.last_name,
             phone_number: @registration.phone_number,
-            registered_address: "123 Example Avenue",
+            registered_address: @registration.registered_address.to_s,
             date_registered: @registration.metaData.date_registered,
             link_to_file: "http://example.com"
           }
