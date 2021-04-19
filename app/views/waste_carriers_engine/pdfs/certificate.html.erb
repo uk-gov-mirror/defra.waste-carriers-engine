@@ -1,3 +1,9 @@
+<%
+  # When this template is used by a controller, the @presenter variable is exposed.
+  # But when it is rendered from (eg) the RegistrationActivatedEmailService,
+  # the instance variable is not available, only the local one.
+  @presenter ||= presenter
+%>
 <!DOCTYPE html>
 <html>
   <head>
@@ -56,9 +62,9 @@
               <tbody>
                 <tr>
                   <td class="table-column-text"><%=t ".name" %></td>
-                    <td>
-                      <%= wicked_pdf_image_tag("environment_agency_logo.png", {alt: "Environment Agency Logo", border: "0", height: "39", width: "129"}) %>
-                    </td>
+                  <td>
+                    <%= image_tag "file:///#{WasteCarriersEngine::Engine.root.join('app', 'assets', 'images', 'environment_agency_logo.png')}", alt: "Environment Agency Logo", border: "0", height: "39", width: "129" %>
+                  </td>
                 </tr>
                 <tr>
                   <td class="table-column-text"><%=t ".nccc_address_pretext" %></td>
@@ -110,7 +116,7 @@
                 <tr>
                   <td class="table-column-text"><%=t ".business_address" %></td>
                   <td>
-                  <% displayable_address(@presenter.registered_address).each do |line| %>
+                  <% @presenter.registered_address_fields.each do |line| %>
                     <%= line %><br>
                   <% end %>
                   </td>
