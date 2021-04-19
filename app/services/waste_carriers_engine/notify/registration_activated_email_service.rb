@@ -11,7 +11,6 @@ module WasteCarriersEngine
           template_id: "889fa2f2-f70c-4b5a-bbc8-d94a8abd3990",
           personalisation: {
             reg_identifier: @registration.reg_identifier,
-            registration_type: @registration.registration_type,
             first_name: @registration.first_name,
             last_name: @registration.last_name,
             phone_number: @registration.phone_number,
