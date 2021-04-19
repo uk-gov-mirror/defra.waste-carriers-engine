@@ -8,7 +8,7 @@ module WasteCarriersEngine
       def notify_options
         {
           email_address: @registration.contact_email,
-          template_id: "889fa2f2-f70c-4b5a-bbc8-d94a8abd3990",
+          template_id: template_id,
           personalisation: {
             reg_identifier: @registration.reg_identifier,
             first_name: @registration.first_name,
@@ -19,6 +19,14 @@ module WasteCarriersEngine
             link_to_file: Notifications.prepare_upload(pdf)
           }
         }
+      end
+
+      def template_id
+        if @registration.upper_tier?
+          "fe1e4746-c940-4ace-b111-8be64ee53b35"
+        else
+          "889fa2f2-f70c-4b5a-bbc8-d94a8abd3990"
+        end
       end
 
       def registered_address
