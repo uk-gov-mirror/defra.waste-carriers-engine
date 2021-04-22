@@ -1,0 +1,69 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.notifications.service.gov.uk/v2/notifications/email
+    body:
+      encoding: UTF-8
+      string: '{"email_address":"foo@example.com","template_id":"b8b68a4c-adc9-4fe6-86cd-3d5a83822c47","personalisation":{"reg_identifier":"CBDU1","first_name":"Jane","last_name":"Doe","sort_code":"","account_number":"","payment_reference":"","payment_due":"","iban":"","swift_bic":"","currency":""}}'
+    headers:
+      User-Agent:
+      - NOTIFY-API-RUBY-CLIENT/5.3.0
+      Content-Type:
+      - application/json
+      Authorization:
+      - Basic <API_KEY>
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Access-Control-Allow-Headers:
+      - Content-Type,Authorization
+      Access-Control-Allow-Methods:
+      - GET,PUT,POST,DELETE
+      Access-Control-Allow-Origin:
+      - "*"
+      Content-Type:
+      - application/json
+      Date:
+      - Thu, 22 Apr 2021 09:00:24 GMT
+      Server:
+      - nginx
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubdomains
+      X-B3-Spanid:
+      - c01d0cc88d54c1b3
+      X-B3-Traceid:
+      - c01d0cc88d54c1b3
+      X-Vcap-Request-Id:
+      - 387cef84-0741-4c94-79f8-b040e1e9b276
+      Content-Length:
+      - '1570'
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: '{"content":{"body":"Dear Jane Doe\r\n\r\n#You need to pay for your
+        waste carriers registration and then email us to confirm payment\r\nWe cannot
+        register you until your payment clears.\r\n\r\n#Pay by bank transfer (Bacs)
+        with these details\r\n\r\nSort code \r\nAccount number \r\nPayment reference
+        \r\nPayment due \u00a3\r\n\r\n#Overseas payments\r\n\r\nIBAN: \r\nSWIFTBIC:
+        \r\nCurrency: \r\n\r\n#Email us your registration CBDU1 to confirm you\u2019ve
+        paid\r\n\r\nEmail us at ea_fsc_ar@gov.sscl.com\r\n\r\nWhen you email us, include
+        the date you paid, the amount and the payment reference CBDU1.\r\n\r\nAllow
+        5 working days for your payment to reach us.\r\n\r\nYou\u2019re not legally
+        entitled to operate as a waste carrier until we have received your payment
+        and confirmed your registration.\r\n\r\nIf any of your details change you
+        must update your registration within 28 days.\r\n\r\nIf you have enquiries
+        please contact the Environment Agency helpline 03708 506506.\r\n\r\nThis is
+        an automated email, please do not reply.","from_email":"waste.carriers.registration.service@notifications.service.gov.uk","subject":"Payment
+        needed for waste carrier registration CBDU1"},"id":"45b086cf-f924-4e22-86e7-c36da641c505","reference":null,"scheduled_for":null,"template":{"id":"b8b68a4c-adc9-4fe6-86cd-3d5a83822c47","uri":"https://api.notifications.service.gov.uk/services/25cb6b94-8ce7-485b-918a-559f3b18f69c/templates/b8b68a4c-adc9-4fe6-86cd-3d5a83822c47","version":3},"uri":"https://api.notifications.service.gov.uk/v2/notifications/45b086cf-f924-4e22-86e7-c36da641c505"}
+
+'
+  recorded_at: Thu, 22 Apr 2021 09:00:24 GMT
+recorded_with: VCR 6.0.0
