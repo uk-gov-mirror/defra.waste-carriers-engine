@@ -3,6 +3,9 @@
 module WasteCarriersEngine
   module Notify
     class BaseSendEmailService < BaseService
+      include WasteCarriersEngine::ApplicationHelper
+      include ActionView::Helpers::NumberHelper
+
       def run(registration:)
         @registration = registration
 

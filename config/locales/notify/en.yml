@@ -5,3 +5,9 @@ en:
         carrier_dealer: "carrier and dealer"
         broker_dealer: "broker and dealer"
         carrier_broker_dealer: "carrier, broker and dealer"
+    payment_details:
+      sort_code: "60-70-80"
+      account_number: "1001 4411"
+      iban: "GB23 NWBK 607080 10014411"
+      swiftbic: "NWBK GB2L"
+      currency: "Sterling"
