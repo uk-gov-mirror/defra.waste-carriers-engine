@@ -31,6 +31,19 @@ en:
       failure: "Could not authenticate you from %{kind} because \"%{reason}\"."
       success: "Successfully authenticated from %{kind} account."
     passwords:
+      new:
+        heading: "Reset your password"
+        paragraph_1: "Enter the email address associated with your account."
+        hint_1: "If you don’t know the email address belonging to your account, contact our helpline on 03708 506506."
+        submit: "Reset password"
+      edit:
+        heading: Change your password
+        password:
+          label: "New password"
+          hint: "8 characters minimum"
+        password_confirmation:
+          label: "New password confirmation"
+        submit: "Change my password"
       no_token: "You cannot access this page without coming from a password reset email. If you do come from a password reset email, please make sure you used the full URL provided."
       send_instructions: "You will receive an email with instructions on how to reset your password in a few minutes."
       send_paranoid_instructions: "If your email address exists in our database, you will receive a password recovery link at your email address in a few minutes."
@@ -45,6 +58,9 @@ en:
       update_needs_confirmation: "You updated your account successfully, but we need to verify your new email address. Please check your email and follow the confirm link to confirm your new email address."
       updated: "Your account has been updated successfully."
     sessions:
+      new:
+        heading: "Sign in"
+        submit: "Sign in"
       signed_in: "Signed in successfully."
       signed_out: "Signed out successfully."
       already_signed_out: "Signed out successfully."
@@ -59,6 +75,11 @@ en:
         locked_paragraph_1: If you or someone else tries to sign in too many times using incorrect details, the account may be temporarily locked.
         locked_link_text: Unlock your account
     unlocks:
+      new:
+        heading: "Locked account"
+        paragraph_1: "This account may be temporarily locked for your security."
+        paragraph_2: "Tell us which email address was used to register and we’ll send unlock instructions."
+        submit: "Send unlock instructions"
       send_instructions: "You will receive an email with instructions for how to unlock your account in a few minutes."
       send_paranoid_instructions: "If your account exists, you will receive an email with instructions for how to unlock it in a few minutes."
       unlocked: "Your account has been unlocked successfully. Please sign in to continue."
