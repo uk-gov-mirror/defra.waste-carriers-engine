@@ -61,6 +61,7 @@ group :test do
   gem "factory_bot_rails", require: false
   gem "govuk_design_system_formbuilder"
   gem "rails-controller-testing"
+  gem "rspec-html-matchers"
   gem "simplecov", "~> 0.17.1", require: false
   gem "timecop"
   gem "vcr"
