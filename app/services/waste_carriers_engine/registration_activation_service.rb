@@ -19,6 +19,7 @@ module WasteCarriersEngine
     def activate_registration
       @registration.metaData.date_activated = Time.current
       @registration.metaData.activate!
+      OrderItemLog.create_from_registration(@registration)
     end
 
     def can_be_completed?
@@ -40,5 +41,6 @@ module WasteCarriersEngine
     def send_registration_confirmation
       RegistrationConfirmationService.run(registration: @registration)
     end
+
   end
 end
