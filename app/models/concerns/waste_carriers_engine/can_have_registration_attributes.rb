@@ -202,6 +202,26 @@ module WasteCarriersEngine
       def email_to_send_receipt
         receipt_email || contact_email
       end
+
+      def legal_entity_name
+        # Robocop and SonarCloud disagree over whether this case statement should have a default clause.
+        # rubocop:disable Style/EmptyElse
+        case business_type
+        when "limitedCompany", "limitedLiabilityPartnership"
+          registered_company_name
+        when "soleTrader"
+          upper_tier? ? first_person_name : nil
+        else
+          nil
+        end
+        # rubocop:enable Style/EmptyElse
+      end
+
+      def first_person_name
+        return nil unless key_people.present? && key_people[0].present?
+
+        format("%<first>s %<last>s", first: key_people[0].first_name, last: key_people[0].last_name)
+      end
     end
     # rubocop:enable Metrics/BlockLength
   end
