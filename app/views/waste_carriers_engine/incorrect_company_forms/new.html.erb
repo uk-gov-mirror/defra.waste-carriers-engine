@@ -14,7 +14,7 @@
 
       <p class="govuk-body"><%= t(".description") %></p>
 
-      <p class="govuk-body"><a href="https://www.gov.uk/file-changes-to-a-company-with-companies-house" target="_blank"><%= t(".service_link") %></a></p>
+      <p class="govuk-body"><a href="https://www.gov.uk/file-changes-to-a-company-with-companies-house" target="_blank"><%= t(".service_link") %></a> <%= t(".new_window") %> </p>
 
       <p class="govuk-body">
         <% if @transient_registration.is_a?(WasteCarriersEngine::NewRegistration) %>
@@ -23,7 +23,7 @@
             <%= t(".must_create_new_registration") %>
           <% end %>
       </p>
-
+    
     <% end %>
   </div>
 </div>
