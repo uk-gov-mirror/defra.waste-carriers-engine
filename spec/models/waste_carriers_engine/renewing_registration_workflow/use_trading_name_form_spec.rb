@@ -4,6 +4,6 @@ require "rails_helper"
 
 module WasteCarriersEngine
   RSpec.describe RenewingRegistration do
-    include_examples "company_address_manual_form workflow", factory: :renewing_registration
+    include_examples "use_trading_name_form workflow", factory: :renewing_registration
   end
 end
