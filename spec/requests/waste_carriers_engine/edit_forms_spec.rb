@@ -8,7 +8,7 @@ module WasteCarriersEngine
       context "when a user is signed in" do
         let(:user) { create(:user) }
 
-        before(:each) do
+        before do
           sign_in(user)
         end
 
@@ -64,7 +64,7 @@ module WasteCarriersEngine
       end
 
       context "when a user is not signed in" do
-        before(:each) do
+        before do
           user = create(:user)
           sign_out(user)
         end
@@ -72,7 +72,7 @@ module WasteCarriersEngine
         it "returns a 302 response and redirects to the sign in page" do
           get new_edit_form_path("foo")
 
-          expect(response).to have_http_status(302)
+          expect(response).to have_http_status(:found)
           expect(response).to redirect_to(new_user_session_path)
         end
       end
@@ -82,7 +82,7 @@ module WasteCarriersEngine
       context "when a user is signed in" do
         let(:user) { create(:user) }
 
-        before(:each) do
+        before do
           sign_in(user)
         end
 
@@ -119,7 +119,7 @@ module WasteCarriersEngine
             transient_registration = EditRegistration.find_by(reg_identifier: registration.reg_identifier)
 
             expect(expected_tr_count).to eq(EditRegistration.count)
-            expect(response).to have_http_status(302)
+            expect(response).to have_http_status(:found)
             expect(response).to redirect_to(new_declaration_form_path(transient_registration.token))
           end
         end
@@ -133,7 +133,7 @@ module WasteCarriersEngine
             post edit_forms_path(edit_registration.reg_identifier)
 
             expect(expected_tr_count).to eq(EditRegistration.count)
-            expect(response).to have_http_status(302)
+            expect(response).to have_http_status(:found)
             expect(response).to redirect_to(new_declaration_form_path(edit_registration.token))
           end
         end
@@ -142,7 +142,7 @@ module WasteCarriersEngine
       context "when a user is not signed in" do
         let(:registration) { create(:registration, :has_required_data) }
 
-        before(:each) do
+        before do
           user = create(:user)
           sign_out(user)
         end
@@ -153,7 +153,7 @@ module WasteCarriersEngine
           post edit_forms_path(registration.reg_identifier)
 
           expect(response).to redirect_to(new_user_session_path)
-          expect(response).to have_http_status(302)
+          expect(response).to have_http_status(:found)
           expect(EditRegistration.count).to eq(original_tr_count)
         end
       end
@@ -165,8 +165,11 @@ module WasteCarriersEngine
 
       context "when a user is signed in" do
         let(:user) { create(:user) }
+        let(:ability_instance) { instance_double(Ability) }
 
-        before(:each) do
+        before do
+          allow(Ability).to receive(:new).and_return(ability_instance)
+          allow(ability_instance).to receive(:can?).with(:edit, edit_registration.registration).and_return(true)
           sign_in(user)
         end
 
@@ -242,12 +245,12 @@ module WasteCarriersEngine
         context "when the user does not have permission" do
           it "returns a 302 response, redirects to the permissions error and does not modify the workflow_state" do
             original_state = edit_registration.workflow_state
-            expect_any_instance_of(Ability).to receive(:can?).with(:edit, edit_registration.registration).and_return(false)
+            allow(ability_instance).to receive(:can?).with(:edit, edit_registration.registration).and_return(false)
 
             get cbd_type_edit_forms_path(token)
 
             expect(response).to redirect_to("/pages/permission")
-            expect(response).to have_http_status(302)
+            expect(response).to have_http_status(:found)
             expect(edit_registration.reload.workflow_state).to eq(original_state)
           end
         end
@@ -259,12 +262,12 @@ module WasteCarriersEngine
           context "when the user does not have permission" do
             it "returns a 302 response, redirects to the permissions error and does not create a new transient registration" do
               original_tr_count = EditRegistration.count
-              expect_any_instance_of(Ability).to receive(:can?).with(:edit, registration).and_return(false)
+              allow(ability_instance).to receive(:can?).with(:edit, registration).and_return(false)
 
               get cbd_type_edit_forms_path(token)
 
               expect(response).to redirect_to("/pages/permission")
-              expect(response).to have_http_status(302)
+              expect(response).to have_http_status(:found)
               expect(EditRegistration.count).to eq(original_tr_count)
             end
           end
@@ -272,7 +275,7 @@ module WasteCarriersEngine
       end
 
       context "when a user is not signed in" do
-        before(:each) do
+        before do
           user = create(:user)
           sign_out(user)
         end
@@ -285,7 +288,7 @@ module WasteCarriersEngine
             get cbd_type_edit_forms_path(token)
 
             expect(response).to redirect_to(new_user_session_path)
-            expect(response).to have_http_status(302)
+            expect(response).to have_http_status(:found)
             expect(EditRegistration.count).to eq(original_tr_count)
           end
         end
@@ -296,7 +299,7 @@ module WasteCarriersEngine
             get cbd_type_edit_forms_path(token)
 
             expect(response).to redirect_to(new_user_session_path)
-            expect(response).to have_http_status(302)
+            expect(response).to have_http_status(:found)
             expect(edit_registration.reload.workflow_state).to eq(original_state)
           end
         end

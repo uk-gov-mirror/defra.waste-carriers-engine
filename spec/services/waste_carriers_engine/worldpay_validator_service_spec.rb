@@ -11,6 +11,19 @@ module WasteCarriersEngine
              :has_finance_details,
              temp_cards: 0)
     end
+    let(:order) { transient_registration.finance_details.orders.first }
+    let(:params) do
+      {
+        orderKey: "#{Rails.configuration.worldpay_admin_code}^#{Rails.configuration.worldpay_merchantcode}^#{order.order_code}",
+        paymentStatus: "REFUSED",
+        paymentAmount: order.total_amount,
+        paymentCurrency: "GBP",
+        mac: "b32f74da10bf1d9ebfd262d673e58fb9",
+        source: "WP",
+        reg_identifier: transient_registration.reg_identifier
+      }
+    end
+    let(:worldpay_validator_service) { described_class.new(order, params) }
 
     before do
       allow(Rails.configuration).to receive(:worldpay_admin_code).and_return("ADMIN_CODE")
@@ -24,21 +37,6 @@ module WasteCarriersEngine
         transient_registration.prepare_for_payment(:worldpay, current_user)
       end
     end
-
-    let(:order) { transient_registration.finance_details.orders.first }
-    let(:params) do
-      {
-        orderKey: "#{Rails.configuration.worldpay_admin_code}^#{Rails.configuration.worldpay_merchantcode}^#{order.order_code}",
-        paymentStatus: "REFUSED",
-        paymentAmount: order.total_amount,
-        paymentCurrency: "GBP",
-        mac: "b32f74da10bf1d9ebfd262d673e58fb9",
-        source: "WP",
-        reg_identifier: transient_registration.reg_identifier
-      }
-    end
-
-    let(:worldpay_validator_service) { WorldpayValidatorService.new(order, params) }
 
     describe "valid_success?" do
       let(:params) do
@@ -54,7 +52,7 @@ module WasteCarriersEngine
       end
 
       it "returns true" do
-        expect(worldpay_validator_service.valid_success?).to eq(true)
+        expect(worldpay_validator_service.valid_success?).to be true
       end
 
       context "when the orderKey is in the wrong format" do
@@ -65,17 +63,17 @@ module WasteCarriersEngine
         end
 
         it "returns false" do
-          expect(worldpay_validator_service.valid_success?).to eq(false)
+          expect(worldpay_validator_service.valid_success?).to be false
         end
       end
 
       context "when the paymentStatus is invalid" do
         before do
-          allow(WorldpayValidatorService).to receive(:valid_world_pay_status?).and_return(false)
+          allow(described_class).to receive(:valid_world_pay_status?).and_return(false)
         end
 
         it "returns false" do
-          expect(worldpay_validator_service.valid_success?).to eq(false)
+          expect(worldpay_validator_service.valid_success?).to be false
         end
       end
 
@@ -87,7 +85,7 @@ module WasteCarriersEngine
         end
 
         it "returns false" do
-          expect(worldpay_validator_service.valid_success?).to eq(false)
+          expect(worldpay_validator_service.valid_success?).to be false
         end
       end
 
@@ -99,7 +97,7 @@ module WasteCarriersEngine
         end
 
         it "returns false" do
-          expect(worldpay_validator_service.valid_success?).to eq(false)
+          expect(worldpay_validator_service.valid_success?).to be false
         end
       end
 
@@ -109,7 +107,7 @@ module WasteCarriersEngine
         end
 
         it "returns false" do
-          expect(worldpay_validator_service.valid_success?).to eq(false)
+          expect(worldpay_validator_service.valid_success?).to be false
         end
       end
     end
@@ -120,16 +118,16 @@ module WasteCarriersEngine
       end
 
       it "returns true" do
-        expect(worldpay_validator_service.valid_failure?).to eq(true)
+        expect(worldpay_validator_service.valid_failure?).to be true
       end
 
       context "when the paymentStatus is invalid" do
         before do
-          allow(WorldpayValidatorService).to receive(:valid_world_pay_status?).and_return(false)
+          allow(described_class).to receive(:valid_world_pay_status?).and_return(false)
         end
 
         it "returns false" do
-          expect(worldpay_validator_service.valid_failure?).to eq(false)
+          expect(worldpay_validator_service.valid_failure?).to be false
         end
       end
     end
@@ -142,16 +140,16 @@ module WasteCarriersEngine
       end
 
       it "returns true" do
-        expect(worldpay_validator_service.valid_pending?).to eq(true)
+        expect(worldpay_validator_service.valid_pending?).to be true
       end
 
       context "when the paymentStatus is invalid" do
         before do
-          allow(WorldpayValidatorService).to receive(:valid_world_pay_status?).and_return(false)
+          allow(described_class).to receive(:valid_world_pay_status?).and_return(false)
         end
 
         it "returns false" do
-          expect(worldpay_validator_service.valid_pending?).to eq(false)
+          expect(worldpay_validator_service.valid_pending?).to be false
         end
       end
     end
@@ -171,16 +169,16 @@ module WasteCarriersEngine
         end
 
         it "returns true" do
-          expect(worldpay_validator_service.valid_cancel?).to eq(true)
+          expect(worldpay_validator_service.valid_cancel?).to be true
         end
 
         context "when the paymentStatus is invalid" do
           before do
-            allow(WorldpayValidatorService).to receive(:valid_world_pay_status?).and_return(false)
+            allow(described_class).to receive(:valid_world_pay_status?).and_return(false)
           end
 
           it "returns false" do
-            expect(worldpay_validator_service.valid_cancel?).to eq(false)
+            expect(worldpay_validator_service.valid_cancel?).to be false
           end
         end
       end
@@ -194,27 +192,27 @@ module WasteCarriersEngine
       end
 
       it "returns true" do
-        expect(worldpay_validator_service.valid_error?).to eq(true)
+        expect(worldpay_validator_service.valid_error?).to be true
       end
 
       context "when the paymentStatus is invalid" do
         before do
-          allow(WorldpayValidatorService).to receive(:valid_world_pay_status?).and_return(false)
+          allow(described_class).to receive(:valid_world_pay_status?).and_return(false)
         end
 
         it "returns false" do
-          expect(worldpay_validator_service.valid_error?).to eq(false)
+          expect(worldpay_validator_service.valid_error?).to be false
         end
       end
     end
 
     describe "valid_world_pay_status?" do
       it "returns true when the status matches the values for the response type" do
-        expect(described_class.valid_world_pay_status?(:success, "AUTHORISED")).to eq(true)
+        expect(described_class.valid_world_pay_status?(:success, "AUTHORISED")).to be true
       end
 
       it "returns false when the status does not match the values for the response type" do
-        expect(described_class.valid_world_pay_status?(:success, "FOO")).to eq(false)
+        expect(described_class.valid_world_pay_status?(:success, "FOO")).to be false
       end
     end
   end

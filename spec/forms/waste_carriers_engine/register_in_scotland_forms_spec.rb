@@ -14,18 +14,18 @@ module WasteCarriersEngine
           }
         end
 
-        it "should submit" do
-          expect(register_in_scotland_form.submit(valid_params)).to eq(true)
+        it "submits" do
+          expect(register_in_scotland_form.submit(valid_params)).to be true
         end
       end
 
       context "when the form is not valid" do
         before do
-          expect(register_in_scotland_form).to receive(:valid?).and_return(false)
+          allow(register_in_scotland_form).to receive(:valid?).and_return(false)
         end
 
-        it "should not submit" do
-          expect(register_in_scotland_form.submit({})).to eq(false)
+        it "does not submit" do
+          expect(register_in_scotland_form.submit({})).to be false
         end
       end
     end

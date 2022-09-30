@@ -5,23 +5,25 @@ require "defra_ruby_companies_house"
 
 RSpec.describe WasteCarriersEngine::RefreshCompaniesHouseNameService do
 
+  subject(:run_service) { described_class.run(reg_identifier: reg_identifier) }
+
   let(:new_registered_name) { Faker::Company.name }
   let(:registration) { create(:registration, :has_required_data, registered_company_name: old_registered_name) }
   let(:reg_identifier) { registration.reg_identifier }
   let(:companies_house_name) { new_registered_name }
+  let(:drch_instance) { instance_double(DefraRubyCompaniesHouse) }
 
   before do
-    allow_any_instance_of(DefraRubyCompaniesHouse).to receive(:load_company).and_return(true)
-    allow_any_instance_of(DefraRubyCompaniesHouse).to receive(:company_name).and_return(companies_house_name)
+    allow(DefraRubyCompaniesHouse).to receive(:new).and_return(drch_instance)
+    allow(drch_instance).to receive(:load_company).and_return(true)
+    allow(drch_instance).to receive(:company_name).and_return(companies_house_name)
   end
-
-  subject { described_class.run(reg_identifier: reg_identifier) }
 
   context "with no previous companies house name" do
     let(:old_registered_name) { nil }
 
     it "stores the companies house name" do
-      expect { subject }.to change { registration_data(registration).registered_company_name }
+      expect { run_service }.to change { registration_data(registration).registered_company_name }
         .from(nil)
         .to(new_registered_name)
     end
@@ -34,13 +36,13 @@ RSpec.describe WasteCarriersEngine::RefreshCompaniesHouseNameService do
       let(:new_registered_name) { old_registered_name }
 
       it "does not change the companies house name" do
-        expect { subject }.not_to change { registration_data(registration).registered_company_name }
+        expect { run_service }.not_to change { registration_data(registration).registered_company_name }
       end
     end
 
     context "when the new company name is different to the old one" do
       it "updates the registered company name" do
-        expect { subject }
+        expect { run_service }
           .to change { registration_data(registration).registered_company_name }
           .from(old_registered_name)
           .to(new_registered_name)

@@ -4,17 +4,12 @@ require "rails_helper"
 
 module WasteCarriersEngine
   module Notify
+
+    # TODO: Refactor to remove the use of allow_any_instance_of
+    # rubocop:disable RSpec/AnyInstance
     RSpec.describe RegistrationPendingOnlinePaymentEmailService do
       let(:template_id) { "c4296e7b-dac6-4b59-906e-2c509271626f" }
-      let(:registration) { create(:registration, :has_required_data) }
-
-      before do
-        registration.finance_details = build(:finance_details, :has_required_data)
-        registration.save
-      end
-
       let(:reg_identifier) { registration.reg_identifier }
-
       let(:expected_notify_options) do
         {
           email_address: "foo@example.com",
@@ -26,26 +21,32 @@ module WasteCarriersEngine
           }
         }
       end
+      let(:registration) { create(:registration, :has_required_data) }
+
+      before do
+        registration.finance_details = build(:finance_details, :has_required_data)
+        registration.save
+      end
 
       describe ".run" do
         context "with a contact_email" do
           before do
-            expect_any_instance_of(Notifications::Client)
+            allow_any_instance_of(Notifications::Client)
               .to receive(:send_email)
               .with(expected_notify_options)
               .and_call_original
           end
 
-          subject do
+          subject(:run_service) do
             VCR.use_cassette("notify_registration_pending_worldpay_payment_sends_an_email") do
               described_class.run(registration: registration)
             end
           end
 
           it "sends an email" do
-            expect(subject).to be_a(Notifications::Client::ResponseNotification)
-            expect(subject.template["id"]).to eq(template_id)
-            expect(subject.content["subject"]).to match(
+            expect(run_service).to be_a(Notifications::Client::ResponseNotification)
+            expect(run_service.template["id"]).to eq(template_id)
+            expect(run_service.content["subject"]).to match(
               /We’re processing your waste carrier registration CBDU/
             )
           end
@@ -62,5 +63,6 @@ module WasteCarriersEngine
         end
       end
     end
+    # rubocop:enable RSpec/AnyInstance
   end
 end

@@ -7,7 +7,7 @@ module WasteCarriersEngine
     let(:transient_registration) { build(:renewing_registration, :has_required_data) }
     let(:current_user) { build(:user) }
 
-    it_should_behave_like "Can have payment type", resource: described_class.new
+    it_behaves_like "Can have payment type", resource: described_class.new
 
     describe "default attributes" do
       describe ".currency" do
@@ -24,8 +24,8 @@ module WasteCarriersEngine
         let(:transient_registration) { build(:renewing_registration, :has_required_data, :has_finance_details) }
 
         it "returns a list of payments that have a type which can be refunded" do
-          cash_payment = WasteCarriersEngine::Payment.new(payment_type: "CASH")
-          refund_payment = WasteCarriersEngine::Payment.new(payment_type: "REFUND")
+          cash_payment = described_class.new(payment_type: "CASH")
+          refund_payment = described_class.new(payment_type: "REFUND")
 
           transient_registration.finance_details.payments << cash_payment
           transient_registration.finance_details.payments << refund_payment
@@ -35,7 +35,7 @@ module WasteCarriersEngine
           result = transient_registration.finance_details.payments.refundable
 
           expect(result).to include(cash_payment)
-          expect(result).to_not include(refund_payment)
+          expect(result).not_to include(refund_payment)
         end
       end
 
@@ -43,8 +43,8 @@ module WasteCarriersEngine
         let(:transient_registration) { build(:renewing_registration, :has_required_data, :has_finance_details) }
 
         it "returns a list of payments that have a type which can be reversed" do
-          cash_payment = WasteCarriersEngine::Payment.new(payment_type: "CASH")
-          refund_payment = WasteCarriersEngine::Payment.new(payment_type: "REFUND")
+          cash_payment = described_class.new(payment_type: "CASH")
+          refund_payment = described_class.new(payment_type: "REFUND")
 
           transient_registration.finance_details.payments << cash_payment
           transient_registration.finance_details.payments << refund_payment
@@ -54,17 +54,17 @@ module WasteCarriersEngine
           result = transient_registration.finance_details.payments.reversible
 
           expect(result).to include(cash_payment)
-          expect(result).to_not include(refund_payment)
+          expect(result).not_to include(refund_payment)
         end
       end
 
       describe ".except_online_not_authorised" do
         let(:transient_registration) { build(:renewing_registration, :has_required_data, :has_finance_details) }
-        let(:cash_payment) { WasteCarriersEngine::Payment.new(payment_type: "CASH") }
-        let(:worldpay_payment_authorised) { WasteCarriersEngine::Payment.new(payment_type: "WORLDPAY", world_pay_payment_status: "AUTHORISED") }
-        let(:worldpay_payment_refused) { WasteCarriersEngine::Payment.new(payment_type: "WORLDPAY", world_pay_payment_status: "REFUSED") }
-        let(:govpay_payment_authorised) { WasteCarriersEngine::Payment.new(payment_type: "GOVPAY", govpay_payment_status: "success") }
-        let(:govpay_payment_refused) { WasteCarriersEngine::Payment.new(payment_type: "GOVPAY", govpay_payment_status: "failed") }
+        let(:cash_payment) { described_class.new(payment_type: "CASH") }
+        let(:worldpay_payment_authorised) { described_class.new(payment_type: "WORLDPAY", world_pay_payment_status: "AUTHORISED") }
+        let(:worldpay_payment_refused) { described_class.new(payment_type: "WORLDPAY", world_pay_payment_status: "REFUSED") }
+        let(:govpay_payment_authorised) { described_class.new(payment_type: "GOVPAY", govpay_payment_status: "success") }
+        let(:govpay_payment_refused) { described_class.new(payment_type: "GOVPAY", govpay_payment_status: "failed") }
 
         before do
           transient_registration.finance_details.payments << cash_payment << worldpay_payment_authorised << govpay_payment_authorised << govpay_payment_refused
@@ -91,33 +91,33 @@ module WasteCarriersEngine
       end
 
       let(:order) { transient_registration.finance_details.orders.first }
-      let(:payment) { Payment.new_from_online_payment(order, current_user.email) }
+      let(:payment) { described_class.new_from_online_payment(order, current_user.email) }
 
-      it "should set the correct order_key" do
+      it "sets the correct order_key" do
         expect(payment.order_key).to eq("1514764800")
       end
 
-      it "should set the correct amount" do
+      it "sets the correct amount" do
         expect(payment.amount).to eq(11_000)
       end
 
-      it "should set the correct currency" do
+      it "sets the correct currency" do
         expect(payment.currency).to eq("GBP")
       end
 
-      it "should set the correct payment_type" do
+      it "sets the correct payment_type" do
         expect(payment.payment_type).to eq("WORLDPAY")
       end
 
-      it "should set the correct registration_reference" do
+      it "sets the correct registration_reference" do
         expect(payment.registration_reference).to eq("Worldpay")
       end
 
-      it "should have the correct updated_by_user" do
+      it "has the correct updated_by_user" do
         expect(payment.updated_by_user).to eq(current_user.email)
       end
 
-      it "should set the correct comment" do
+      it "sets the correct comment" do
         expect(payment.comment).to eq("Paid via Worldpay")
       end
     end
@@ -144,64 +144,64 @@ module WasteCarriersEngine
       end
 
       let(:order) { transient_registration.finance_details.orders.first }
-      let(:payment) { Payment.new_from_non_online_payment(params, order) }
+      let(:payment) { described_class.new_from_non_online_payment(params, order) }
 
-      it "should set the correct amount" do
+      it "sets the correct amount" do
         expect(payment.amount).to eq(params[:amount])
       end
 
-      it "should set the correct comment" do
+      it "sets the correct comment" do
         expect(payment.comment).to eq(params[:comment])
       end
 
-      it "should set the correct currency" do
+      it "sets the correct currency" do
         expect(payment.currency).to eq("GBP")
       end
 
-      it "should set the correct date_entered" do
+      it "sets the correct date_entered" do
         Timecop.freeze(Time.new(2018, 1, 1)) do
           expect(payment.date_entered).to eq(Date.new(2018, 1, 1))
         end
       end
 
-      it "should set the correct date_received" do
+      it "sets the correct date_received" do
         expect(payment.date_received).to eq(params[:date_received])
       end
 
-      it "should set the correct date_received_day" do
+      it "sets the correct date_received_day" do
         expect(payment.date_received_day).to eq(params[:date_received_day])
       end
 
-      it "should set the correct date_received_month" do
+      it "sets the correct date_received_month" do
         expect(payment.date_received_month).to eq(params[:date_received_month])
       end
 
-      it "should set the correct date_received_year" do
+      it "sets the correct date_received_year" do
         expect(payment.date_received_year).to eq(params[:date_received_year])
       end
 
-      it "should set the correct order_key" do
-        expect(SecureRandom).to receive(:uuid).and_return("__-1514764800")
+      it "sets the correct order_key" do
+        allow(SecureRandom).to receive(:uuid).and_return("__-1514764800")
 
         expect(payment.order_key).to eq("1514764800")
       end
 
-      it "should set the correct payment_type" do
+      it "sets the correct payment_type" do
         expect(payment.payment_type).to eq(params[:payment_type])
       end
 
-      it "should set the correct registration_reference" do
+      it "sets the correct registration_reference" do
         expect(payment.registration_reference).to eq(params[:registration_reference])
       end
 
-      it "should set the correct updated_by_user" do
+      it "sets the correct updated_by_user" do
         expect(payment.updated_by_user).to eq(params[:updated_by_user])
       end
     end
 
     describe "update_after_online_payment" do
       let(:order) { transient_registration.finance_details.orders.first }
-      let(:payment) { Payment.new_from_online_payment(order, current_user.email) }
+      let(:payment) { described_class.new_from_online_payment(order, current_user.email) }
 
       before do
         Timecop.freeze(Time.new(2018, 3, 4)) do

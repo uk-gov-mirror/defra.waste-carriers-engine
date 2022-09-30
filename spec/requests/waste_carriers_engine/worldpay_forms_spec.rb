@@ -3,14 +3,18 @@
 require "webmock/rspec"
 require "rails_helper"
 
+# WorldpayForms will be retired shortly, so not worth refactoring to avoid allow_any_instance_of
+# rubocop:disable RSpec/AnyInstance
 module WasteCarriersEngine
   RSpec.describe "WorldpayForms", type: :request do
     let(:host) { "https://secure-test.worldpay.com" }
+
     before { allow(Rails.configuration).to receive(:worldpay_url).and_return(host) }
 
     context "when a valid user is signed in" do
       let(:user) { create(:user) }
-      before(:each) do
+
+      before do
         sign_in(user)
       end
 
@@ -39,7 +43,7 @@ module WasteCarriersEngine
             get new_worldpay_form_path(token)
 
             expect(response.location).to include("https://hpp-sandbox.worldpay.com/")
-            expect(transient_registration.reload.finance_details).to_not eq(nil)
+            expect(transient_registration.reload.finance_details).not_to be_nil
           end
 
           context "when the transient_registration is a new registration" do
@@ -53,7 +57,7 @@ module WasteCarriersEngine
 
             it "creates a new finance_details" do
               get new_worldpay_form_path(token)
-              expect(transient_registration.reload.finance_details).to_not eq(nil)
+              expect(transient_registration.reload.finance_details).not_to be_nil
             end
           end
 
@@ -154,7 +158,7 @@ module WasteCarriersEngine
                 end
 
                 it "does not raise an error" do
-                  expect { get success_worldpay_forms_path(token), params: params }.to_not raise_error
+                  expect { get success_worldpay_forms_path(token), params: params }.not_to raise_error
                 end
               end
             end
@@ -237,15 +241,16 @@ module WasteCarriersEngine
     end
 
     describe "#cancel" do
-      it_should_behave_like "GET unsuccessful Worldpay response", :cancel
+      it_behaves_like "GET unsuccessful Worldpay response", :cancel
     end
 
     describe "#error" do
-      it_should_behave_like "GET unsuccessful Worldpay response", :error
+      it_behaves_like "GET unsuccessful Worldpay response", :error
     end
 
     describe "#failure" do
-      it_should_behave_like "GET unsuccessful Worldpay response", :failure
+      it_behaves_like "GET unsuccessful Worldpay response", :failure
     end
   end
 end
+# rubocop:enable RSpec/AnyInstance

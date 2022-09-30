@@ -14,8 +14,8 @@ module WasteCarriersEngine
           }
         end
 
-        it "should submit" do
-          expect(waste_types_form.submit(valid_params)).to eq(true)
+        it "submits" do
+          expect(waste_types_form.submit(valid_params)).to be true
         end
       end
 
@@ -23,8 +23,8 @@ module WasteCarriersEngine
         let(:waste_types_form) { build(:waste_types_form, :has_required_data) }
         let(:invalid_params) { { only_amf: "foo" } }
 
-        it "should not submit" do
-          expect(waste_types_form.submit(invalid_params)).to eq(false)
+        it "does not submit" do
+          expect(waste_types_form.submit(invalid_params)).to be false
         end
       end
     end

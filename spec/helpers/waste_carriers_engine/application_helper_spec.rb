@@ -6,7 +6,7 @@ module WasteCarriersEngine
   RSpec.describe WasteCarriersEngine::ApplicationHelper, type: :helper do
     describe "feedback_survey_url" do
       it "returns a correctly-formatted URL" do
-        expect(WasteCarriersEngine::ApplicationHelper.feedback_survey_url("foo")).to eq("https://www.smartsurvey.co.uk/s/waste-carriers/?referringpage=foo")
+        expect(described_class.feedback_survey_url("foo")).to eq("https://www.smartsurvey.co.uk/s/waste-carriers/?referringpage=foo")
       end
     end
 
@@ -42,7 +42,7 @@ module WasteCarriersEngine
 
     describe "#current_git_commit" do
       it "returns nil when run in the test environment" do
-        expect(helper.current_git_commit).to eq(nil)
+        expect(helper.current_git_commit).to be_nil
       end
     end
 
@@ -64,8 +64,8 @@ module WasteCarriersEngine
       let(:address) do
         build(:address,
               house_number: "5",
-              address_line_1: "Foo Terrace",
-              address_line_2: "Bar Street",
+              address_line1: "Foo Terrace",
+              address_line2: "Bar Street",
               town_city: "Bazville",
               postcode: "AB1 2CD",
               country: "Quxland")

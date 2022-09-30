@@ -15,7 +15,7 @@ module WasteCarriersEngine
     end
     let(:order) { transient_registration.finance_details.orders.first }
     let(:current_user) { build(:user) }
-    let(:worldpay_xml_service) { WorldpayXmlService.new(transient_registration, order) }
+    let(:worldpay_xml_service) { described_class.new(transient_registration, order) }
 
     before do
       # Set a specific reg_identifier so we can match our XML
@@ -24,8 +24,8 @@ module WasteCarriersEngine
       allow(Rails.configuration).to receive(:worldpay_merchantcode).and_return("MERCHANTCODE")
 
       # This is generated based on the time, so to avoid any millisecond malarky, let's just stub it
-      allow_any_instance_of(Order).to receive(:order_code).and_return("1234567890")
-      allow_any_instance_of(Order).to receive(:total_amount).and_return(10_000)
+      allow(order).to receive(:order_code).and_return("1234567890")
+      allow(order).to receive(:total_amount).and_return(10_000)
     end
 
     describe "#build_xml" do
@@ -40,7 +40,7 @@ module WasteCarriersEngine
         it "includes that instead of the contact email" do
           xml = worldpay_xml_service.build_xml
           expect(xml).to include("receipt@example.com")
-          expect(xml).to_not include(transient_registration.contact_email)
+          expect(xml).not_to include(transient_registration.contact_email)
         end
       end
     end

@@ -6,11 +6,6 @@ require "rails_helper"
 module WasteCarriersEngine
   RSpec.describe GovpayPaymentDetailsService do
     let(:govpay_host) { "https://publicapi.payments.service.gov.uk" }
-    before do
-      allow(WasteCarriersEngine::FeatureToggle).to receive(:active?).with(:govpay_payments).and_return(true)
-      allow(Rails.configuration).to receive(:govpay_url).and_return(govpay_host)
-    end
-
     let(:transient_registration) do
       create(:renewing_registration,
              :has_required_data,
@@ -21,18 +16,20 @@ module WasteCarriersEngine
     let(:current_user) { build(:user) }
 
     before do
+      allow(WasteCarriersEngine::FeatureToggle).to receive(:active?).with(:govpay_payments).and_return(true)
+      allow(Rails.configuration).to receive(:govpay_url).and_return(govpay_host)
       allow(Rails.configuration).to receive(:renewal_charge).and_return(10_500)
 
       transient_registration.prepare_for_payment(:govpay, current_user)
     end
 
-    subject { GovpayPaymentDetailsService.new(payment_uuid: transient_registration.finance_details.orders.first.payment_uuid) }
+    subject { described_class.new(payment_uuid: transient_registration.finance_details.orders.first.payment_uuid) }
 
     describe "govpay_payment_status" do
 
       context "with an invalid payment uuid" do
         it "raises an exception" do
-          expect { GovpayPaymentDetailsService.new(payment_uuid: "bad_uuid") }.to raise_exception(ArgumentError)
+          expect { described_class.new(payment_uuid: "bad_uuid") }.to raise_exception(ArgumentError)
         end
       end
 
@@ -68,7 +65,7 @@ module WasteCarriersEngine
 
       shared_examples "maps to the expected status" do |govpay_status, expected_status|
         it "returns the correct status" do
-          expect(GovpayPaymentDetailsService.payment_status(govpay_status)).to eq expected_status
+          expect(described_class.payment_status(govpay_status)).to eq expected_status
         end
       end
 

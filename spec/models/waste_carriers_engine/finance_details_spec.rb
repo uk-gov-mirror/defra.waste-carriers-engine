@@ -16,24 +16,24 @@ module WasteCarriersEngine
     describe "new_finance_details" do
       let(:finance_details) { transient_registration.prepare_for_payment(:worldpay, current_user) }
 
-      it "should include 1 order" do
+      it "includes 1 order" do
         order_count = finance_details.orders.length
         expect(order_count).to eq(1)
       end
 
-      it "should have the correct balance" do
+      it "has the correct balance" do
         expect(finance_details.balance).to eq(10_000)
       end
 
-      it "should persist" do
-        expect(finance_details.persisted?).to eq(true)
+      it "persists" do
+        expect(finance_details.persisted?).to be true
       end
     end
 
     describe "zero_difference_balance" do
       let(:transient_registration) { build(:renewing_registration, :has_required_data, :has_finance_details) }
 
-      subject { transient_registration.finance_details }
+      subject(:finance_details) { transient_registration.finance_details }
 
       before do
         transient_registration.finance_details.balance = balance
@@ -43,7 +43,7 @@ module WasteCarriersEngine
         let(:balance) { 0 }
 
         it "returns 0" do
-          expect(subject.zero_difference_balance).to be_zero
+          expect(finance_details.zero_difference_balance).to be_zero
         end
       end
 
@@ -51,15 +51,15 @@ module WasteCarriersEngine
         let(:balance) { -4 }
 
         it "returns the difference from 0 balance" do
-          expect(subject.zero_difference_balance).to eq(4)
+          expect(finance_details.zero_difference_balance).to eq(4)
         end
       end
 
-      context "returns the difference from 0 balance" do
+      context "when the balance is more than 0" do
         let(:balance) { 4 }
 
-        it "returns 0" do
-          expect(subject.zero_difference_balance).to eq(4)
+        it "returns the difference from 0 balance" do
+          expect(finance_details.zero_difference_balance).to eq(4)
         end
       end
     end
@@ -67,7 +67,7 @@ module WasteCarriersEngine
     describe "overpaid_balance" do
       let(:transient_registration) { build(:renewing_registration, :has_required_data, :has_finance_details) }
 
-      subject { transient_registration.finance_details }
+      subject(:finance_details) { transient_registration.finance_details }
 
       before do
         transient_registration.finance_details.balance = balance
@@ -77,7 +77,7 @@ module WasteCarriersEngine
         let(:balance) { 0 }
 
         it "returns 0" do
-          expect(subject.overpaid_balance).to be_zero
+          expect(finance_details.overpaid_balance).to be_zero
         end
       end
 
@@ -85,7 +85,7 @@ module WasteCarriersEngine
         let(:balance) { -4 }
 
         it "returns the balance but in positive" do
-          expect(subject.overpaid_balance).to eq(4)
+          expect(finance_details.overpaid_balance).to eq(4)
         end
       end
 
@@ -93,7 +93,7 @@ module WasteCarriersEngine
         let(:balance) { 4 }
 
         it "returns 0" do
-          expect(subject.overpaid_balance).to be_zero
+          expect(finance_details.overpaid_balance).to be_zero
         end
       end
     end
@@ -101,7 +101,7 @@ module WasteCarriersEngine
     describe "unpaid_balance" do
       let(:transient_registration) { build(:renewing_registration, :has_required_data, :has_finance_details) }
 
-      subject { transient_registration.finance_details }
+      subject(:finance_details) { transient_registration.finance_details }
 
       before do
         transient_registration.finance_details.balance = balance
@@ -111,7 +111,7 @@ module WasteCarriersEngine
         let(:balance) { 0 }
 
         it "returns 0" do
-          expect(subject.unpaid_balance).to be_zero
+          expect(finance_details.unpaid_balance).to be_zero
         end
       end
 
@@ -119,7 +119,7 @@ module WasteCarriersEngine
         let(:balance) { 4 }
 
         it "returns the balance" do
-          expect(subject.unpaid_balance).to eq(4)
+          expect(finance_details.unpaid_balance).to eq(4)
         end
       end
 
@@ -127,7 +127,7 @@ module WasteCarriersEngine
         let(:balance) { -4 }
 
         it "returns 0" do
-          expect(subject.unpaid_balance).to be_zero
+          expect(finance_details.unpaid_balance).to be_zero
         end
       end
     end
@@ -135,7 +135,7 @@ module WasteCarriersEngine
     describe "update_balance" do
       let(:finance_details) { build(:finance_details) }
 
-      it "should have the correct balance" do
+      it "has the correct balance" do
         finance_details.update_balance
         expect(finance_details.balance).to eq(0)
       end
@@ -145,7 +145,7 @@ module WasteCarriersEngine
           finance_details.orders = [Order.new_order(transient_registration, :worldpay, current_user)]
         end
 
-        it "should have the correct balance" do
+        it "has the correct balance" do
           finance_details.update_balance
           expect(finance_details.balance).to eq(10_000)
         end
@@ -155,7 +155,7 @@ module WasteCarriersEngine
             finance_details.payments = [build(:payment, :worldpay, amount: 5_000, world_pay_payment_status: "AUTHORISED")]
           end
 
-          it "should have the correct balance" do
+          it "has the correct balance" do
             finance_details.update_balance
             expect(finance_details.balance).to eq(5_000)
           end
@@ -166,7 +166,7 @@ module WasteCarriersEngine
             finance_details.payments = [build(:payment, :worldpay, amount: 5_000, world_pay_payment_status: "REFUSED")]
           end
 
-          it "should not include it when calculating the balance" do
+          it "does not include it when calculating the balance" do
             finance_details.update_balance
             expect(finance_details.balance).to eq(10_000)
           end
@@ -177,7 +177,7 @@ module WasteCarriersEngine
             finance_details.payments = [build(:payment, :bank_transfer, amount: 5_000)]
           end
 
-          it "should have the correct balance" do
+          it "has the correct balance" do
             finance_details.update_balance
             expect(finance_details.balance).to eq(5_000)
           end
@@ -189,7 +189,7 @@ module WasteCarriersEngine
           finance_details.payments = [build(:payment, :worldpay, amount: 5_000, world_pay_payment_status: "AUTHORISED")]
         end
 
-        it "should have the correct balance" do
+        it "has the correct balance" do
           finance_details.update_balance
           expect(finance_details.balance).to eq(-5_000)
         end

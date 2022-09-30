@@ -7,7 +7,8 @@ module WasteCarriersEngine
     describe "GET new_renewal_received_pending_govpay_payment_form_path" do
       context "when a valid user is signed in" do
         let(:user) { create(:user) }
-        before(:each) do
+
+        before do
           sign_in(user)
         end
 
@@ -33,7 +34,7 @@ module WasteCarriersEngine
             it "returns a 200 status and renders the :new template" do
               get new_renewal_received_pending_govpay_payment_form_path(transient_registration.token)
 
-              expect(response).to have_http_status(200)
+              expect(response).to have_http_status(:ok)
               expect(response).to render_template(:new)
             end
           end

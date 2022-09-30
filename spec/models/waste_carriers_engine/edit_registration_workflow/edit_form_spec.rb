@@ -7,7 +7,7 @@ module WasteCarriersEngine
     subject(:edit_registration) { build(:edit_registration) }
 
     describe "#workflow_state" do
-      context ":edit_form state transitions" do
+      context "with :edit_form state transitions" do
         current_state = :edit_form
         non_address_editable_form_states = %i[
           cbd_type_form
@@ -33,7 +33,7 @@ module WasteCarriersEngine
             event = "edit_#{state_without_form_suffix}".to_sym
 
             it "changes to #{expected_state} after the '#{event}' event" do
-              expect(subject).to transition_from(current_state).to(expected_state).on_event(event)
+              expect(edit_registration).to transition_from(current_state).to(expected_state).on_event(event)
             end
           end
 
@@ -41,11 +41,11 @@ module WasteCarriersEngine
             before { edit_registration.location = "england" }
 
             it "changes to :company_postcode_form after the 'edit_company_address' event" do
-              expect(subject).to transition_from(current_state).to(:company_postcode_form).on_event(:edit_company_address)
+              expect(edit_registration).to transition_from(current_state).to(:company_postcode_form).on_event(:edit_company_address)
             end
 
             it "changes to :contact_postcode_form after the 'edit_contact_address' event" do
-              expect(subject).to transition_from(current_state).to(:contact_postcode_form).on_event(:edit_contact_address)
+              expect(edit_registration).to transition_from(current_state).to(:contact_postcode_form).on_event(:edit_contact_address)
             end
           end
 
@@ -53,21 +53,21 @@ module WasteCarriersEngine
             before { edit_registration.location = "overseas" }
 
             it "changes to :company_address_manual_form after the 'edit_company_address' event" do
-              expect(subject).to transition_from(current_state).to(:company_address_manual_form).on_event(:edit_company_address)
+              expect(edit_registration).to transition_from(current_state).to(:company_address_manual_form).on_event(:edit_company_address)
             end
 
             it "changes to :contact_address_manual_form after the 'edit_contact_address' event" do
-              expect(subject).to transition_from(current_state).to(:contact_address_manual_form).on_event(:edit_contact_address)
+              expect(edit_registration).to transition_from(current_state).to(:contact_address_manual_form).on_event(:edit_contact_address)
             end
           end
 
           it "changes to confirm_edit_cancelled after the 'cancel_edit' event" do
             expected_state = :confirm_edit_cancelled_form
             event = :cancel_edit
-            expect(subject).to transition_from(current_state).to(expected_state).on_event(event)
+            expect(edit_registration).to transition_from(current_state).to(expected_state).on_event(event)
           end
 
-          context "on next" do
+          context "with :next transition" do
             include_examples "has next transition", next_state: "declaration_form"
           end
         end

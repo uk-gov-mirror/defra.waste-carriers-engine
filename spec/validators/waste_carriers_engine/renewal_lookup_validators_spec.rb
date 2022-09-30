@@ -14,23 +14,23 @@ end
 
 module WasteCarriersEngine
   RSpec.describe RenewalLookupValidator do
-    subject { Test::RenewalLookupValidatable.new }
+    subject(:validatable) { Test::RenewalLookupValidatable.new }
 
     context "when there is no matching registration" do
       before do
-        expect(Registration).to receive(:where).and_return([])
+        allow(Registration).to receive(:where).and_return([])
       end
 
       it "is invalid and sets the correct error message" do
-        expect(subject).to_not be_valid
-        expect(subject.errors[:temp_lookup_number].first).to include("no_match")
+        expect(validatable).not_to be_valid
+        expect(validatable.errors[:temp_lookup_number].first).to include("no_match")
       end
     end
 
     context "when there is a matching registration" do
-      let(:upper_tier) {}
-      let(:active) {}
-      let(:expired) {}
+      let(:upper_tier) { false }
+      let(:active) { false }
+      let(:expired) { false }
       let(:registration) do
         double(:registration,
                active?: active,
@@ -39,25 +39,25 @@ module WasteCarriersEngine
       end
 
       before do
-        expect(Registration).to receive(:where).and_return([registration])
+        allow(Registration).to receive(:where).and_return([registration])
       end
 
       context "when it's lower tier" do
         let(:upper_tier) { false }
 
         it "is invalid and sets the correct error message" do
-          expect(subject).to_not be_valid
-          expect(subject.errors[:temp_lookup_number].first).to include("lower_tier")
+          expect(validatable).not_to be_valid
+          expect(validatable.errors[:temp_lookup_number].first).to include("lower_tier")
         end
       end
 
       context "when it's upper tier" do
         let(:upper_tier) { true }
 
-        let(:date_can_renew_from) {}
-        let(:expired_check_service) {}
-        let(:in_expiry_grace_window) {}
-        let(:in_renewal_window) {}
+        let(:date_can_renew_from) { nil }
+        let(:expired_check_service) { nil }
+        let(:in_expiry_grace_window) { false }
+        let(:in_renewal_window) { false }
 
         let(:check_service) do
           double(:check_service,
@@ -73,15 +73,15 @@ module WasteCarriersEngine
           let(:expired_check_service) { false }
 
           before do
-            expect(ExpiryCheckService).to receive(:new).and_return(check_service)
+            allow(ExpiryCheckService).to receive(:new).and_return(check_service)
           end
 
           context "when it's not yet in the renewal window" do
             let(:in_renewal_window) { false }
 
             it "is invalid and sets the correct error message" do
-              expect(subject).to_not be_valid
-              expect(subject.errors[:temp_lookup_number].first).to include("not_yet_renewable")
+              expect(validatable).not_to be_valid
+              expect(validatable.errors[:temp_lookup_number].first).to include("not_yet_renewable")
             end
           end
 
@@ -89,7 +89,7 @@ module WasteCarriersEngine
             let(:in_renewal_window) { true }
 
             it "is valid" do
-              expect(subject).to be_valid
+              expect(validatable).to be_valid
             end
           end
         end
@@ -100,15 +100,15 @@ module WasteCarriersEngine
           let(:expired_check_service) { true }
 
           before do
-            expect(ExpiryCheckService).to receive(:new).and_return(check_service)
+            allow(ExpiryCheckService).to receive(:new).and_return(check_service)
           end
 
           context "when it's beyond the expiry grace period" do
             let(:in_expiry_grace_window) { false }
 
             it "is invalid and sets the correct error message" do
-              expect(subject).to_not be_valid
-              expect(subject.errors[:temp_lookup_number].first).to include("expired")
+              expect(validatable).not_to be_valid
+              expect(validatable.errors[:temp_lookup_number].first).to include("expired")
             end
           end
 
@@ -116,7 +116,7 @@ module WasteCarriersEngine
             let(:in_expiry_grace_window) { true }
 
             it "is valid" do
-              expect(subject).to be_valid
+              expect(validatable).to be_valid
             end
           end
         end
@@ -126,8 +126,8 @@ module WasteCarriersEngine
           let(:expired) { false }
 
           it "is invalid and sets the correct error message" do
-            expect(subject).to_not be_valid
-            expect(subject.errors[:temp_lookup_number].first).to include("unrenewable_status")
+            expect(validatable).not_to be_valid
+            expect(validatable.errors[:temp_lookup_number].first).to include("unrenewable_status")
           end
         end
       end

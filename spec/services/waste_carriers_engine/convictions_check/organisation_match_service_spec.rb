@@ -7,11 +7,8 @@ module WasteCarriersEngine
     RSpec.describe OrganisationMatchService do
       describe "run" do
         let(:time) { Time.new(2019, 1, 1) }
-        before { allow(Time).to receive(:current).and_return(time) }
-
         let(:name) { "foo" }
         let(:company_no) { "bar" }
-
         let(:entity_a) do
           double(:entity,
                  system_flag: "foo",
@@ -25,21 +22,22 @@ module WasteCarriersEngine
                  name: "quuz")
         end
 
-        subject do
-          described_class.run(name: name,
-                              company_no: company_no)
+        before do
+          allow(Time).to receive(:current).and_return(time)
+          allow(Entity).to receive(:matching_organisations).and_return([entity_a])
         end
 
+        subject(:run_match_service) { described_class.run(name: name, company_no: company_no) }
+
         it "does not explode" do
-          expect { subject }.to_not raise_error
+          expect { run_match_service }.not_to raise_error
         end
 
         it "checks for matching entities" do
-          expect(Entity).to receive(:matching_organisations).with(name: name,
-                                                                  company_no: company_no)
-                                                            .and_return([entity_a])
+          run_match_service
 
-          subject
+          expect(Entity).to have_received(:matching_organisations).with(name: name,
+                                                                        company_no: company_no)
         end
 
         context "when there are matches" do
@@ -57,7 +55,7 @@ module WasteCarriersEngine
               matched_name: entity_a.name
             }
 
-            expect(subject).to eq(data)
+            expect(run_match_service).to eq(data)
           end
         end
 
@@ -73,7 +71,7 @@ module WasteCarriersEngine
               match_result: "NO"
             }
 
-            expect(subject).to eq(data)
+            expect(run_match_service).to eq(data)
           end
         end
 
@@ -90,7 +88,7 @@ module WasteCarriersEngine
               matching_system: "ERROR"
             }
 
-            expect(subject).to eq(data)
+            expect(run_match_service).to eq(data)
           end
         end
       end

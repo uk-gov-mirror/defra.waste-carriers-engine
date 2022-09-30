@@ -7,7 +7,7 @@ module WasteCarriersEngine
     let(:registration) { create(:registration, :has_required_data, :expires_soon) }
 
     describe "build_past_registration" do
-      let(:past_registration) { PastRegistration.build_past_registration(registration) }
+      let(:past_registration) { described_class.build_past_registration(registration) }
 
       it "creates a new past_registration" do
         past_registration_count = registration.past_registrations.count
@@ -27,35 +27,35 @@ module WasteCarriersEngine
         expect(past_registration.registered_address).to eq(registration.registered_address)
       end
 
-      context "if :edit is given as an argument" do
-        let(:past_registration) { PastRegistration.build_past_registration(registration, :edit) }
+      context "when :edit is given as an argument" do
+        let(:past_registration) { described_class.build_past_registration(registration, :edit) }
 
         it "sets the cause to 'edit'" do
           expect(past_registration.cause).to eq("edit")
         end
       end
 
-      context "if there is already a past_registration with the same expiry date" do
+      context "when there is already a past_registration with the same expiry date" do
         before do
-          PastRegistration.build_past_registration(registration, :edit)
+          described_class.build_past_registration(registration, :edit)
         end
 
-        context "if the new version is a renewal" do
-          context "if the past registration is a renewal" do
+        context "when the new version is a renewal" do
+          context "when the past registration is a renewal" do
             before do
-              PastRegistration.build_past_registration(registration)
+              described_class.build_past_registration(registration)
             end
 
             it "returns nil and does not create a new past_registration" do
               past_registration_count = registration.past_registrations.count
 
-              expect(past_registration).to eq(nil)
+              expect(past_registration).to be_nil
 
               expect(registration.reload.past_registrations.count).to eq(past_registration_count)
             end
           end
 
-          context "if the past registration is not a renewal" do
+          context "when the past registration is not a renewal" do
             it "does create a new past_registration" do
               past_registration_count = registration.past_registrations.count
               past_registration
@@ -64,8 +64,8 @@ module WasteCarriersEngine
           end
         end
 
-        context "if the new version is an edit" do
-          let(:past_registration) { PastRegistration.build_past_registration(registration, :edit) }
+        context "when the new version is an edit" do
+          let(:past_registration) { described_class.build_past_registration(registration, :edit) }
 
           it "does create a new past_registration" do
             past_registration_count = registration.past_registrations.count

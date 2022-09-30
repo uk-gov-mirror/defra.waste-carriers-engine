@@ -9,7 +9,8 @@ module WasteCarriersEngine
     describe "POST contact_postcode_forms_path" do
       context "when a valid user is signed in" do
         let(:user) { create(:user) }
-        before(:each) do
+
+        before do
           sign_in(user)
         end
 
@@ -36,12 +37,12 @@ module WasteCarriersEngine
               post contact_postcode_forms_path(transient_registration.token), params: { contact_postcode_form: valid_params }
 
               expect(transient_registration.reload[:temp_contact_postcode]).to eq(valid_params[:temp_contact_postcode])
-              expect(response).to have_http_status(302)
+              expect(response).to have_http_status(:found)
               expect(response).to redirect_to(new_contact_address_form_path(transient_registration[:token]))
             end
 
             context "when a postcode search returns an error" do
-              before(:each) do
+              before do
                 response = double(:response, successful?: false, error: "foo")
 
                 allow(DefraRuby::Address::OsPlacesAddressLookupService).to receive(:run).and_return(response)
@@ -65,8 +66,8 @@ module WasteCarriersEngine
             it "returns a 302 response and does not update the transient registration" do
               post contact_postcode_forms_path("foo"), params: { contact_postcode_form: invalid_params }
 
-              expect(response).to have_http_status(302)
-              expect(transient_registration.reload[:temp_contact_postcode]).to_not eq(invalid_params[:temp_contact_postcode])
+              expect(response).to have_http_status(:found)
+              expect(transient_registration.reload[:temp_contact_postcode]).not_to eq(invalid_params[:temp_contact_postcode])
             end
           end
         end
@@ -88,8 +89,8 @@ module WasteCarriersEngine
           it "does not update the transient registration, returns a 302 response and redirects to the correct form for the state" do
             post contact_postcode_forms_path(transient_registration[:token]), params: { contact_postcode_form: valid_params }
 
-            expect(transient_registration.reload[:temp_contact_postcode]).to_not eq(valid_params[:temp_contact_postcode])
-            expect(response).to have_http_status(302)
+            expect(transient_registration.reload[:temp_contact_postcode]).not_to eq(valid_params[:temp_contact_postcode])
+            expect(response).to have_http_status(:found)
             expect(response).to redirect_to(new_renewal_start_form_path(transient_registration[:token]))
           end
         end
@@ -99,7 +100,8 @@ module WasteCarriersEngine
     describe "GET skip_to_manual_address_contact_postcode_forms_path" do
       context "when a valid user is signed in" do
         let(:user) { create(:user) }
-        before(:each) do
+
+        before do
           sign_in(user)
         end
 
@@ -116,7 +118,7 @@ module WasteCarriersEngine
             it "returns a 302 response and redirects to the contact_address_manual form" do
               get skip_to_manual_address_contact_postcode_forms_path(transient_registration[:token])
 
-              expect(response).to have_http_status(302)
+              expect(response).to have_http_status(:found)
               expect(response).to redirect_to(new_contact_address_manual_form_path(transient_registration[:token]))
             end
           end
@@ -135,7 +137,7 @@ module WasteCarriersEngine
             it "returns a 302 response and redirects to the correct form for the state" do
               get skip_to_manual_address_contact_postcode_forms_path(transient_registration[:token])
 
-              expect(response).to have_http_status(302)
+              expect(response).to have_http_status(:found)
               expect(response).to redirect_to(new_renewal_start_form_path(transient_registration[:token]))
             end
           end

@@ -6,9 +6,9 @@ module WasteCarriersEngine
   RSpec.describe EditRegistration, type: :model do
     subject(:edit_registration) { build(:edit_registration) }
 
-    it_should_behave_like "Can check if registration type changed"
+    it_behaves_like "Can check if registration type changed"
 
-    context "default status" do
+    context "with default status" do
       context "when an EditRegistration is created" do
         it "has the state of :edit_form" do
           expect(edit_registration).to have_state(:edit_form)
@@ -16,17 +16,17 @@ module WasteCarriersEngine
       end
     end
 
-    context "Validations" do
+    context "with validations" do
       describe "reg_identifier" do
         context "when an EditRegistration is created" do
           it "is not valid if the reg_identifier is in the wrong format" do
             edit_registration.reg_identifier = "foo"
-            expect(edit_registration).to_not be_valid
+            expect(edit_registration).not_to be_valid
           end
 
           it "is not valid if no matching registration exists" do
             edit_registration.reg_identifier = "CBDU999999"
-            expect(edit_registration).to_not be_valid
+            expect(edit_registration).not_to be_valid
           end
         end
       end
@@ -73,66 +73,68 @@ module WasteCarriersEngine
     end
 
     describe "#prepare_for_payment" do
+      before { allow(BuildEditFinanceDetailsService).to receive(:run) }
+
       it "runs the EditFinanceDetailsBuilderService with the correct params" do
         mode = "OFFLINE"
-        user = double(:user)
+        user = instance_double(described_class, :user)
 
-        expect(BuildEditFinanceDetailsService).to receive(:run).with(
+        edit_registration.prepare_for_payment(mode, user)
+
+        expect(BuildEditFinanceDetailsService).to have_received(:run).with(
           user: user,
-          transient_registration: subject,
+          transient_registration: edit_registration,
           payment_method: mode
         )
-
-        subject.prepare_for_payment(mode, user)
       end
     end
 
     describe "#location_changed_from_overseas?" do
       context "when the registration is has an overseas location" do
-        before { subject.registration.location = "overseas" }
+        before { edit_registration.registration.location = "overseas" }
 
         context "when the edit_registration has a UK location" do
-          before { subject.location = "england" }
+          before { edit_registration.location = "england" }
 
           it "returns true" do
-            expect(subject.location_changed_from_overseas?).to be_truthy
+            expect(edit_registration).to be_location_changed_from_overseas
           end
         end
 
         context "when the edit_registration does not have a UK location" do
-          before { subject.location = "overseas" }
+          before { edit_registration.location = "overseas" }
 
           it "returns false" do
-            expect(subject.location_changed_from_overseas?).to be_falsey
+            expect(edit_registration).not_to be_location_changed_from_overseas
           end
         end
       end
 
       context "when the registration is has an overseas business type" do
-        before { subject.registration.business_type = "overseas" }
+        before { edit_registration.registration.business_type = "overseas" }
 
         context "when the edit_registration has a UK location" do
-          before { subject.location = "england" }
+          before { edit_registration.location = "england" }
 
           it "returns true" do
-            expect(subject.location_changed_from_overseas?).to be_truthy
+            expect(edit_registration).to be_location_changed_from_overseas
           end
         end
 
         context "when the edit_registration does not have a UK location" do
-          before { subject.location = "overseas" }
+          before { edit_registration.location = "overseas" }
 
           it "returns false" do
-            expect(subject.location_changed_from_overseas?).to be_falsey
+            expect(edit_registration).not_to be_location_changed_from_overseas
           end
         end
       end
 
       context "when the registration is not overseas" do
-        before { subject.registration.location = "england" }
+        before { edit_registration.registration.location = "england" }
 
         it "returns false" do
-          expect(subject.location_changed_from_overseas?).to be_falsey
+          expect(edit_registration).not_to be_location_changed_from_overseas
         end
       end
     end

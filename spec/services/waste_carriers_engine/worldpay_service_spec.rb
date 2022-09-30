@@ -6,8 +6,6 @@ require "rails_helper"
 module WasteCarriersEngine
   RSpec.describe WorldpayService do
     let(:host) { "https://secure-test.worldpay.com" }
-    before { allow(Rails.configuration).to receive(:worldpay_url).and_return(host) }
-
     let(:transient_registration) do
       create(:renewing_registration,
              :has_required_data,
@@ -16,13 +14,6 @@ module WasteCarriersEngine
              temp_cards: 0)
     end
     let(:current_user) { build(:user) }
-
-    before do
-      allow(Rails.configuration).to receive(:renewal_charge).and_return(10_500)
-
-      transient_registration.prepare_for_payment(:worldpay, current_user)
-    end
-
     let(:order) { transient_registration.finance_details.orders.first }
     # An incomplete set of params which should still be valid when we stub the validation service
     let(:params) do
@@ -33,15 +24,21 @@ module WasteCarriersEngine
         reg_identifier: transient_registration.reg_identifier
       }
     end
+    let(:worldpay_service) { described_class.new(transient_registration, order, current_user, params) }
 
-    let(:worldpay_service) { WorldpayService.new(transient_registration, order, current_user, params) }
+    before do
+      allow(Rails.configuration).to receive(:worldpay_url).and_return(host)
+      allow(Rails.configuration).to receive(:renewal_charge).and_return(10_500)
+
+      transient_registration.prepare_for_payment(:worldpay, current_user)
+    end
 
     describe "prepare_params" do
       context "when the params are nil" do
-        let(:params) {}
+        let(:params) { nil }
 
         it "sets params to nil" do
-          expect(worldpay_service.instance_variable_get(:@params)).to eq(nil)
+          expect(worldpay_service.instance_variable_get(:@params)).to be_nil
         end
       end
 
@@ -96,10 +93,12 @@ module WasteCarriersEngine
       context "when the request is valid" do
         let(:root) { Rails.configuration.wcrs_renewals_url }
         let(:reg_id) { transient_registration.reg_identifier }
+        let(:worldpay_url_service) { instance_double(WorldpayUrlService) }
 
         # Stub the WorldpayUrlService as we're testing that separately
         before do
-          allow_any_instance_of(WorldpayUrlService).to receive(:format_link).and_return("LINK GOES HERE")
+          allow(WorldpayUrlService).to receive(:new).and_return(worldpay_url_service)
+          allow(worldpay_url_service).to receive(:format_link).and_return("LINK GOES HERE")
 
           stub_request(:any, /.*#{host}.*/).to_return(
             status: 200,
@@ -120,8 +119,11 @@ module WasteCarriersEngine
       end
 
       context "when the request is invalid" do
+        let(:worldpay_xml_service) { instance_double(WorldpayXmlService) }
+
         before do
-          allow_any_instance_of(WorldpayXmlService).to receive(:build_xml).and_return("foo")
+          allow(WorldpayXmlService).to receive(:new).and_return(worldpay_xml_service)
+          allow(worldpay_xml_service).to receive(:build_xml).and_return("foo")
 
           stub_request(:any, /.*#{host}.*/).to_return(
             status: 200,
@@ -136,17 +138,20 @@ module WasteCarriersEngine
     end
 
     describe "valid_success?" do
+      let(:worldpay_validator_service) { instance_double(WorldpayValidatorService) }
+
       before do
+        allow(WorldpayValidatorService).to receive(:new).and_return(worldpay_validator_service)
         params[:paymentStatus] = "AUTHORISED"
       end
 
       context "when the params are valid" do
         before do
-          allow_any_instance_of(WorldpayValidatorService).to receive(:valid_success?).and_return(true)
+          allow(worldpay_validator_service).to receive(:valid_success?).and_return(true)
         end
 
         it "returns true" do
-          expect(worldpay_service.valid_success?).to eq(true)
+          expect(worldpay_service.valid_success?).to be true
         end
 
         it "updates the payment status" do
@@ -167,11 +172,11 @@ module WasteCarriersEngine
 
       context "when the params are invalid" do
         before do
-          allow_any_instance_of(WorldpayValidatorService).to receive(:valid_success?).and_return(false)
+          allow(worldpay_validator_service).to receive(:valid_success?).and_return(false)
         end
 
         it "returns false" do
-          expect(worldpay_service.valid_success?).to eq(false)
+          expect(worldpay_service.valid_success?).to be false
         end
 
         it "does not update the order" do
@@ -188,19 +193,19 @@ module WasteCarriersEngine
     end
 
     describe "#valid_failure?" do
-      it_should_behave_like "WorldpayService valid unsuccessful action", :valid_failure?, "REFUSED"
+      it_behaves_like "WorldpayService valid unsuccessful action", :valid_failure?, "REFUSED"
     end
 
     describe "#valid_pending?" do
-      it_should_behave_like "WorldpayService valid unsuccessful action", :valid_pending?, "SENT_FOR_AUTHORISATION"
+      it_behaves_like "WorldpayService valid unsuccessful action", :valid_pending?, "SENT_FOR_AUTHORISATION"
     end
 
     describe "#valid_cancel?" do
-      it_should_behave_like "WorldpayService valid unsuccessful action", :valid_cancel?, "CANCELLED"
+      it_behaves_like "WorldpayService valid unsuccessful action", :valid_cancel?, "CANCELLED"
     end
 
     describe "#valid_error?" do
-      it_should_behave_like "WorldpayService valid unsuccessful action", :valid_error?, "ERROR"
+      it_behaves_like "WorldpayService valid unsuccessful action", :valid_error?, "ERROR"
     end
   end
 end

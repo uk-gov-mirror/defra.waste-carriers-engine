@@ -14,37 +14,40 @@ RSpec.shared_examples "searching phone number attribute" do |factory:|
   let(:normal_number) { "01234567890" }
   let(:number_with_spaces) { "012 3456 7890" }
   let(:number_with_dashes) { "012-3456-7890" }
-  let(:number_starting_with_44) { "+441234567890" }
+  let(:number_starting_with_plus44) { "+441234567890" }
   let(:international_number) { "+78121234567" }
   let(:number_with_text) { "Landline 01234567890" }
 
-  # Use "let!" to ensure these are instantiated in the DB in all cases
-  let!(:non_matching_record) { create(factory, :has_required_data, phone_number: "0121117890") }
-  let!(:matching_record) { create(factory, :has_required_data, phone_number: matching_phone_number) }
+  let(:non_matching_record) { create(factory, :has_required_data, phone_number: "0121117890") }
+  let(:matching_record) { create(factory, :has_required_data, phone_number: matching_phone_number) }
 
   context "when the number in the database has not got any spaces or dashes and doesn't start in +44" do
     let(:matching_phone_number) { normal_number }
 
-    context "and the search term has not got any spaces or dashes and doesn't start in +44" do
+    context "when the search term has not got any spaces or dashes and doesn't start in +44" do
       let(:term) { normal_number }
+
       it_behaves_like "matching and non matching registrations"
     end
 
-    context "but the search term has spaces" do
+    context "when the search term has spaces" do
       let(:term) { number_with_spaces }
+
       it_behaves_like "matching and non matching registrations"
     end
 
-    context "but the search term has dashes" do
+    context "when the search term has dashes" do
       let(:term) { number_with_dashes }
+
       it_behaves_like "matching and non matching registrations"
     end
 
-    context "but the search term starts with +44" do
-      let(:term) { number_starting_with_44 }
+    context "when the search term starts with +44" do
+      let(:term) { number_starting_with_plus44 }
+
       it_behaves_like "matching and non matching registrations"
 
-      context "and the search term is short" do
+      context "when the search term is short" do
         let(:term) { "+44 12345678" }
 
         it "returns no matches with no error" do
@@ -66,20 +69,20 @@ RSpec.shared_examples "searching phone number attribute" do |factory:|
   context "when the search term has not got any spaces or dashes and doesn't start in +44" do
     let(:term) { normal_number }
 
-    context "and the number in the database has spaces" do
+    context "when the number in the database has spaces" do
       let(:matching_phone_number) { number_with_spaces }
 
       it_behaves_like "matching and non matching registrations"
     end
 
-    context "and the number in the database has dashes" do
+    context "when the number in the database has dashes" do
       let(:matching_phone_number) { number_with_dashes }
 
       it_behaves_like "matching and non matching registrations"
     end
 
-    context "and the number in the database starts with +44" do
-      let(:matching_phone_number) { number_starting_with_44 }
+    context "when the number in the database starts with +44" do
+      let(:matching_phone_number) { number_starting_with_plus44 }
 
       it_behaves_like "matching and non matching registrations"
     end
@@ -88,13 +91,13 @@ RSpec.shared_examples "searching phone number attribute" do |factory:|
   context "when the search term is in international number format" do
     let(:term) { international_number }
 
-    context "and the number in the database is in international number format" do
+    context "when the number in the database is in international number format" do
       let(:matching_phone_number) { international_number }
 
       it_behaves_like "matching and non matching registrations"
     end
 
-    context "and the number in the database is not in international number format" do
+    context "when the number in the database is not in international number format" do
       let(:matching_phone_number) { normal_number }
 
       it "does not match any registrations" do

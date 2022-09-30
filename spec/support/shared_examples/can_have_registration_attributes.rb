@@ -33,7 +33,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
       let(:resource) { build(factory, declared_convictions: "yes") }
 
       it "returns true" do
-        expect(resource.declared_convictions?).to eq(true)
+        expect(resource.declared_convictions?).to be true
       end
     end
 
@@ -41,7 +41,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
       let(:resource) { build(factory, declared_convictions: "no") }
 
       it "returns false" do
-        expect(resource.declared_convictions?).to eq(false)
+        expect(resource.declared_convictions?).to be false
       end
     end
   end
@@ -54,7 +54,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
         let(:location) { uk_location }
 
         it "returns true" do
-          expect(resource.uk_location?).to be_truthy
+          expect(resource).to be_uk_location
         end
       end
     end
@@ -63,7 +63,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
       let(:location) { "overseas" }
 
       it "returns false" do
-        expect(resource.uk_location?).to be_falsey
+        expect(resource).not_to be_uk_location
       end
     end
 
@@ -71,7 +71,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
       let(:location) { nil }
 
       it "returns false" do
-        expect(resource.uk_location?).to be_falsey
+        expect(resource).not_to be_uk_location
       end
     end
   end
@@ -82,9 +82,10 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
     let(:resource) { build(factory, location: location, business_type: business_type) }
 
     context "when the location is within the UK" do
+      before { allow(resource).to receive(:uk_location?).and_return(true) }
+
       it "returns false" do
-        expect(resource).to receive(:uk_location?).and_return(true)
-        expect(resource.overseas?).to be_falsey
+        expect(resource).not_to be_overseas
       end
     end
 
@@ -92,7 +93,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
       let(:location) { "overseas" }
 
       it "returns true" do
-        expect(resource.overseas?).to be_truthy
+        expect(resource).to be_overseas
       end
     end
 
@@ -101,7 +102,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
         let(:business_type) { "overseas" }
 
         it "returns true" do
-          expect(resource.overseas?).to be_truthy
+          expect(resource).to be_overseas
         end
       end
 
@@ -109,7 +110,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
         let(:business_type) { "soleTrader" }
 
         it "returns false" do
-          expect(resource.overseas?).to be_falsey
+          expect(resource).not_to be_overseas
         end
       end
     end
@@ -122,7 +123,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
       let(:tier) { "LOWER" }
 
       it "returns true" do
-        expect(resource.lower_tier?).to be_truthy
+        expect(resource).to be_lower_tier
       end
     end
 
@@ -130,7 +131,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
       let(:tier) { "FOO" }
 
       it "returns false" do
-        expect(resource.lower_tier?).to be_falsey
+        expect(resource).not_to be_lower_tier
       end
     end
   end
@@ -142,7 +143,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
       let(:tier) { "UPPER" }
 
       it "returns true" do
-        expect(resource.upper_tier?).to be_truthy
+        expect(resource).to be_upper_tier
       end
     end
 
@@ -150,7 +151,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
       let(:tier) { "FOO" }
 
       it "returns false" do
-        expect(resource.upper_tier?).to be_falsey
+        expect(resource).not_to be_upper_tier
       end
     end
   end
@@ -161,13 +162,15 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
       finance_detail2 = double(:finance_detail2, amount: 30)
       finance_details = double(:finance_details, payments: [finance_detail1, finance_detail2])
 
-      expect(resource).to receive(:finance_details).and_return(finance_details)
+      allow(resource).to receive(:finance_details).and_return(finance_details)
+
       expect(resource.amount_paid).to eq(53)
     end
 
     context "when there are no finance details" do
-      it "return 0" do
-        expect(resource).to receive(:finance_details)
+      it "returns 0" do
+        allow(resource).to receive(:finance_details)
+
         expect(resource.amount_paid).to eq(0)
       end
     end
@@ -200,7 +203,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
       end
 
       it "returns true" do
-        expect(resource.assisted_digital?).to eq(true)
+        expect(resource).to be_assisted_digital
       end
     end
 
@@ -210,7 +213,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
       end
 
       it "returns true" do
-        expect(resource.assisted_digital?).to eq(true)
+        expect(resource).to be_assisted_digital
       end
     end
 
@@ -220,7 +223,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
       end
 
       it "returns false" do
-        expect(resource.assisted_digital?).to eq(false)
+        expect(resource).not_to be_assisted_digital
       end
     end
   end
@@ -249,7 +252,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
       end
 
       it "returns false" do
-        expect(resource.conviction_check_required?).to eq(false)
+        expect(resource).not_to be_conviction_check_required
       end
     end
 
@@ -264,7 +267,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
         end
 
         it "returns false" do
-          expect(resource.conviction_check_required?).to eq(false)
+          expect(resource).not_to be_conviction_check_required
         end
       end
 
@@ -274,7 +277,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
         end
 
         it "returns true" do
-          expect(resource.conviction_check_required?).to eq(true)
+          expect(resource).to be_conviction_check_required
         end
       end
     end
@@ -287,7 +290,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
       end
 
       it "returns false" do
-        expect(resource.conviction_check_approved?).to eq(false)
+        expect(resource).not_to be_conviction_check_approved
       end
     end
 
@@ -302,7 +305,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
         end
 
         it "returns false" do
-          expect(resource.conviction_check_approved?).to eq(false)
+          expect(resource).not_to be_conviction_check_approved
         end
       end
 
@@ -312,20 +315,20 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
         end
 
         it "returns true" do
-          expect(resource.conviction_check_approved?).to eq(true)
+          expect(resource).to be_conviction_check_approved
         end
       end
     end
   end
 
   describe "#unpaid_balance?" do
-    context do
+    context "with nil finance_details" do
       before do
         resource.finance_details = nil
       end
 
       it "returns false" do
-        expect(resource.unpaid_balance?).to eq(false)
+        expect(resource).not_to be_unpaid_balance
       end
     end
 
@@ -335,7 +338,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
       end
 
       it "returns false" do
-        expect(resource.unpaid_balance?).to eq(false)
+        expect(resource).not_to be_unpaid_balance
       end
     end
 
@@ -345,7 +348,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
       end
 
       it "returns false" do
-        expect(resource.unpaid_balance?).to eq(false)
+        expect(resource).not_to be_unpaid_balance
       end
     end
 
@@ -355,7 +358,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
       end
 
       it "returns true" do
-        expect(resource.unpaid_balance?).to eq(true)
+        expect(resource).to be_unpaid_balance
       end
     end
   end
@@ -395,13 +398,15 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
         end
 
         it "returns nil" do
-          expect(resource.email_to_send_receipt).to eq(nil)
+          expect(resource.email_to_send_receipt).to be_nil
         end
       end
     end
   end
 
   describe "#legal_entity_name" do
+    subject { resource.legal_entity_name }
+
     let(:person_a) { build(:key_person, :main, first_name: Faker::Name.first_name, last_name: Faker::Name.last_name) }
     let(:key_people) { [person_a] }
     let(:registered_company_name) { nil }
@@ -414,8 +419,6 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
             registered_company_name: registered_company_name,
             key_people: key_people)
     end
-
-    subject { resource.legal_entity_name }
 
     shared_examples "returns registered_company_name" do
       it "returns the registered company name" do
@@ -439,6 +442,7 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
 
         context "with a business name" do
           let(:company_name) { Faker::Company.name }
+
           it_behaves_like "returns registered_company_name"
         end
       end
@@ -452,81 +456,91 @@ RSpec.shared_examples "Can have registration attributes" do |factory:|
 
         context "with a business name" do
           let(:company_name) { Faker::Company.name }
+
           it_behaves_like "returns nil"
         end
       end
     end
 
-    context "for a sole trader" do
+    context "with a sole trader" do
       let(:business_type) { "soleTrader" }
 
-      context "upper tier" do
+      context "with an upper tier registration" do
         it "returns the sole trader's name" do
           expect(subject).to eq "#{resource.key_people[0].first_name} #{resource.key_people[0].last_name}"
         end
       end
 
-      context "lower tier" do
+      context "with a lower tier registration" do
         let(:tier) { WasteCarriersEngine::Registration::LOWER_TIER }
+
         it "returns nil" do
           expect(subject).to be_nil
         end
       end
     end
 
-    context "for a limited company" do
+    context "with a limited company" do
       let(:business_type) { "limitedCompany" }
+
       it_behaves_like "LTD or LLP"
     end
 
-    context "for a limited liability partnership" do
+    context "with a limited liability partnership" do
       let(:business_type) { "limitedLiabilityPartnership" }
+
       it_behaves_like "LTD or LLP"
     end
   end
 
   describe "#company_name_required?" do
+    subject { resource.company_name_required? }
+
     let(:registered_company_name) { nil }
     let(:resource) do
       build(factory, business_type: business_type, tier: tier, registered_company_name: registered_company_name)
     end
 
-    subject { resource.company_name_required? }
-
     shared_examples "it is required for lower tier only" do
-      context "upper tier" do
+      context "with an upper tier registration" do
         let(:tier) { WasteCarriersEngine::Registration::UPPER_TIER }
+
         it "returns false" do
           expect(subject).to be false
         end
       end
 
-      context "lower tier" do
+      context "with a lower tier registration" do
         let(:tier) { WasteCarriersEngine::Registration::LOWER_TIER }
+
         it "returns true" do
           expect(subject).to be true
         end
       end
     end
 
-    context "for a limited company" do
+    context "with a limited company" do
       let(:business_type) { "limitedCompany" }
+
       it_behaves_like "it is required for lower tier only"
     end
 
-    context "for a limited liability partnership" do
+    context "with a limited liability partnership" do
       let(:business_type) { "limitedLiabilityPartnership" }
+
       it_behaves_like "it is required for lower tier only"
     end
 
-    context "for a sole trader" do
+    context "with a sole trader" do
       let(:business_type) { "soleTrader" }
+
       it_behaves_like "it is required for lower tier only"
     end
 
-    context "for an overseas business" do
+    context "with an overseas business" do
       let(:business_type) { "soleTrader" }
       let(:tier) { WasteCarriersEngine::Registration::UPPER_TIER }
+
       before { resource.location = "overseas" }
 
       it "returns true" do

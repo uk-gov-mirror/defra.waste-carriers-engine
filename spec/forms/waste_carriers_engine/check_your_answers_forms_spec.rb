@@ -4,26 +4,30 @@ require "rails_helper"
 
 module WasteCarriersEngine
   RSpec.describe CheckYourAnswersForm, type: :model do
+    let(:companies_house_validator) { instance_double(DefraRuby::Validators::CompaniesHouseService) }
+
     before do
-      allow_any_instance_of(DefraRuby::Validators::CompaniesHouseService).to receive(:status).and_return(:active)
+      allow(DefraRuby::Validators::CompaniesHouseService).to receive(:new).and_return(companies_house_validator)
+      allow(companies_house_validator).to receive(:status).and_return(:active)
     end
 
     describe "#submit" do
       let(:check_your_answers_form) { build(:check_your_answers_form, :has_required_data) }
+
       context "when the form is valid" do
         let(:valid_params) { { token: check_your_answers_form.token } }
 
-        it "should submit" do
+        it "submits" do
           expect(check_your_answers_form.submit(valid_params)).to be_truthy
         end
       end
 
       context "when the form is not valid" do
         before do
-          expect(check_your_answers_form).to receive(:valid?).and_return(false)
+          allow(check_your_answers_form).to receive(:valid?).and_return(false)
         end
 
-        it "should not submit" do
+        it "does not submit" do
           expect(check_your_answers_form.submit({})).to be_falsey
         end
       end
@@ -54,7 +58,7 @@ module WasteCarriersEngine
           end
 
           it "is not valid" do
-            expect(check_your_answers_form).to_not be_valid
+            expect(check_your_answers_form).not_to be_valid
           end
         end
 
@@ -85,7 +89,7 @@ module WasteCarriersEngine
             end
 
             it "is not valid" do
-              expect(check_your_answers_form).to_not be_valid
+              expect(check_your_answers_form).not_to be_valid
             end
           end
         end
@@ -109,7 +113,7 @@ module WasteCarriersEngine
             end
 
             it "is not valid" do
-              expect(check_your_answers_form).to_not be_valid
+              expect(check_your_answers_form).not_to be_valid
             end
           end
 
@@ -119,7 +123,7 @@ module WasteCarriersEngine
             end
 
             it "is not valid" do
-              expect(check_your_answers_form).to_not be_valid
+              expect(check_your_answers_form).not_to be_valid
             end
           end
         end
@@ -132,7 +136,7 @@ module WasteCarriersEngine
           end
 
           it "is not valid" do
-            expect(check_your_answers_form).to_not be_valid
+            expect(check_your_answers_form).not_to be_valid
           end
         end
 
@@ -163,7 +167,7 @@ module WasteCarriersEngine
             end
 
             it "is not valid" do
-              expect(check_your_answers_form).to_not be_valid
+              expect(check_your_answers_form).not_to be_valid
             end
           end
         end
@@ -187,7 +191,7 @@ module WasteCarriersEngine
             end
 
             it "is not valid" do
-              expect(check_your_answers_form).to_not be_valid
+              expect(check_your_answers_form).not_to be_valid
             end
           end
 
@@ -197,7 +201,7 @@ module WasteCarriersEngine
             end
 
             it "is not valid" do
-              expect(check_your_answers_form).to_not be_valid
+              expect(check_your_answers_form).not_to be_valid
             end
           end
         end
@@ -227,7 +231,7 @@ module WasteCarriersEngine
           end
 
           it "is not valid" do
-            expect(check_your_answers_form).to_not be_valid
+            expect(check_your_answers_form).not_to be_valid
           end
         end
 
@@ -239,7 +243,7 @@ module WasteCarriersEngine
           end
 
           it "is not valid" do
-            expect(check_your_answers_form).to_not be_valid
+            expect(check_your_answers_form).not_to be_valid
           end
         end
 
@@ -262,7 +266,7 @@ module WasteCarriersEngine
             end
 
             it "is not valid" do
-              expect(check_your_answers_form).to_not be_valid
+              expect(check_your_answers_form).not_to be_valid
             end
           end
         end
@@ -287,7 +291,7 @@ module WasteCarriersEngine
             end
 
             it "is not valid" do
-              expect(check_your_answers_form).to_not be_valid
+              expect(check_your_answers_form).not_to be_valid
             end
           end
         end
@@ -302,7 +306,7 @@ module WasteCarriersEngine
           end
 
           context "when declared_convictions does not expect there to be people" do
-            before(:each) do
+            before do
               check_your_answers_form.transient_registration.declared_convictions = "no"
             end
 
@@ -312,12 +316,12 @@ module WasteCarriersEngine
           end
 
           context "when declared_convictions expects there to be people" do
-            before(:each) do
+            before do
               check_your_answers_form.transient_registration.declared_convictions = "yes"
             end
 
             it "is not valid" do
-              expect(check_your_answers_form).to_not be_valid
+              expect(check_your_answers_form).not_to be_valid
             end
           end
         end
@@ -342,7 +346,7 @@ module WasteCarriersEngine
           end
 
           it "is not valid" do
-            expect(check_your_answers_form).to_not be_valid
+            expect(check_your_answers_form).not_to be_valid
           end
         end
       end
@@ -354,10 +358,10 @@ module WasteCarriersEngine
             check_your_answers_form.transient_registration.temp_use_trading_name = "no"
           end
 
-          context "for an upper tier registration" do
+          context "with an upper tier registration" do
             before { check_your_answers_form.transient_registration.tier = "UPPER" }
 
-            context "based in England" do
+            context "when based in England" do
               before { check_your_answers_form.transient_registration.location = "england" }
 
               it "is valid" do
@@ -365,49 +369,49 @@ module WasteCarriersEngine
               end
             end
 
-            context "based overseas" do
+            context "when based overseas" do
               before { check_your_answers_form.transient_registration.location = "overseas" }
 
               it "is not valid" do
-                expect(check_your_answers_form).to_not be_valid
+                expect(check_your_answers_form).not_to be_valid
               end
             end
           end
 
-          context "for a lower tier registration" do
+          context "with a lower tier registration" do
             before { check_your_answers_form.transient_registration.tier = "LOWER" }
 
             it "is not valid" do
-              expect(check_your_answers_form).to_not be_valid
+              expect(check_your_answers_form).not_to be_valid
             end
           end
         end
       end
 
       context "when the business type has an invalid change" do
-        before(:each) do
+        before do
           check_your_answers_form.transient_registration.business_type = "limitedCompany"
           check_your_answers_form.transient_registration.registration.update_attributes(business_type: "soleTrader")
         end
 
         it "is not valid" do
-          expect(check_your_answers_form).to_not be_valid
+          expect(check_your_answers_form).not_to be_valid
         end
       end
 
       context "when the business type has changed to charity" do
-        before(:each) do
+        before do
           check_your_answers_form.transient_registration.business_type = "charity"
         end
 
         it "is not valid" do
-          expect(check_your_answers_form).to_not be_valid
+          expect(check_your_answers_form).not_to be_valid
         end
       end
     end
 
     describe "custom_error_messages" do
-      it "should get the correct error" do
+      it "gets the correct error" do
         hash = { inclusion: "Select a valid principal place of business" }
 
         expect(described_class.custom_error_messages(:location, :inclusion)).to eq(hash)

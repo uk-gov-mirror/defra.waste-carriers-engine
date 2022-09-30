@@ -14,8 +14,8 @@ module WasteCarriersEngine
           }
         end
 
-        it "should submit" do
-          expect(construction_demolition_form.submit(valid_params)).to eq(true)
+        it "submits" do
+          expect(construction_demolition_form.submit(valid_params)).to be true
         end
       end
 
@@ -23,8 +23,8 @@ module WasteCarriersEngine
         let(:construction_demolition_form) { build(:construction_demolition_form, :has_required_data) }
         let(:invalid_params) { { construction_waste: "foo" } }
 
-        it "should not submit" do
-          expect(construction_demolition_form.submit(invalid_params)).to eq(false)
+        it "does not submit" do
+          expect(construction_demolition_form.submit(invalid_params)).to be false
         end
       end
     end

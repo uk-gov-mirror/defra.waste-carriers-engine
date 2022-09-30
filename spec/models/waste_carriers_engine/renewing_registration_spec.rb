@@ -6,13 +6,16 @@ module WasteCarriersEngine
   RSpec.describe RenewingRegistration, type: :model do
     subject(:renewing_registration) { build(:renewing_registration, :has_required_data) }
 
-    it_should_behave_like "Can check if registration type changed"
+    it_behaves_like "Can check if registration type changed"
 
     describe "scopes" do
-      it_should_behave_like "TransientRegistration named scopes"
+      it_behaves_like "TransientRegistration named scopes"
     end
 
     describe "workflow_state" do
+
+      before { allow(renewing_registration).to receive(:set_metadata_route) }
+
       context "when a RenewingRegistration is created" do
         it "has the state :renewal_start_form" do
           expect(renewing_registration).to have_state(:renewal_start_form)
@@ -21,53 +24,55 @@ module WasteCarriersEngine
 
       context "when transitioning from confirm_bank_transfer_form to renewal_received_pending_payment_form successfully" do
         it "set the transient registration metadata route" do
-          expect(renewing_registration).to receive(:set_metadata_route).once
-
           renewing_registration.update_attributes(workflow_state: :confirm_bank_transfer_form)
           renewing_registration.next
+
+          expect(renewing_registration).to have_received(:set_metadata_route).once
         end
       end
 
       context "when transitioning from worldpay_form to renewal_complete_form successfully" do
         it "set the transient registration metadata route" do
-          expect(renewing_registration).to receive(:set_metadata_route).once
-          expect(renewing_registration).to receive(:pending_online_payment?).and_return(false)
-          expect(renewing_registration).to receive(:conviction_check_required?).and_return(false)
+          allow(renewing_registration).to receive(:pending_online_payment?).and_return(false)
+          allow(renewing_registration).to receive(:conviction_check_required?).and_return(false)
 
           renewing_registration.update_attributes(workflow_state: :worldpay_form)
           renewing_registration.next
+
+          expect(renewing_registration).to have_received(:set_metadata_route).once
         end
       end
 
       context "when transitioning from worldpay_form to renewal_received_pending_conviction_form succesfully" do
         it "set the transient registration metadata route" do
-          expect(renewing_registration).to receive(:set_metadata_route).once
-          expect(renewing_registration).to receive(:pending_online_payment?).and_return(false)
-          expect(renewing_registration).to receive(:conviction_check_required?).and_return(true)
+          allow(renewing_registration).to receive(:pending_online_payment?).and_return(false)
+          allow(renewing_registration).to receive(:conviction_check_required?).and_return(true)
 
           renewing_registration.update_attributes(workflow_state: :worldpay_form)
           renewing_registration.next
+
+          expect(renewing_registration).to have_received(:set_metadata_route).once
         end
       end
     end
 
-    context "Validations" do
+    context "with validations" do
       describe "reg_identifier" do
         context "when a RenewingRegistration is created" do
           it "is not valid if the reg_identifier is in the wrong format" do
             renewing_registration.reg_identifier = "foo"
-            expect(renewing_registration).to_not be_valid
+            expect(renewing_registration).not_to be_valid
           end
 
           it "is not valid if no matching registration exists" do
             renewing_registration.reg_identifier = "CBDU999999"
-            expect(renewing_registration).to_not be_valid
+            expect(renewing_registration).not_to be_valid
           end
 
           it "is not valid if the reg_identifier is already in use" do
             existing_renewing_registration = create(:renewing_registration, :has_required_data)
             renewing_registration.reg_identifier = existing_renewing_registration.reg_identifier
-            expect(renewing_registration).to_not be_valid
+            expect(renewing_registration).not_to be_valid
           end
         end
       end
@@ -82,7 +87,7 @@ module WasteCarriersEngine
         end
 
         it "strips the whitespace from the attributes" do
-          renewing_registration = RenewingRegistration.new(reg_identifier: registration.reg_identifier)
+          renewing_registration = described_class.new(reg_identifier: registration.reg_identifier)
           expect(renewing_registration.company_name).to eq("test")
         end
       end
@@ -91,7 +96,7 @@ module WasteCarriersEngine
         let(:revoked_renewing_registration) { build(:renewing_registration, :has_revoked_registration) }
 
         it "does not import it" do
-          expect(revoked_renewing_registration.metaData.revoked_reason).to eq(nil)
+          expect(revoked_renewing_registration.metaData.revoked_reason).to be_nil
         end
       end
 
@@ -106,24 +111,24 @@ module WasteCarriersEngine
         end
 
         it "does not copy over private contact information" do
-          renewing_registration = RenewingRegistration.new(reg_identifier: registration.reg_identifier)
-          expect(renewing_registration.first_name).to eq(nil)
-          expect(renewing_registration.last_name).to eq(nil)
-          expect(renewing_registration.phone_number).to eq(nil)
-          expect(renewing_registration.contact_email).to eq(nil)
+          renewing_registration = described_class.new(reg_identifier: registration.reg_identifier)
+          expect(renewing_registration.first_name).to be_nil
+          expect(renewing_registration.last_name).to be_nil
+          expect(renewing_registration.phone_number).to be_nil
+          expect(renewing_registration.contact_email).to be_nil
         end
       end
     end
 
     describe "status" do
-      it_should_behave_like "Can check registration status",
-                            factory: :renewing_registration
+      it_behaves_like "Can check registration status",
+                      factory: :renewing_registration
     end
 
     describe "#renewal_application_submitted?" do
       context "when the workflow_state is not a completed one" do
         it "returns false" do
-          expect(renewing_registration.renewal_application_submitted?).to eq(false)
+          expect(renewing_registration.renewal_application_submitted?).to be false
         end
       end
 
@@ -136,53 +141,61 @@ module WasteCarriersEngine
           end
 
           it "returns true" do
-            expect(renewing_registration.renewal_application_submitted?).to eq(true)
+            expect(renewing_registration.renewal_application_submitted?).to be true
           end
         end
       end
     end
 
     describe "#can_be_renewed?" do
+      let(:expiry_check_service) { instance_double(ExpiryCheckService) }
+
+      before do
+        allow(ExpiryCheckService).to receive(:new).and_return(expiry_check_service)
+        allow(expiry_check_service).to receive(:expired?).and_return(false)
+      end
+
       context "when a registration is neither active or expired" do
         let(:revoked_renewing_registration) { build(:renewing_registration, :has_revoked_registration) }
 
         it "returns false" do
-          expect(revoked_renewing_registration.can_be_renewed?).to eq(false)
+          expect(revoked_renewing_registration.can_be_renewed?).to be false
         end
       end
 
       context "when the declaration is confirmed" do
         it "returns true" do
           renewing_registration.declaration = 1
-          expect(renewing_registration.can_be_renewed?).to eq(true)
+          expect(renewing_registration.can_be_renewed?).to be true
         end
       end
 
       context "when a registration is active" do
+
         context "when it is within the grace window" do
-          before { allow_any_instance_of(ExpiryCheckService).to receive(:in_expiry_grace_window?).and_return(true) }
+          before { allow(expiry_check_service).to receive(:in_expiry_grace_window?).and_return(true) }
 
           it "returns true" do
-            expect(renewing_registration.can_be_renewed?).to eq(true)
+            expect(renewing_registration.can_be_renewed?).to be true
           end
         end
 
         context "when it is not within the grace window" do
-          before { allow_any_instance_of(ExpiryCheckService).to receive(:in_expiry_grace_window?).and_return(false) }
+          before { allow(expiry_check_service).to receive(:in_expiry_grace_window?).and_return(false) }
 
-          context "and when it is within the renewal window" do
-            before { allow_any_instance_of(ExpiryCheckService).to receive(:in_renewal_window?).and_return(true) }
+          context "when it is within the renewal window" do
+            before { allow(expiry_check_service).to receive(:in_renewal_window?).and_return(true) }
 
             it "returns true" do
-              expect(renewing_registration.can_be_renewed?).to eq(true)
+              expect(renewing_registration.can_be_renewed?).to be true
             end
           end
 
-          context "and when it is not within the renewal window" do
-            before { allow_any_instance_of(ExpiryCheckService).to receive(:in_renewal_window?).and_return(false) }
+          context "when it is not within the renewal window" do
+            before { allow(expiry_check_service).to receive(:in_renewal_window?).and_return(false) }
 
             it "returns false" do
-              expect(renewing_registration.can_be_renewed?).to eq(false)
+              expect(renewing_registration.can_be_renewed?).to be false
             end
           end
         end
@@ -193,29 +206,29 @@ module WasteCarriersEngine
 
         context "when a registration is active" do
           context "when it is within the grace window" do
-            before { allow_any_instance_of(ExpiryCheckService).to receive(:in_expiry_grace_window?).and_return(true) }
+            before { allow(expiry_check_service).to receive(:in_expiry_grace_window?).and_return(true) }
 
             it "returns true" do
-              expect(renewing_registration.can_be_renewed?).to eq(true)
+              expect(renewing_registration.can_be_renewed?).to be true
             end
           end
 
           context "when it is not within the grace window" do
-            before { allow_any_instance_of(ExpiryCheckService).to receive(:in_expiry_grace_window?).and_return(false) }
+            before { allow(expiry_check_service).to receive(:in_expiry_grace_window?).and_return(false) }
 
-            context "and when it is within the renewal window" do
-              before { allow_any_instance_of(ExpiryCheckService).to receive(:in_renewal_window?).and_return(true) }
+            context "when it is within the renewal window" do
+              before { allow(expiry_check_service).to receive(:in_renewal_window?).and_return(true) }
 
               it "returns true" do
-                expect(renewing_registration.can_be_renewed?).to eq(true)
+                expect(renewing_registration.can_be_renewed?).to be true
               end
             end
 
-            context "and when it is not within the renewal window" do
-              before { allow_any_instance_of(ExpiryCheckService).to receive(:in_renewal_window?).and_return(false) }
+            context "when it is not within the renewal window" do
+              before { allow(expiry_check_service).to receive(:in_renewal_window?).and_return(false) }
 
               it "returns false" do
-                expect(renewing_registration.can_be_renewed?).to eq(false)
+                expect(renewing_registration.can_be_renewed?).to be false
               end
             end
           end
@@ -226,28 +239,30 @@ module WasteCarriersEngine
     describe "#ready_to_complete?" do
       context "when the transient registration is ready to complete" do
         let(:renewing_registration) { build(:renewing_registration, :is_ready_to_complete) }
+
         it "returns true" do
-          expect(renewing_registration.ready_to_complete?).to eq(true)
+          expect(renewing_registration.ready_to_complete?).to be true
         end
       end
 
       context "when the transient registration is not ready to complete" do
-        context "because it is not submitted" do
+        context "when it is not submitted" do
           let(:renewing_registration) { build(:renewing_registration, workflow_state: "bank_transfer_form") }
+
           it "returns false" do
-            expect(renewing_registration.ready_to_complete?).to eq(false)
+            expect(renewing_registration.ready_to_complete?).to be false
           end
         end
 
-        context "because it has outstanding payments" do
+        context "when it has outstanding payments" do
           it "returns false" do
-            expect(renewing_registration.ready_to_complete?).to eq(false)
+            expect(renewing_registration.ready_to_complete?).to be false
           end
         end
 
-        context "because it has outstanding conviction checks" do
+        context "when it has outstanding conviction checks" do
           it "returns false" do
-            expect(renewing_registration.ready_to_complete?).to eq(false)
+            expect(renewing_registration.ready_to_complete?).to be false
           end
         end
       end
@@ -258,40 +273,40 @@ module WasteCarriersEngine
         let(:renewing_registration) { build(:renewing_registration, :has_required_data) }
 
         it "returns false" do
-          expect(renewing_registration.stuck?).to eq(false)
+          expect(renewing_registration.stuck?).to be false
         end
       end
 
       context "when the registration is submitted" do
-        context "and has been revoked" do
+        context "when has been revoked" do
           let(:renewing_registration) { build(:renewing_registration, :has_required_data, :is_submitted, :revoked) }
 
           it "returns false" do
-            expect(renewing_registration.stuck?).to eq(false)
+            expect(renewing_registration.stuck?).to be false
           end
         end
 
-        context "and has an outstanding payment" do
+        context "when has an outstanding payment" do
           let(:renewing_registration) { build(:renewing_registration, :has_required_data, :has_unpaid_balance) }
 
           it "returns false" do
-            expect(renewing_registration.stuck?).to eq(false)
+            expect(renewing_registration.stuck?).to be false
           end
         end
 
-        context "and has an outstanding conviction check" do
+        context "when has an outstanding conviction check" do
           let(:renewing_registration) { build(:renewing_registration, :has_required_data, :is_submitted, :requires_conviction_check) }
 
           it "returns false" do
-            expect(renewing_registration.stuck?).to eq(false)
+            expect(renewing_registration.stuck?).to be false
           end
         end
 
-        context "and has no outstanding checks" do
+        context "when has no outstanding checks" do
           let(:renewing_registration) { build(:renewing_registration, :has_required_data, :is_submitted, :has_paid_balance) }
 
           it "returns true" do
-            expect(renewing_registration.stuck?).to eq(true)
+            expect(renewing_registration.stuck?).to be true
           end
         end
       end
@@ -300,7 +315,7 @@ module WasteCarriersEngine
     describe "#pending_payment?" do
       context "when the renewal is not in a completed workflow_state" do
         it "returns false" do
-          expect(renewing_registration.pending_payment?).to eq(false)
+          expect(renewing_registration.pending_payment?).to be false
         end
       end
 
@@ -315,7 +330,7 @@ module WasteCarriersEngine
           end
 
           it "returns false" do
-            expect(renewing_registration.pending_payment?).to eq(false)
+            expect(renewing_registration.pending_payment?).to be false
           end
         end
 
@@ -325,7 +340,7 @@ module WasteCarriersEngine
           end
 
           it "returns true" do
-            expect(renewing_registration.pending_payment?).to eq(true)
+            expect(renewing_registration.pending_payment?).to be true
           end
         end
       end
@@ -334,7 +349,7 @@ module WasteCarriersEngine
     describe "#pending_manual_conviction_check?" do
       context "when the renewal is not in a completed workflow_state" do
         it "returns false" do
-          expect(renewing_registration.pending_manual_conviction_check?).to eq(false)
+          expect(renewing_registration.pending_manual_conviction_check?).to be false
         end
       end
 
@@ -349,7 +364,7 @@ module WasteCarriersEngine
           end
 
           it "returns false" do
-            expect(renewing_registration.pending_manual_conviction_check?).to eq(false)
+            expect(renewing_registration.pending_manual_conviction_check?).to be false
           end
         end
 
@@ -362,13 +377,13 @@ module WasteCarriersEngine
             let(:revoked_renewing_registration) { build(:renewing_registration, :has_revoked_registration) }
 
             it "returns false" do
-              expect(revoked_renewing_registration.pending_manual_conviction_check?).to eq(false)
+              expect(revoked_renewing_registration.pending_manual_conviction_check?).to be false
             end
           end
 
           context "when the registration is active" do
             it "returns true" do
-              expect(renewing_registration.pending_manual_conviction_check?).to eq(true)
+              expect(renewing_registration.pending_manual_conviction_check?).to be true
             end
           end
         end

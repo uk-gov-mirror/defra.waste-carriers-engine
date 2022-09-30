@@ -4,8 +4,11 @@ require "rails_helper"
 
 module WasteCarriersEngine
   RSpec.describe RegistrationNumberForm, type: :model do
+    let(:companies_house_validator) { instance_double(DefraRuby::Validators::CompaniesHouseService) }
+
     before do
-      allow_any_instance_of(DefraRuby::Validators::CompaniesHouseService).to receive(:status).and_return(:active)
+      allow(DefraRuby::Validators::CompaniesHouseService).to receive(:new).and_return(companies_house_validator)
+      allow(companies_house_validator).to receive(:status).and_return(:active)
     end
 
     describe "#submit" do
@@ -13,20 +16,20 @@ module WasteCarriersEngine
         let(:registration_number_form) { build(:registration_number_form, :has_required_data) }
         let(:valid_params) { { token: registration_number_form.token, company_no: "09360070" } }
 
-        it "should submit" do
-          expect(registration_number_form.submit(valid_params)).to eq(true)
+        it "submits" do
+          expect(registration_number_form.submit(valid_params)).to be true
         end
 
         context "when the token is less than 8 characters" do
-          before(:each) { valid_params[:company_no] = "946107" }
+          before { valid_params[:company_no] = "946107" }
 
-          it "should increase the length" do
+          it "increases the length" do
             registration_number_form.submit(valid_params)
             expect(registration_number_form.company_no).to eq("00946107")
           end
 
-          it "should submit" do
-            expect(registration_number_form.submit(valid_params)).to eq(true)
+          it "submits" do
+            expect(registration_number_form.submit(valid_params)).to be true
           end
         end
       end
@@ -35,8 +38,8 @@ module WasteCarriersEngine
         let(:registration_number_form) { build(:registration_number_form, :has_required_data) }
         let(:invalid_params) { { token: "foo", company_no: "foo" } }
 
-        it "should not submit" do
-          expect(registration_number_form.submit(invalid_params)).to eq(false)
+        it "does not submit" do
+          expect(registration_number_form.submit(invalid_params)).to be false
         end
       end
     end

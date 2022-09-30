@@ -38,9 +38,10 @@ module WasteCarriersEngine
 
         xml.amount(currencyCode: "GBP", value: value, exponent: "2")
 
-        if @transient_registration.is_a?(WasteCarriersEngine::RenewingRegistration)
+        case @transient_registration
+        when WasteCarriersEngine::RenewingRegistration
           xml.orderContent "Waste Carrier Registration renewal: #{reg_identifier} for #{company_name}"
-        elsif @transient_registration.is_a?(WasteCarriersEngine::EditRegistration)
+        when WasteCarriersEngine::EditRegistration
           xml.orderContent "Waste Carrier Registration edit: #{reg_identifier} for #{company_name}"
         else
           xml.orderContent "Waste Carrier Registration: #{reg_identifier} for #{company_name}"
@@ -74,8 +75,8 @@ module WasteCarriersEngine
 
       address = @transient_registration.registered_address
 
-      address1 = [address.house_number, address.address_line_1].join(" ")
-      address2 = address.address_line_2
+      address1 = [address.house_number, address.address_line1].join(" ")
+      address2 = address.address_line2
       postcode = address.postcode.presence || "UNKNOWN"
       city = address.town_city
       country_code = look_up_country_code(address.country)

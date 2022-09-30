@@ -5,14 +5,14 @@ require "rails_helper"
 module WasteCarriersEngine
   RSpec.describe "StartForms", type: :request do
     # TODO: Remove once new registration is no longer behind a feature toggle
-    before(:each) { allow(WasteCarriersEngine::FeatureToggle).to receive(:active?).with(:new_registration).and_return(true) }
+    before { allow(WasteCarriersEngine::FeatureToggle).to receive(:active?).with(:new_registration).and_return(true) }
 
     describe "GET new_start_form_path" do
       it "returns a 200 response and render the new template" do
         get new_start_form_path
 
         expect(response).to render_template(:new)
-        expect(response).to have_http_status(200)
+        expect(response).to have_http_status(:ok)
       end
     end
 
@@ -52,7 +52,7 @@ module WasteCarriersEngine
           new_registration.reload
 
           expect(response).to redirect_to(new_location_form_path(new_registration.token))
-          expect(response).to have_http_status(302)
+          expect(response).to have_http_status(:found)
           expect(new_registration.workflow_state).to eq("location_form")
         end
       end
@@ -66,7 +66,7 @@ module WasteCarriersEngine
           new_registration.reload
 
           expect(response).to redirect_to(new_renew_registration_form_path(new_registration.token))
-          expect(response).to have_http_status(302)
+          expect(response).to have_http_status(:found)
           expect(new_registration.workflow_state).to eq("renew_registration_form")
         end
       end
@@ -76,7 +76,7 @@ module WasteCarriersEngine
           post new_start_form_path
 
           expect(response).to render_template(:new)
-          expect(response).to have_http_status(200)
+          expect(response).to have_http_status(:ok)
         end
       end
     end

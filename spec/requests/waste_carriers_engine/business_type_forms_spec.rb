@@ -13,7 +13,7 @@ module WasteCarriersEngine
                        invalid_params: { business_type: "foo" },
                        test_attribute: :business_type
 
-      context "When the transient_registration is a new registration" do
+      context "when the transient_registration is a new registration" do
         let(:transient_registration) do
           create(:new_registration, workflow_state: "business_type_form")
         end
@@ -36,11 +36,9 @@ module WasteCarriersEngine
             transient_registration.save!
           end
 
-          context "and the business type is no longer limitedCompany" do
-            subject { post_form_with_params("business_type_form", transient_registration.token, { business_type: "soleTrader" }) }
-
+          context "when the business type is no longer limitedCompany" do
             it "removes the company attributes" do
-              subject
+              post_form_with_params("business_type_form", transient_registration.token, { business_type: "soleTrader" })
               transient_registration.reload
               expect(transient_registration.company_no).to be_nil
               expect(transient_registration.registered_company_name).to be_nil
@@ -48,11 +46,9 @@ module WasteCarriersEngine
             end
           end
 
-          context "and the business type is still limitedCompany" do
-            subject { post_form_with_params("business_type_form", transient_registration.token, { business_type: "limitedCompany" }) }
-
+          context "when the business type is still limitedCompany" do
             it "does not remove the company attributes" do
-              subject
+              post_form_with_params("business_type_form", transient_registration.token, { business_type: "limitedCompany" })
               transient_registration.reload
               expect(transient_registration.company_no).to eq(company_no)
               expect(transient_registration.registered_company_name).to eq(registered_company_name)

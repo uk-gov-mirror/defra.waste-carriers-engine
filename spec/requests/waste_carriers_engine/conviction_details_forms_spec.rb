@@ -9,7 +9,8 @@ module WasteCarriersEngine
     describe "POST conviction_details_forms_path" do
       context "when a valid user is signed in" do
         let(:user) { create(:user) }
-        before(:each) do
+
+        before do
           sign_in(user)
         end
 
@@ -41,14 +42,14 @@ module WasteCarriersEngine
               expect(transient_registration.reload.key_people.count).to eq(total_people_count + 1)
               expect(transient_registration.reload.key_people.last.position).to eq(valid_params[:position])
 
-              expect(response).to have_http_status(302)
+              expect(response).to have_http_status(:found)
               expect(response).to redirect_to(new_contact_name_form_path(transient_registration[:token]))
             end
 
             context "when there is already a relevant conviction person" do
               let(:relevant_conviction_person) { build(:key_person, :has_required_data, :relevant) }
 
-              before(:each) do
+              before do
                 transient_registration.update_attributes(key_people: [relevant_conviction_person])
               end
 
@@ -65,7 +66,7 @@ module WasteCarriersEngine
             context "when there is already a main person" do
               let(:main_person) { build(:key_person, :has_required_data, :main) }
 
-              before(:each) do
+              before do
                 transient_registration.update_attributes(key_people: [main_person])
               end
 
@@ -124,7 +125,7 @@ module WasteCarriersEngine
             context "when there is already a main person" do
               let(:existing_main_person) { build(:key_person, :has_required_data, :main) }
 
-              before(:each) do
+              before do
                 transient_registration.update_attributes(key_people: [existing_main_person])
               end
 
@@ -180,8 +181,8 @@ module WasteCarriersEngine
           it "does not update the transient registration, returns a 302 response and redirects to the correct form for the state" do
             post conviction_details_forms_path(transient_registration.token), params: { conviction_details_form: valid_params }
 
-            expect(transient_registration.reload.key_people).to_not exist
-            expect(response).to have_http_status(302)
+            expect(transient_registration.reload.key_people).not_to exist
+            expect(response).to have_http_status(:found)
             expect(response).to redirect_to(new_renewal_start_form_path(transient_registration[:token]))
           end
         end
@@ -191,7 +192,8 @@ module WasteCarriersEngine
     describe "DELETE delete_person_conviction_details_forms_path" do
       context "when a valid user is signed in" do
         let(:user) { create(:user) }
-        before(:each) do
+
+        before do
           sign_in(user)
         end
 
@@ -207,7 +209,7 @@ module WasteCarriersEngine
             let(:relevant_person_a) { build(:key_person, :has_required_data, :relevant) }
             let(:relevant_person_b) { build(:key_person, :has_required_data, :relevant) }
 
-            before(:each) do
+            before do
               transient_registration.update_attributes(key_people: [relevant_person_a, relevant_person_b])
             end
 
@@ -223,7 +225,7 @@ module WasteCarriersEngine
                 # Does not affect other people
                 expect(transient_registration.reload.key_people.where(id: relevant_person_b[:id]).count).to eq(1)
 
-                expect(response).to have_http_status(302)
+                expect(response).to have_http_status(:found)
                 expect(response).to redirect_to(new_conviction_details_form_path(transient_registration[:token]))
               end
             end

@@ -14,9 +14,11 @@ module WasteCarriersEngine
                lower_tier?: lower_tier)
       end
 
+      # rubocop:disable RSpec/MessageChain
       before do
-        expect(transient_registration).to receive_message_chain(:class, :name).and_return(class_double)
+        allow(transient_registration).to receive_message_chain(:class, :name).and_return(class_double)
       end
+      # rubocop:enable RSpec/MessageChain
 
       it "returns data in the correct format" do
         expected_string = "'journey': 'new', 'tier': 'unknown'"
@@ -27,6 +29,7 @@ module WasteCarriersEngine
       describe "journeys" do
         context "when the transient_registration is a CeasedOrRevokedRegistration" do
           let(:class_double) { "WasteCarriersEngine::CeasedOrRevokedRegistration" }
+
           it "returns the correct value" do
             expected_string = "'journey': 'cease_or_revoke'"
 
@@ -36,6 +39,7 @@ module WasteCarriersEngine
 
         context "when the transient_registration is an EditRegistration" do
           let(:class_double) { "WasteCarriersEngine::EditRegistration" }
+
           it "returns the correct value" do
             expected_string = "'journey': 'edit'"
 
@@ -45,6 +49,7 @@ module WasteCarriersEngine
 
         context "when the transient_registration is a NewRegistration" do
           let(:class_double) { "WasteCarriersEngine::NewRegistration" }
+
           it "returns the correct value" do
             expected_string = "'journey': 'new'"
 
@@ -54,6 +59,7 @@ module WasteCarriersEngine
 
         context "when the transient_registration is an OrderCopyCardsRegistration" do
           let(:class_double) { "WasteCarriersEngine::OrderCopyCardsRegistration" }
+
           it "returns the correct value" do
             expected_string = "'journey': 'order_copy_cards'"
 
@@ -63,6 +69,7 @@ module WasteCarriersEngine
 
         context "when the transient_registration is a RenewingRegistration" do
           let(:class_double) { "WasteCarriersEngine::RenewingRegistration" }
+
           it "returns the correct value" do
             expected_string = "'journey': 'renew'"
 
@@ -72,6 +79,7 @@ module WasteCarriersEngine
 
         context "when the transient_registration is not a recognised subtype" do
           let(:class_double) { "Foo" }
+
           it "raises an error" do
             expect { helper.data_layer(transient_registration) }.to raise_error(DataLayerHelper::UnexpectedSubtypeError)
           end

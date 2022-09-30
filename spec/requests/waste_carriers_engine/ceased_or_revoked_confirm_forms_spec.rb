@@ -8,7 +8,7 @@ module WasteCarriersEngine
       context "when a user is signed in" do
         let(:user) { create(:user) }
 
-        before(:each) do
+        before do
           sign_in(user)
         end
 
@@ -40,7 +40,7 @@ module WasteCarriersEngine
       end
 
       context "when a user is not signed in" do
-        before(:each) do
+        before do
           user = create(:user)
           sign_out(user)
         end
@@ -48,7 +48,7 @@ module WasteCarriersEngine
         it "returns a 302 response" do
           get new_ceased_or_revoked_confirm_form_path("foo")
 
-          expect(response).to have_http_status(302)
+          expect(response).to have_http_status(:found)
           expect(response).to redirect_to(page_path("invalid"))
         end
       end
@@ -57,7 +57,8 @@ module WasteCarriersEngine
     describe "POST ceased_or_revoked_confirm_forms_path" do
       context "when a valid user is signed in" do
         let(:user) { create(:user) }
-        before(:each) do
+
+        before do
           sign_in(user)
         end
 
@@ -84,7 +85,7 @@ module WasteCarriersEngine
               expect(WasteCarriersEngine::TransientRegistration.count).to eq(0)
               expect(registration.metaData.status).to eq("REVOKED")
               expect(registration.metaData.revokedReason).to eq("Revoked Reason")
-              expect(response).to have_http_status(302)
+              expect(response).to have_http_status(:found)
               expect(response).to redirect_to("/bo")
             end
           end

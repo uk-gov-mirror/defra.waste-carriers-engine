@@ -17,7 +17,7 @@ module WasteCarriersEngine
     end
     let(:registration) { Registration.where(reg_identifier: transient_registration.reg_identifier).first }
 
-    let(:renewal_completion_service) { RenewalCompletionService.new(transient_registration) }
+    let(:renewal_completion_service) { described_class.new(transient_registration) }
 
     before do
       # We have to run this block after the transient registration creation,
@@ -33,6 +33,12 @@ module WasteCarriersEngine
     end
 
     describe "#complete_renewal" do
+
+      before do
+        allow(Notify::RenewalConfirmationEmailService).to receive(:run)
+        allow(Notify::RenewalConfirmationLetterService).to receive(:run)
+      end
+
       context "when the renewal can be completed" do
         it "creates a new past_registration" do
           number_of_past_registrations = registration.past_registrations.count
@@ -156,20 +162,20 @@ module WasteCarriersEngine
         end
 
         it "creates the correct number of order item logs" do
-          expect { renewal_completion_service.complete_renewal }.to change { OrderItemLog.count }
+          expect { renewal_completion_service.complete_renewal }.to change(OrderItemLog, :count)
             .from(0)
             .to(transient_registration.finance_details.orders.sum { |o| o.order_items.length })
         end
 
         # This only applies to attributes where a value could be set, but not always - for example, smart answers
-        context "if the registration has an attribute which is not in the transient_registration" do
+        context "when the registration has an attribute which is not in the transient_registration" do
           before do
             registration.update_attributes(construction_waste: true)
           end
 
           it "updates the attribute to be nil in the registration" do
             renewal_completion_service.complete_renewal
-            expect(registration.reload.construction_waste).to eq(nil)
+            expect(registration.reload.construction_waste).to be_nil
           end
         end
 
@@ -191,12 +197,12 @@ module WasteCarriersEngine
         end
 
         it "sends a confirmation email" do
+          renewal_completion_service.complete_renewal
+
           expect(Notify::RenewalConfirmationEmailService)
-            .to receive(:run)
+            .to have_received(:run)
             .with(registration: registration)
             .once
-
-          renewal_completion_service.complete_renewal
         end
 
         context "when there is no contact email" do
@@ -205,12 +211,12 @@ module WasteCarriersEngine
           end
 
           it "sends a confirmation letter" do
+            renewal_completion_service.complete_renewal
+
             expect(Notify::RenewalConfirmationLetterService)
-              .to receive(:run)
+              .to have_received(:run)
               .with(registration: registration)
               .once
-
-            renewal_completion_service.complete_renewal
           end
         end
       end
@@ -276,13 +282,15 @@ module WasteCarriersEngine
             .to receive(:run)
             .and_raise(the_error)
 
-          expect(Airbrake)
+          allow(Airbrake)
             .to receive(:notify)
             .with(the_error, { registration_no: transient_registration.reg_identifier })
         end
 
         it "notifies Airbrake" do
           renewal_completion_service.complete_renewal
+
+          expect(Airbrake).to have_received(:notify)
         end
       end
     end

@@ -6,7 +6,7 @@ module WasteCarriersEngine
   RSpec.describe RegistrationActivationService do
     let(:registration) { create(:registration, :has_required_data, :is_pending) }
 
-    let(:service) { RegistrationActivationService.run(registration: registration) }
+    let(:service) { described_class.run(registration: registration) }
 
     let(:current_time) { Time.new(2020, 1, 1) }
 
@@ -18,10 +18,9 @@ module WasteCarriersEngine
           allow(registration).to receive(:unpaid_balance?).and_return(false)
           allow(registration).to receive(:pending_manual_conviction_check?).and_return(false)
 
-          expect(RegistrationConfirmationService)
+          allow(RegistrationConfirmationService)
             .to receive(:run)
             .with(registration: registration)
-            .once
         end
 
         it "updates the date_activated" do
@@ -31,11 +30,11 @@ module WasteCarriersEngine
         end
 
         it "activates the registration" do
-          expect { service }.to change { registration.active? }.from(false).to(true)
+          expect { service }.to change(registration, :active?).from(false).to(true)
         end
 
         it "creates one or more order item logs" do
-          expect { service }.to change { OrderItemLog.count }.from(0)
+          expect { service }.to change(OrderItemLog, :count).from(0)
         end
       end
 
@@ -43,11 +42,11 @@ module WasteCarriersEngine
         before { allow(registration).to receive(:unpaid_balance?).and_return(true) }
 
         it "does not activate the registration" do
-          expect { service }.to_not change { registration.active? }
+          expect { service }.not_to change(registration, :active?)
         end
 
         it "does not create an order item log" do
-          expect { service }.not_to change { OrderItemLog.count }.from(0)
+          expect { service }.not_to change(OrderItemLog, :count).from(0)
         end
       end
 
@@ -55,11 +54,11 @@ module WasteCarriersEngine
         before { allow(registration).to receive(:pending_manual_conviction_check?).and_return(true) }
 
         it "does not activate the registration" do
-          expect { service }.to_not change { registration.active? }
+          expect { service }.not_to change(registration, :active?)
         end
 
         it "does not create an order item log" do
-          expect { service }.not_to change { OrderItemLog.count }.from(0)
+          expect { service }.not_to change(OrderItemLog, :count).from(0)
         end
       end
     end

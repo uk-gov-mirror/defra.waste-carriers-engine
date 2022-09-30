@@ -6,11 +6,6 @@ require "rails_helper"
 module WasteCarriersEngine
   RSpec.describe GovpayPaymentService do
     let(:govpay_host) { "https://publicapi.payments.service.gov.uk" }
-    before do
-      allow(WasteCarriersEngine::FeatureToggle).to receive(:active?).with(:govpay_payments).and_return(true)
-      allow(Rails.configuration).to receive(:govpay_url).and_return(govpay_host)
-    end
-
     let(:transient_registration) do
       create(:renewing_registration,
              :has_required_data,
@@ -19,18 +14,16 @@ module WasteCarriersEngine
              temp_cards: 0)
     end
     let(:current_user) { build(:user) }
+    let(:order) { transient_registration.finance_details.orders.first }
+    let(:govpay_service) { described_class.new(transient_registration, order, current_user) }
 
     before do
+      allow(WasteCarriersEngine::FeatureToggle).to receive(:active?).with(:govpay_payments).and_return(true)
+      allow(Rails.configuration).to receive(:govpay_url).and_return(govpay_host)
       allow(Rails.configuration).to receive(:renewal_charge).and_return(10_500)
 
       transient_registration.prepare_for_payment(:govpay, current_user)
-    end
 
-    let(:order) { transient_registration.finance_details.orders.first }
-
-    let(:govpay_service) { GovpayPaymentService.new(transient_registration, order, current_user) }
-
-    before do
       stub_request(:any, /.*#{govpay_host}.*/).to_return(
         status: 200,
         body: File.read("./spec/fixtures/files/govpay/create_payment_created_response.json")
@@ -54,20 +47,29 @@ module WasteCarriersEngine
         end
 
         context "when the request is from the back-office" do
-          before { allow(WasteCarriersEngine.configuration).to receive(:host_is_back_office?).and_return(true) }
+          before do
+            allow(govpay_service).to receive(:send_request)
+            allow(WasteCarriersEngine.configuration).to receive(:host_is_back_office?).and_return(true)
+          end
 
           it "sends the moto flag to GovPay" do
-            expect(govpay_service).to receive(:send_request).with(anything, anything, hash_including(moto: true))
+            allow(govpay_service).to receive(:send_request)
             govpay_service.prepare_for_payment
+
+            expect(govpay_service).to have_received(:send_request).with(anything, anything, hash_including(moto: true))
           end
         end
 
         context "when the request is from the front-office" do
-          before { allow(WasteCarriersEngine.configuration).to receive(:host_is_back_office?).and_return(false) }
+          before do
+            allow(govpay_service).to receive(:send_request)
+            allow(WasteCarriersEngine.configuration).to receive(:host_is_back_office?).and_return(false)
+          end
 
           it "does not send the moto flag to GovPay" do
-            expect(govpay_service).to receive(:send_request).with(anything, anything, hash_not_including(moto: true))
             govpay_service.prepare_for_payment
+
+            expect(govpay_service).to have_received(:send_request).with(anything, anything, hash_not_including(moto: true))
           end
         end
       end
@@ -93,25 +95,25 @@ module WasteCarriersEngine
         allow(Rails.configuration).to receive(:host).and_return(callback_host)
       end
 
-      subject { govpay_service.payment_callback_url }
+      subject(:callback_url) { govpay_service.payment_callback_url }
 
       context "when the order does not exist" do
 
         before { transient_registration.finance_details.orders = [] }
 
         it "raises an exception" do
-          expect { subject }.to raise_error(StandardError)
+          expect { callback_url }.to raise_error(StandardError)
         end
       end
 
       context "when the order exists" do
 
         it "the callback url includes the base path" do
-          expect(subject).to start_with(callback_host)
+          expect(callback_url).to start_with(callback_host)
         end
 
         it "the callback url includes the payment uuid" do
-          expect(subject).to include(TransientRegistration.first.finance_details.orders.first.payment_uuid)
+          expect(callback_url).to include(TransientRegistration.first.finance_details.orders.first.payment_uuid)
         end
       end
     end

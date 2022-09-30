@@ -12,18 +12,18 @@ module WasteCarriersEngine
           { temp_payment_method: "card" }
         end
 
-        it "should submit" do
-          expect(edit_payment_summary_form.submit(valid_params)).to eq(true)
+        it "submits" do
+          expect(edit_payment_summary_form.submit(valid_params)).to be true
         end
       end
 
       context "when the form is not valid" do
         before do
-          expect(edit_payment_summary_form).to receive(:valid?).and_return(false)
+          allow(edit_payment_summary_form).to receive(:valid?).and_return(false)
         end
 
-        it "should not submit" do
-          expect(edit_payment_summary_form.submit({})).to eq(false)
+        it "does not submit" do
+          expect(edit_payment_summary_form.submit({})).to be false
         end
       end
     end

@@ -5,12 +5,15 @@ require "rails_helper"
 module WasteCarriersEngine
   module ConvictionsCheck
     RSpec.describe Entity, type: :model do
+
       describe "public interface" do
+        subject(:entity) { described_class.new }
+
         properties = %i[name date_of_birth company_number system_flag incident_number]
 
         properties.each do |property|
           it "responds to property" do
-            expect(subject).to respond_to(property)
+            expect(entity).to respond_to(property)
           end
         end
       end
@@ -31,7 +34,7 @@ module WasteCarriersEngine
 
             expect(scope).to include(matching_record)
             expect(scope).to include(partially_matching_record)
-            expect(scope).to_not include(non_matching_record)
+            expect(scope).not_to include(non_matching_record)
           end
 
           it "is not case sensitive" do
@@ -72,7 +75,7 @@ module WasteCarriersEngine
             let(:matching_first_name) { "*" }
 
             it "does not break the scope" do
-              expect { scope }.to_not raise_error
+              expect { scope }.not_to raise_error
             end
           end
 
@@ -93,19 +96,19 @@ module WasteCarriersEngine
             non_matching_record = described_class.create(name: non_matching_term)
 
             expect(scope).to include(matching_record)
-            expect(scope).to_not include(non_matching_record)
+            expect(scope).not_to include(non_matching_record)
           end
 
           it "does not return records where only the first name matches" do
             non_matching_record = described_class.create(name: "#{non_matching_term}, #{matching_first_name}")
 
-            expect(scope).to_not include(non_matching_record)
+            expect(scope).not_to include(non_matching_record)
           end
 
           it "does not return records where only the last name matches" do
             non_matching_record = described_class.create(name: "#{matching_last_name}, #{non_matching_term}")
 
-            expect(scope).to_not include(non_matching_record)
+            expect(scope).not_to include(non_matching_record)
           end
 
           it "is not case sensitive" do
@@ -118,7 +121,7 @@ module WasteCarriersEngine
             let(:matching_first_name) { "*" }
 
             it "does not break the scope" do
-              expect { scope }.to_not raise_error
+              expect { scope }.not_to raise_error
             end
           end
 
@@ -143,7 +146,7 @@ module WasteCarriersEngine
             non_matching_record = described_class.create(date_of_birth: non_matching_term)
 
             expect(scope).to include(matching_record)
-            expect(scope).to_not include(non_matching_record)
+            expect(scope).not_to include(non_matching_record)
           end
 
           context "when the search term is blank" do
@@ -172,8 +175,8 @@ module WasteCarriersEngine
             non_matching_record = described_class.create(company_number: non_matching_term)
 
             expect(scope).to include(matching_record)
-            expect(scope).to_not include(partially_matching_record)
-            expect(scope).to_not include(non_matching_record)
+            expect(scope).not_to include(partially_matching_record)
+            expect(scope).not_to include(non_matching_record)
           end
 
           it "is not case sensitive" do
@@ -192,7 +195,7 @@ module WasteCarriersEngine
 
               expect(scope).to include(record_with_leading_zero)
               expect(scope).to include(record_without_leading_zero)
-              expect(scope).to_not include(record_with_zero_somewhere_else)
+              expect(scope).not_to include(record_with_zero_somewhere_else)
             end
           end
 
@@ -200,7 +203,7 @@ module WasteCarriersEngine
             let(:term) { "*" }
 
             it "does not break the scope" do
-              expect { scope }.to_not raise_error
+              expect { scope }.not_to raise_error
             end
           end
 
@@ -229,9 +232,9 @@ module WasteCarriersEngine
               non_matching_record = described_class.create(name: non_matching_term, date_of_birth: non_matching_date_term)
 
               expect(scope).to include(matching_record)
-              expect(scope).to_not include(name_match_only_record)
-              expect(scope).to_not include(dob_match_only_record)
-              expect(scope).to_not include(non_matching_record)
+              expect(scope).not_to include(name_match_only_record)
+              expect(scope).not_to include(dob_match_only_record)
+              expect(scope).not_to include(non_matching_record)
             end
           end
 
@@ -242,8 +245,8 @@ module WasteCarriersEngine
               non_matching_record = described_class.create(name: non_matching_term, date_of_birth: non_matching_date_term)
 
               expect(scope).to include(name_match_only_record)
-              expect(scope).to_not include(dob_match_only_record)
-              expect(scope).to_not include(non_matching_record)
+              expect(scope).not_to include(dob_match_only_record)
+              expect(scope).not_to include(non_matching_record)
             end
           end
 
@@ -276,7 +279,7 @@ module WasteCarriersEngine
           non_matching_record = described_class.create(name: non_matching_term)
 
           expect(results).to include(matching_record)
-          expect(results).to_not include(non_matching_record)
+          expect(results).not_to include(non_matching_record)
         end
 
         it "returns records with matching company_numbers" do
@@ -284,7 +287,7 @@ module WasteCarriersEngine
           non_matching_record = described_class.create(company_number: non_matching_term)
 
           expect(results).to include(matching_record)
-          expect(results).to_not include(non_matching_record)
+          expect(results).not_to include(non_matching_record)
         end
 
         it "does not return records with matching date_of_births" do
@@ -294,12 +297,12 @@ module WasteCarriersEngine
           matching_record = described_class.create(date_of_birth: term)
           non_matching_record = described_class.create(date_of_birth: non_matching_term)
 
-          expect(results).to_not include(matching_record)
-          expect(results).to_not include(non_matching_record)
+          expect(results).not_to include(matching_record)
+          expect(results).not_to include(non_matching_record)
         end
 
         it "allows company_no to be missing" do
-          expect { described_class.matching_organisations(name: term) }.to_not raise_error
+          expect { described_class.matching_organisations(name: term) }.not_to raise_error
         end
 
         it "does not allow name to be missing" do

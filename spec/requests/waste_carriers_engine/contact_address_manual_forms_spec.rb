@@ -9,7 +9,8 @@ module WasteCarriersEngine
     describe "POST contact_address_manual_forms_path" do
       context "when a valid user is signed in" do
         let(:user) { create(:user) }
-        before(:each) do
+
+        before do
           sign_in(user)
         end
 
@@ -27,7 +28,7 @@ module WasteCarriersEngine
                 token: transient_registration[:token],
                 contact_address: {
                   house_number: "42",
-                  address_line_1: "Foo Terrace",
+                  address_line1: "Foo Terrace",
                   town_city: "Barton"
                 }
               }
@@ -37,7 +38,7 @@ module WasteCarriersEngine
               post contact_address_manual_forms_path(transient_registration.token), params: { contact_address_manual_form: valid_params }
 
               expect(transient_registration.reload.contact_address.house_number).to eq("42")
-              expect(response).to have_http_status(302)
+              expect(response).to have_http_status(:found)
               expect(response).to redirect_to(new_check_your_answers_form_path(transient_registration[:token]))
             end
 
@@ -57,8 +58,8 @@ module WasteCarriersEngine
 
                 post contact_address_manual_forms_path(transient_registration.token), params: { contact_address_manual_form: valid_params }
 
-                expect(transient_registration.reload.contact_address).to_not eq(old_contact_address)
-                expect(transient_registration.reload.contact_address.address_line_1).to eq("Foo Terrace")
+                expect(transient_registration.reload.contact_address).not_to eq(old_contact_address)
+                expect(transient_registration.reload.contact_address.address_line1).to eq("Foo Terrace")
                 expect(transient_registration.reload.registered_address).to eq(old_registered_address)
                 expect(transient_registration.reload.addresses.count).to eq(number_of_addresses)
               end
@@ -79,7 +80,7 @@ module WasteCarriersEngine
               token: transient_registration[:token],
               contact_address: {
                 house_number: "42",
-                address_line_1: "Foo Terrace",
+                address_line1: "Foo Terrace",
                 town_city: "Barton"
               }
             }
@@ -89,7 +90,7 @@ module WasteCarriersEngine
             post contact_address_forms_path(transient_registration.token), params: { contact_address_form: valid_params }
 
             expect(transient_registration.reload.addresses.count).to eq(0)
-            expect(response).to have_http_status(302)
+            expect(response).to have_http_status(:found)
             expect(response).to redirect_to(new_renewal_start_form_path(transient_registration[:token]))
           end
         end

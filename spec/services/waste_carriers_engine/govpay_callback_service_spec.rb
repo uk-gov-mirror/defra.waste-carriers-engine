@@ -6,6 +6,7 @@ require "rails_helper"
 module WasteCarriersEngine
   RSpec.describe GovpayCallbackService do
     let(:govpay_host) { "https://publicapi.payments.service.gov.uk" }
+    let(:govpay_service) { described_class.new(order.payment_uuid) }
     let(:transient_registration) do
       create(:renewing_registration,
              :has_required_data,
@@ -26,17 +27,19 @@ module WasteCarriersEngine
       order.save!
     end
 
-    let(:govpay_service) { GovpayCallbackService.new(order.payment_uuid) }
-
     describe "#payment_callback" do
-      context "valid_success?" do
+      let(:govpay_validator_service) { instance_double(GovpayValidatorService) }
+
+      before { allow(GovpayValidatorService).to receive(:new).and_return(govpay_validator_service) }
+
+      context "with valid_success?" do
         before { allow(GovpayPaymentDetailsService).to receive(:payment_status).with(order.govpay_id).and_return(:success) }
 
         context "when the status is valid" do
-          before { allow_any_instance_of(GovpayValidatorService).to receive(:valid_success?).and_return(true) }
+          before { allow(govpay_validator_service).to receive(:valid_success?).and_return(true) }
 
           it "returns true" do
-            expect(govpay_service.valid_success?).to eq(true)
+            expect(govpay_service.valid_success?).to be true
           end
 
           it "updates the payment status" do
@@ -56,10 +59,10 @@ module WasteCarriersEngine
         end
 
         context "when the status is invalid" do
-          before { allow_any_instance_of(GovpayValidatorService).to receive(:valid_success?).and_return(false) }
+          before { allow(govpay_validator_service).to receive(:valid_success?).and_return(false) }
 
           it "returns false" do
-            expect(govpay_service.valid_success?).to eq(false)
+            expect(govpay_service.valid_success?).to be false
           end
 
           it "does not update the order" do
@@ -74,22 +77,6 @@ module WasteCarriersEngine
           end
         end
       end
-
-      # context "#valid_failure?" do
-      #   it_should_behave_like "GovpayCallbackService valid unsuccessful action", :valid_failure?, "failed"
-      # end
-
-      # context "#valid_pending?" do
-      #   it_should_behave_like "GovpayCallbackService valid unsuccessful action", :valid_pending?, "created"
-      # end
-
-      # context "#valid_cancel?" do
-      #   it_should_behave_like "GovpayCallbackService valid unsuccessful action", :valid_cancel?, "cancelled"
-      # end
-
-      # context "#valid_error?" do
-      #   it_should_behave_like "GovpayCallbackService valid unsuccessful action", :valid_error?, "error"
-      # end
     end
   end
 end

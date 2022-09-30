@@ -14,8 +14,8 @@ module WasteCarriersEngine
           }
         end
 
-        it "should submit" do
-          expect(cards_form.submit(valid_params)).to eq(true)
+        it "submits" do
+          expect(cards_form.submit(valid_params)).to be true
         end
       end
 
@@ -27,8 +27,8 @@ module WasteCarriersEngine
           }
         end
 
-        it "should not submit" do
-          expect(cards_form.submit(invalid_params)).to eq(false)
+        it "does not submit" do
+          expect(cards_form.submit(invalid_params)).to be false
         end
       end
 
@@ -42,7 +42,7 @@ module WasteCarriersEngine
           }
         end
 
-        it "should change the value to zero" do
+        it "changes the value to zero" do
           cards_form.submit(blank_params)
           expect(transient_registration.reload.temp_cards).to eq(0)
         end
@@ -58,8 +58,8 @@ module WasteCarriersEngine
           }
         end
 
-        it "should not submit" do
-          expect(cards_form.submit(outside_range_params)).to eq(false)
+        it "does not submit" do
+          expect(cards_form.submit(outside_range_params)).to be false
         end
       end
     end
@@ -75,22 +75,22 @@ module WasteCarriersEngine
         end
 
         context "when a temp_cards is blank" do
-          before(:each) do
+          before do
             cards_form.transient_registration.temp_cards = nil
           end
 
           it "is not valid" do
-            expect(cards_form).to_not be_valid
+            expect(cards_form).not_to be_valid
           end
         end
 
         context "when a temp_cards is a negative number" do
-          before(:each) do
+          before do
             cards_form.transient_registration.temp_cards = -3
           end
 
           it "is not valid" do
-            expect(cards_form).to_not be_valid
+            expect(cards_form).not_to be_valid
           end
         end
       end

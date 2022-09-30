@@ -11,8 +11,8 @@ module WasteCarriersEngine
           { token: company_name_form.token, company_name: company_name_form.company_name }
         end
 
-        it "should submit" do
-          expect(company_name_form.submit(valid_params)).to eq(true)
+        it "submits" do
+          expect(company_name_form.submit(valid_params)).to be true
         end
       end
 
@@ -22,8 +22,8 @@ module WasteCarriersEngine
 
         before { company_name_form.transient_registration.tier = WasteCarriersEngine::Registration::LOWER_TIER }
 
-        it "should not submit" do
-          expect(company_name_form.submit(invalid_params)).to eq(false)
+        it "does not submit" do
+          expect(company_name_form.submit(invalid_params)).to be false
         end
       end
     end

@@ -7,56 +7,58 @@ module WasteCarriersEngine
     let(:transient_registration) { build(:transient_registration, :has_required_data) }
 
     describe "#set_metadata_route" do
-      it "updates the transient registration's metadata route" do
+      let(:metadata_route) { instance_double(described_class, :metadata_route) }
+
+      before do
         allow_message_expectations_on_nil
+        allow(Rails.configuration).to receive(:metadata_route).and_return(metadata_route)
+        allow(transient_registration.metaData).to receive(:route=)
+        allow(transient_registration).to receive(:save)
+      end
 
-        metadata_route = double(:metadata_route)
-
-        expect(Rails.configuration).to receive(:metadata_route).and_return(metadata_route)
-
-        expect(transient_registration.metaData).to receive(:route=).with(metadata_route)
-        expect(transient_registration).to receive(:save)
-
+      it "updates the transient registration's metadata route" do
         transient_registration.set_metadata_route
+
+        expect(transient_registration.metaData).to have_received(:route=).with(metadata_route)
       end
     end
 
     describe "#update_created_at" do
       context "when a new transient registration is created" do
         it "updates the transient registration's created_at" do
-          time = double(:time)
-
-          expect(Time).to receive(:current).and_return(time)
-
-          expect(transient_registration).to receive(:created_at=).with(time)
+          time = instance_double(described_class, :time)
+          allow(Time).to receive(:current).and_return(time)
+          allow(transient_registration).to receive(:created_at=)
 
           transient_registration.save
+
+          expect(transient_registration).to have_received(:created_at=).with(time)
         end
       end
     end
 
     describe "search" do
-      it_should_behave_like "Search scopes",
-                            record_class: WasteCarriersEngine::TransientRegistration,
-                            factory: :transient_registration
+      it_behaves_like "Search scopes",
+                      record_class: described_class,
+                      factory: :transient_registration
     end
 
     describe "secure token" do
-      it_should_behave_like "Having a secure token"
+      it_behaves_like "Having a secure token"
     end
 
     describe "registration attributes" do
-      it_should_behave_like "Can have registration attributes",
-                            factory: :transient_registration
+      it_behaves_like "Can have registration attributes",
+                      factory: :transient_registration
     end
 
     describe "entity_display names" do
-      it_should_behave_like "Can present entity display name",
-                            factory: :transient_registration
+      it_behaves_like "Can present entity display name",
+                      factory: :transient_registration
     end
 
     describe "conviction scopes" do
-      it_should_behave_like "Can filter conviction status"
+      it_behaves_like "Can filter conviction status"
     end
 
     describe "#rejected_conviction_checks?" do
@@ -68,7 +70,7 @@ module WasteCarriersEngine
         let(:conviction_sign_offs) { nil }
 
         it "return false" do
-          expect(transient_registration.rejected_conviction_checks?).to be_falsey
+          expect(transient_registration).not_to be_rejected_conviction_checks
         end
       end
 
@@ -80,7 +82,7 @@ module WasteCarriersEngine
           let(:rejected) { true }
 
           it "returns true" do
-            expect(transient_registration.rejected_conviction_checks?).to be_truthy
+            expect(transient_registration).to be_rejected_conviction_checks
           end
         end
 
@@ -88,7 +90,7 @@ module WasteCarriersEngine
           let(:rejected) { false }
 
           it "returns false" do
-            expect(transient_registration.rejected_conviction_checks?).to be_falsey
+            expect(transient_registration).not_to be_rejected_conviction_checks
           end
         end
       end
@@ -103,7 +105,7 @@ module WasteCarriersEngine
         let(:unpaid_balance) { false }
 
         it "returns false" do
-          expect(transient_registration.pending_payment?).to eq(false)
+          expect(transient_registration).not_to be_pending_payment
         end
       end
 
@@ -111,7 +113,7 @@ module WasteCarriersEngine
         let(:unpaid_balance) { true }
 
         it "returns true" do
-          expect(transient_registration.pending_payment?).to eq(true)
+          expect(transient_registration).to be_pending_payment
         end
       end
     end
@@ -128,7 +130,7 @@ module WasteCarriersEngine
           end
 
           it "returns true" do
-            expect(transient_registration.pending_online_payment?).to eq(true)
+            expect(transient_registration).to be_pending_online_payment
           end
         end
 
@@ -138,7 +140,7 @@ module WasteCarriersEngine
           end
 
           it "returns false" do
-            expect(transient_registration.pending_online_payment?).to eq(false)
+            expect(transient_registration).not_to be_pending_online_payment
           end
         end
       end
@@ -149,7 +151,7 @@ module WasteCarriersEngine
         end
 
         it "returns false" do
-          expect(transient_registration.pending_online_payment?).to eq(false)
+          expect(transient_registration).not_to be_pending_online_payment
         end
       end
     end
@@ -161,7 +163,7 @@ module WasteCarriersEngine
         end
 
         it "returns false" do
-          expect(transient_registration.pending_manual_conviction_check?).to eq(false)
+          expect(transient_registration).not_to be_pending_manual_conviction_check
         end
       end
 
@@ -171,7 +173,7 @@ module WasteCarriersEngine
         end
 
         it "returns true" do
-          expect(transient_registration.pending_manual_conviction_check?).to eq(true)
+          expect(transient_registration).to be_pending_manual_conviction_check
         end
       end
     end
@@ -192,25 +194,27 @@ module WasteCarriersEngine
         }
       end
 
-      context "valid change" do
+      context "with a valid change" do
 
         it "allows all valid changes" do
           valid_changes.each do |old_type, new_types|
-            allow_any_instance_of(Registration).to receive(:business_type).and_return(old_type)
+            renewing_registration.registration.business_type = old_type
+            renewing_registration.registration.save!
 
             new_types.each do |new_type|
               allow(renewing_registration).to receive(:business_type).and_return(new_type)
 
-              expect(renewing_registration.business_type_change_valid?).to be_truthy
+              expect(renewing_registration).to be_business_type_change_valid
             end
           end
         end
       end
 
-      context "invalid change" do
+      context "with an invalid change" do
         it "does not allow invalid changes" do
           business_types.each do |old_type|
-            allow_any_instance_of(Registration).to receive(:business_type).and_return(old_type)
+            renewing_registration.registration.business_type = old_type
+            renewing_registration.registration.save!
 
             business_types.each do |new_type|
               next if old_type == new_type
@@ -218,7 +222,7 @@ module WasteCarriersEngine
 
               allow(renewing_registration).to receive(:business_type).and_return(new_type)
 
-              expect(renewing_registration.business_type_change_valid?).not_to be_truthy
+              expect(renewing_registration).not_to be_business_type_change_valid
             end
           end
         end
@@ -234,17 +238,17 @@ module WasteCarriersEngine
     describe "#next_state!" do
       let(:new_registration) { build(:new_registration, :has_required_data) }
 
-      subject { new_registration.next_state! }
+      subject(:next_state) { new_registration.next_state! }
 
       context "with no available next state" do
         before { new_registration.workflow_state = "registration_completed_form" }
 
         it "does not change the state" do
-          expect { subject }.not_to change { new_registration.workflow_state }
+          expect { next_state }.not_to change(new_registration, :workflow_state)
         end
 
         it "does not add to workflow history" do
-          expect { subject }.not_to change { new_registration.workflow_history }
+          expect { next_state }.not_to change(new_registration, :workflow_history)
         end
       end
 
@@ -252,11 +256,11 @@ module WasteCarriersEngine
         before { new_registration.workflow_state = "not_valid" }
 
         it "does not change the state" do
-          expect { subject }.not_to change { new_registration.workflow_state }
+          expect { next_state }.not_to change(new_registration, :workflow_state)
         end
 
         it "does not add to workflow history" do
-          expect { subject }.not_to change { new_registration.workflow_history }
+          expect { next_state }.not_to change(new_registration, :workflow_history)
         end
       end
 
@@ -264,15 +268,15 @@ module WasteCarriersEngine
         before { new_registration.workflow_state = "location_form" }
 
         it "changes the state" do
-          expect { subject }.to change { new_registration.workflow_state }.to("business_type_form")
+          expect { next_state }.to change(new_registration, :workflow_state).to("business_type_form")
         end
 
         it "adds to workflow history" do
-          expect { subject }.to change { new_registration.workflow_history.length }.from(0).to(1)
+          expect { next_state }.to change { new_registration.workflow_history.length }.from(0).to(1)
         end
 
         it "adds the previous state to workflow history" do
-          expect { subject }.to change { new_registration.workflow_history }.to(["location_form"])
+          expect { next_state }.to change(new_registration, :workflow_history).to(["location_form"])
         end
       end
     end
@@ -280,18 +284,20 @@ module WasteCarriersEngine
     describe "#previous_valid_state!" do
       let(:new_registration) { build(:new_registration, :has_required_data) }
 
-      subject { new_registration.previous_valid_state! }
+      subject(:previous_state) { new_registration.previous_valid_state! }
 
       context "with no workflow history" do
-        before { new_registration.workflow_history = [] }
-        before { new_registration.workflow_state = "location_form" }
+        before do
+          new_registration.workflow_history = []
+          new_registration.workflow_state = "location_form"
+        end
 
         it "uses the default state" do
-          expect { subject }.to change { new_registration.workflow_state }.to("start_form")
+          expect { previous_state }.to change(new_registration, :workflow_state).to("start_form")
         end
 
         it "does not modify workflow history" do
-          expect { subject }.not_to change { new_registration.workflow_history }
+          expect { previous_state }.not_to change(new_registration, :workflow_history)
         end
       end
 
@@ -299,11 +305,11 @@ module WasteCarriersEngine
         before { new_registration.workflow_history = %w[another_form location_form not_valid] }
 
         it "skips the invalid state" do
-          expect { subject }.to change { new_registration.workflow_state }.to("location_form")
+          expect { previous_state }.to change(new_registration, :workflow_state).to("location_form")
         end
 
         it "deletes multiple items workflow history" do
-          expect { subject }.to change { new_registration.workflow_history.length }.by(-2)
+          expect { previous_state }.to change { new_registration.workflow_history.length }.by(-2)
         end
       end
 
@@ -314,11 +320,11 @@ module WasteCarriersEngine
         end
 
         it "uses the default state" do
-          expect { subject }.to change { new_registration.workflow_state }.to("start_form")
+          expect { previous_state }.to change(new_registration, :workflow_state).to("start_form")
         end
 
         it "deletes all items from workflow history" do
-          expect { subject }.to change { new_registration.workflow_history.length }.to(0)
+          expect { previous_state }.to change { new_registration.workflow_history.length }.to(0)
         end
       end
 
@@ -329,11 +335,11 @@ module WasteCarriersEngine
         end
 
         it "changes the state" do
-          expect { subject }.to change { new_registration.workflow_state }.to("location_form")
+          expect { previous_state }.to change(new_registration, :workflow_state).to("location_form")
         end
 
         it "deletes from workflow history" do
-          expect { subject }.to change { new_registration.workflow_history.length }.by(-1)
+          expect { previous_state }.to change { new_registration.workflow_history.length }.by(-1)
         end
       end
 
@@ -344,11 +350,11 @@ module WasteCarriersEngine
         end
 
         it "skips the duplicated state" do
-          expect { subject }.to change { new_registration.workflow_state }.to("start_form")
+          expect { previous_state }.to change(new_registration, :workflow_state).to("start_form")
         end
 
         it "deletes from workflow history" do
-          expect { subject }.to change { new_registration.workflow_history.length }.to(0)
+          expect { previous_state }.to change { new_registration.workflow_history.length }.to(0)
         end
       end
     end

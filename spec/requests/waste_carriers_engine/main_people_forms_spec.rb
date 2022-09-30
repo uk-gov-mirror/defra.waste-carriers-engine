@@ -9,7 +9,8 @@ module WasteCarriersEngine
     describe "POST main_people_forms_path" do
       context "when a valid user is signed in" do
         let(:user) { create(:user) }
-        before(:each) do
+
+        before do
           sign_in(user)
         end
 
@@ -39,14 +40,14 @@ module WasteCarriersEngine
 
               expect(transient_registration.reload.key_people.count).to eq(key_people_count + 1)
               expect(transient_registration.reload.key_people.last.first_name).to eq(valid_params[:first_name])
-              expect(response).to have_http_status(302)
+              expect(response).to have_http_status(:found)
               expect(response).to redirect_to(new_use_trading_name_form_path(transient_registration[:token]))
             end
 
             context "when there is already a main person" do
               let(:existing_main_person) { build(:key_person, :has_required_data, :main) }
 
-              before(:each) do
+              before do
                 transient_registration.update_attributes(key_people: [existing_main_person])
               end
 
@@ -59,7 +60,7 @@ module WasteCarriersEngine
               end
 
               context "when there can only be one main person" do
-                before(:each) do
+                before do
                   transient_registration.update_attributes(business_type: "soleTrader")
                 end
 
@@ -68,7 +69,7 @@ module WasteCarriersEngine
 
                   post main_people_forms_path(transient_registration.token), params: { main_people_form: valid_params }
 
-                  expect(transient_registration.reload.key_people.first.first_name).to_not eq(existing_main_person.first_name)
+                  expect(transient_registration.reload.key_people.first.first_name).not_to eq(existing_main_person.first_name)
                   expect(transient_registration.reload.key_people.count).to eq(key_people_count)
                 end
               end
@@ -77,7 +78,7 @@ module WasteCarriersEngine
             context "when there is a relevant conviction person" do
               let(:relevant_conviction_person) { build(:key_person, :has_required_data, :relevant) }
 
-              before(:each) do
+              before do
                 transient_registration.update_attributes(key_people: [relevant_conviction_person])
               end
 
@@ -93,7 +94,7 @@ module WasteCarriersEngine
               end
 
               context "when there can only be one main person" do
-                before(:each) do
+                before do
                   transient_registration.update_attributes(business_type: "soleTrader")
                 end
 
@@ -151,7 +152,7 @@ module WasteCarriersEngine
             context "when there is already a main person" do
               let(:existing_main_person) { build(:key_person, :has_required_data, :main) }
 
-              before(:each) do
+              before do
                 transient_registration.update_attributes(key_people: [existing_main_person])
               end
 
@@ -202,8 +203,8 @@ module WasteCarriersEngine
           it "does not update the transient registration, returns a 302 response and redirects to the correct form for the state" do
             post main_people_forms_path(transient_registration.token), params: { main_people_form: valid_params }
 
-            expect(transient_registration.reload.key_people).to_not exist
-            expect(response).to have_http_status(302)
+            expect(transient_registration.reload.key_people).not_to exist
+            expect(response).to have_http_status(:found)
             expect(response).to redirect_to(new_renewal_start_form_path(transient_registration[:token]))
           end
         end
@@ -213,7 +214,8 @@ module WasteCarriersEngine
     describe "DELETE delete_person_main_people_forms_path" do
       context "when a valid user is signed in" do
         let(:user) { create(:user) }
-        before(:each) do
+
+        before do
           sign_in(user)
         end
 
@@ -229,7 +231,7 @@ module WasteCarriersEngine
             let(:main_person_a) { build(:key_person, :has_required_data, :main) }
             let(:main_person_b) { build(:key_person, :has_required_data, :main) }
 
-            before(:each) do
+            before do
               transient_registration.update_attributes(key_people: [main_person_a, main_person_b])
             end
 
@@ -245,7 +247,7 @@ module WasteCarriersEngine
                 # Does not affect other people
                 expect(transient_registration.reload.key_people.where(id: main_person_b[:id]).count).to eq(1)
 
-                expect(response).to have_http_status(302)
+                expect(response).to have_http_status(:found)
                 expect(response).to redirect_to(new_main_people_form_path(transient_registration[:token]))
               end
             end

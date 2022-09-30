@@ -7,7 +7,8 @@ module WasteCarriersEngine
     describe "GET new_edit_cancelled_form_path" do
       context "when a valid user is signed in" do
         let(:user) { create(:user) }
-        before(:each) do
+
+        before do
           sign_in(user)
         end
 
@@ -34,7 +35,7 @@ module WasteCarriersEngine
               get new_edit_cancelled_form_path(transient_registration.token)
 
               expect(WasteCarriersEngine::TransientRegistration.count).to eq(0)
-              expect(response).to have_http_status(200)
+              expect(response).to have_http_status(:ok)
             end
           end
 

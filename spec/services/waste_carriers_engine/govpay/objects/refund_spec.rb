@@ -2,18 +2,21 @@
 
 require "rails_helper"
 
-RSpec.describe WasteCarriersEngine::Govpay::Refund do
-  subject(:refund) { described_class.new(params) }
-  let(:params) { JSON.parse(file_fixture("govpay/get_refund_response_success.json").read) }
+module WasteCarriersEngine
+  RSpec.describe WasteCarriersEngine::Govpay::Refund do
+    subject(:refund) { described_class.new(params) }
 
-  describe "#status" do
-    it { expect(refund.status).to eq "success" }
-    it { expect(refund.success?).to be true }
+    let(:params) { JSON.parse(file_fixture("govpay/get_refund_response_success.json").read) }
 
-    context "with non-successful refund" do
-      let(:params) { super().merge(status: "submitted") }
+    describe "#status" do
+      it { expect(refund.status).to eq "success" }
+      it { expect(refund.success?).to be true }
 
-      it { expect(refund.success?).to be false }
+      context "with non-successful refund" do
+        let(:params) { super().merge(status: "submitted") }
+
+        it { expect(refund.success?).to be false }
+      end
     end
   end
 end

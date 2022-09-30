@@ -7,7 +7,8 @@ module WasteCarriersEngine
     describe "GET new_copy_cards_order_completed_form_path" do
       context "when a valid user is signed in" do
         let(:user) { create(:user) }
-        before(:each) do
+
+        before do
           sign_in(user)
         end
 
@@ -45,7 +46,7 @@ module WasteCarriersEngine
               expect(order.order_items.count).to eq(1)
               expect(order_item.type).to eq("COPY_CARDS")
               expect(order_item.amount).to eq(500)
-              expect(response).to have_http_status(200)
+              expect(response).to have_http_status(:ok)
               expect(response).to render_template("waste_carriers_engine/copy_cards_order_completed_forms/new")
             end
           end

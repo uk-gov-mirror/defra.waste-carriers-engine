@@ -4,5 +4,6 @@ require "rails_helper"
 
 module WasteCarriersEngine
   RSpec.describe EditCompleteForm, type: :model do
+    pending "No examples currently defined"
   end
 end

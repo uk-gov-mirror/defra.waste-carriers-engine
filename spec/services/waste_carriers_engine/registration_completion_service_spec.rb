@@ -16,7 +16,7 @@ module WasteCarriersEngine
       it "generates a new registration and copies data to it" do
         registration_scope = WasteCarriersEngine::Registration.where(reg_identifier: transient_registration.reg_identifier)
 
-        expect(registration_scope.any?).to be_falsey
+        expect(registration_scope.to_a).to be_empty
 
         registration = described_class.run(transient_registration)
 
@@ -49,7 +49,7 @@ module WasteCarriersEngine
 
         new_registration_scope = WasteCarriersEngine::NewRegistration.where(token: token)
 
-        expect(new_registration_scope.any?).to be_falsey
+        expect(new_registration_scope.to_a).to be_empty
       end
 
       context "when the registration is a lower tier registration" do
@@ -85,7 +85,7 @@ module WasteCarriersEngine
         end
 
         it "creates the correct number of order item logs" do
-          expect { registration }.to change { OrderItemLog.count }
+          expect { registration }.to change(OrderItemLog, :count)
             .from(0)
             .to(transient_registration.finance_details.orders.sum { |o| o.order_items.length })
         end
@@ -110,7 +110,7 @@ module WasteCarriersEngine
           end
 
           it "creates the correct number of order item logs" do
-            expect { registration }.to change { OrderItemLog.count }
+            expect { registration }.to change(OrderItemLog, :count)
               .from(0)
               .to(transient_registration.finance_details.orders.sum { |o| o.order_items.length })
           end
@@ -163,17 +163,19 @@ module WasteCarriersEngine
               .to receive(:run)
               .and_raise(the_error)
 
-            expect(Airbrake)
+            allow(Airbrake)
               .to receive(:notify)
               .with(the_error, { registration_no: transient_registration.reg_identifier })
           end
 
           it "does not create an order item log" do
-            expect { described_class.run(transient_registration) }.not_to change { OrderItemLog.count }.from(0)
+            expect { described_class.run(transient_registration) }.not_to change(OrderItemLog, :count).from(0)
           end
 
           it "notifies Airbrake" do
             described_class.run(transient_registration)
+
+            expect(Airbrake).to have_received(:notify)
           end
         end
       end
@@ -207,17 +209,19 @@ module WasteCarriersEngine
               .to receive(:run)
               .and_raise(the_error)
 
-            expect(Airbrake)
+            allow(Airbrake)
               .to receive(:notify)
               .with(the_error, { registration_no: transient_registration.reg_identifier })
           end
 
           it "does not create an order item log" do
-            expect { described_class.run(transient_registration) }.not_to change { OrderItemLog.count }.from(0)
+            expect { described_class.run(transient_registration) }.not_to change(OrderItemLog, :count).from(0)
           end
 
           it "notifies Airbrake" do
             described_class.run(transient_registration)
+
+            expect(Airbrake).to have_received(:notify)
           end
         end
       end
@@ -260,17 +264,19 @@ module WasteCarriersEngine
                 .to receive(:run)
                 .and_raise(the_error)
 
-              expect(Airbrake)
+              allow(Airbrake)
                 .to receive(:notify)
                 .with(the_error, { registration_no: transient_registration.reg_identifier })
             end
 
             it "does not create an order item log" do
-              expect { described_class.run(transient_registration) }.not_to change { OrderItemLog.count }.from(0)
+              expect { described_class.run(transient_registration) }.not_to change(OrderItemLog, :count).from(0)
             end
 
             it "notifies Airbrake" do
               described_class.run(transient_registration)
+
+              expect(Airbrake).to have_received(:notify)
             end
           end
         end
@@ -279,14 +285,16 @@ module WasteCarriersEngine
           let(:finance_details) { build(:finance_details, :has_required_data) }
 
           before do
+            allow(Notify::RegistrationPendingConvictionCheckEmailService).to receive(:run)
+
             transient_registration.finance_details = finance_details
             transient_registration.save
           end
 
           it "does not send the pending conviction check email" do
-            expect(Notify::RegistrationPendingConvictionCheckEmailService).to_not receive(:run)
-
             described_class.run(transient_registration)
+
+            expect(Notify::RegistrationPendingConvictionCheckEmailService).not_to have_received(:run)
           end
 
           it "does not create an order item log" do
@@ -295,36 +303,42 @@ module WasteCarriersEngine
           end
         end
 
-        context "temporary additional debugging" do
+        context "with temporary additional debugging" do
 
           before do
+            allow(Airbrake).to receive(:notify)
             allow(FeatureToggle).to receive(:active?).with(:additional_debug_logging).and_return true
             allow(FeatureToggle).to receive(:active?).with(:govpay_payments).and_return true
           end
 
           it "logs an error" do
-            expect(Airbrake).to receive(:notify)
-
             described_class.new.log_transient_registration_details("foo", transient_registration)
+
+            expect(Airbrake).to have_received(:notify)
           end
 
           context "with a nil transient_registration" do
             before { allow(transient_registration).to receive(:nil?).and_return(true) }
 
             it "logs an error" do
-              expect(Airbrake).to receive(:notify)
-
               described_class.new.log_transient_registration_details("foo", transient_registration)
+
+              expect(Airbrake).to have_received(:notify)
             end
           end
 
           context "when activating the registration raises an exception" do
-            before { allow_any_instance_of(RegistrationActivationService).to receive(:run).and_raise(StandardError) }
+            let(:registration_activation_service) { instance_double(RegistrationActivationService) }
+
+            before do
+              allow(RegistrationActivationService).to receive(:new).and_return(registration_activation_service)
+              allow(registration_activation_service).to receive(:run).and_raise(StandardError)
+            end
 
             it "logs an error" do
-              expect(Airbrake).to receive(:notify).at_least(:once)
-
               described_class.run(transient_registration)
+
+              expect(Airbrake).to have_received(:notify).at_least(:once)
             end
           end
         end

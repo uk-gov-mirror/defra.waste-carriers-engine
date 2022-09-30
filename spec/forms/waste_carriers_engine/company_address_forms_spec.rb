@@ -20,8 +20,8 @@ module WasteCarriersEngine
           }
         end
 
-        it "should submit" do
-          expect(company_address_form.submit(valid_params)).to eq(true)
+        it "submits" do
+          expect(company_address_form.submit(valid_params)).to be true
         end
       end
 
@@ -29,8 +29,8 @@ module WasteCarriersEngine
         let(:company_address_form) { build(:company_address_form, :has_required_data) }
         let(:invalid_params) { { token: "foo" } }
 
-        it "should not submit" do
-          expect(company_address_form.submit(invalid_params)).to eq(false)
+        it "does not submit" do
+          expect(company_address_form.submit(invalid_params)).to be false
         end
       end
     end
@@ -40,12 +40,12 @@ module WasteCarriersEngine
 
       describe "#addresses" do
         context "when no address is selected" do
-          before(:each) do
+          before do
             company_address_form.transient_registration.addresses = nil
           end
 
           it "is not valid" do
-            expect(company_address_form).to_not be_valid
+            expect(company_address_form).not_to be_valid
           end
         end
       end
@@ -59,7 +59,7 @@ module WasteCarriersEngine
               workflow_state: "company_address_form")
       end
       # Don't use FactoryBot for this as we need to make sure it initializes with a specific object
-      let(:company_address_form) { CompanyAddressForm.new(transient_registration) }
+      let(:company_address_form) { described_class.new(transient_registration) }
 
       describe "#temp_address" do
         it "pre-selects the address" do

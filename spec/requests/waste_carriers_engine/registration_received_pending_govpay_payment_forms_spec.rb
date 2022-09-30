@@ -31,7 +31,7 @@ module WasteCarriersEngine
 
             registration = WasteCarriersEngine::Registration.find_by(reg_identifier: reg_identifier)
 
-            expect(response).to have_http_status(200)
+            expect(response).to have_http_status(:ok)
             expect(response).to render_template(:new)
             expect(registration).to be_valid
             expect(WasteCarriersEngine::NewRegistration.count).to eq(new_registrations_count - 1)
@@ -70,15 +70,13 @@ module WasteCarriersEngine
           end
 
           it "logs the exception" do
-            expect(Airbrake)
-              .to receive(:notify)
-              .with(the_error, { reg_identifier: transient_registration.reg_identifier })
+            get new_registration_received_pending_govpay_payment_form_path(transient_registration.token)
 
-            begin
-              get new_registration_received_pending_govpay_payment_form_path(transient_registration.token)
-            rescue ActionView::Template::Error
-              # Capture the exception raised in the view
-            end
+            expect(Airbrake)
+              .to have_received(:notify)
+              .with(the_error, { reg_identifier: transient_registration.reg_identifier })
+          rescue ActionView::Template::Error
+            # Capture the exception raised in the view
           end
         end
       end

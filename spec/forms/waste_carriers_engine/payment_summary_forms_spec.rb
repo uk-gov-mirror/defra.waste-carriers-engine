@@ -16,27 +16,27 @@ module WasteCarriersEngine
           }
         end
 
-        context "and the form is valid" do
+        context "when the form is valid" do
           let(:payment_method) { "card" }
           let(:card_confirmation_email) { "foo@example.com" }
 
-          it "should submit" do
-            expect(payment_summary_form.submit(params)).to eq(true)
+          it "submits" do
+            expect(payment_summary_form.submit(params)).to be true
           end
         end
 
-        context "and the form is not valid" do
+        context "when the form is not valid" do
           let(:payment_method) { "foo" }
           let(:card_confirmation_email) { "foo@com" }
 
-          it "should not submit" do
-            expect(payment_summary_form.submit(params)).to eq(false)
+          it "does not submit" do
+            expect(payment_summary_form.submit(params)).to be false
           end
         end
       end
 
       context "when hosted in the back-office" do
-        before(:each) do
+        before do
           allow(WasteCarriersEngine.configuration).to receive(:host_is_back_office?).and_return(true)
         end
 
@@ -47,19 +47,19 @@ module WasteCarriersEngine
           }
         end
 
-        context "and the form is valid" do
+        context "when the form is valid" do
           let(:payment_method) { "card" }
 
-          it "should submit" do
-            expect(payment_summary_form.submit(params)).to eq(true)
+          it "submits" do
+            expect(payment_summary_form.submit(params)).to be true
           end
         end
 
-        context "and the form is not valid" do
+        context "when the form is not valid" do
           let(:payment_method) { "foo" }
 
-          it "should not submit" do
-            expect(payment_summary_form.submit(params)).to eq(false)
+          it "does not submit" do
+            expect(payment_summary_form.submit(params)).to be false
           end
         end
       end
@@ -67,7 +67,7 @@ module WasteCarriersEngine
     end
 
     describe "#valid?" do
-      before(:each) do
+      before do
         payment_summary_form.transient_registration.temp_payment_method = temp_payment_method
       end
 
@@ -81,7 +81,7 @@ module WasteCarriersEngine
           )
         end
 
-        context "and the temp_payment_method is card" do
+        context "when the temp_payment_method is card" do
           let(:temp_payment_method) { "card" }
           let(:card_confirmation_email) { "hello@example.com" }
 
@@ -89,8 +89,8 @@ module WasteCarriersEngine
             expect(payment_summary_form).to be_valid
           end
 
-          context "and the receipt email has been set" do
-            context "to something invalid" do
+          context "when the receipt email has been set" do
+            context "when to something invalid" do
               let(:card_confirmation_email) { "foo@bar" }
 
               it "is not valid" do
@@ -98,7 +98,7 @@ module WasteCarriersEngine
               end
             end
 
-            context "to nothing" do
+            context "when set to nothing" do
               let(:card_confirmation_email) { "" }
 
               it "is not valid" do
@@ -108,18 +108,18 @@ module WasteCarriersEngine
           end
         end
 
-        context "and the temp_payment_method is anything else" do
+        context "when the temp_payment_method is anything else" do
           let(:temp_payment_method) { "I am a payment method, don't you know?" }
           let(:card_confirmation_email) { "hello@example.com" }
 
           it "is not valid" do
-            expect(payment_summary_form).to_not be_valid
+            expect(payment_summary_form).not_to be_valid
           end
         end
       end
 
       context "when hosted in the back-office" do
-        before(:each) do
+        before do
           allow(WasteCarriersEngine.configuration).to receive(:host_is_back_office?).and_return(true)
         end
 
@@ -131,7 +131,7 @@ module WasteCarriersEngine
           )
         end
 
-        context "and the temp_payment_method is card" do
+        context "when the temp_payment_method is card" do
           let(:temp_payment_method) { "card" }
 
           it "is valid" do
@@ -139,11 +139,11 @@ module WasteCarriersEngine
           end
         end
 
-        context "and the temp_payment_method is anything else" do
+        context "when the temp_payment_method is anything else" do
           let(:temp_payment_method) { "I am a payment method, don't you know?" }
 
           it "is not valid" do
-            expect(payment_summary_form).to_not be_valid
+            expect(payment_summary_form).not_to be_valid
           end
         end
       end
@@ -160,7 +160,7 @@ module WasteCarriersEngine
         )
       end
       # Don't use FactoryBot for this as we need to make sure it initializes with a specific object
-      let(:payment_summary_form) { PaymentSummaryForm.new(transient_registration) }
+      let(:payment_summary_form) { described_class.new(transient_registration) }
 
       context "when initialised with a transient_registration with only contact email set" do
         let(:contact_email) { "contact@example.com" }

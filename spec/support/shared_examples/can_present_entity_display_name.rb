@@ -2,13 +2,13 @@
 
 RSpec.shared_examples "Can present entity display name" do |factory:|
 
-  include_context "Sample registration with defaults", factory
+  subject { registration.entity_display_name }
+
+  include_context "with a sample registration with defaults", factory
   let(:registration) { resource }
 
   let(:upper_tier) { WasteCarriersEngine::Registration::UPPER_TIER }
   let(:lower_tier) { WasteCarriersEngine::Registration::LOWER_TIER }
-
-  subject { registration.entity_display_name }
 
   shared_examples "legal_entity_name trading as trading_as_name" do
     it "returns entity name trading as company_name with truncation" do
@@ -39,16 +39,19 @@ RSpec.shared_examples "Can present entity display name" do |factory:|
 
     context "without 'trading as' detail" do
       let(:company_name) { trading_as_name }
+
       it_behaves_like "legal_entity_name trading as trading_as_name"
     end
 
     context "with 'trading as' detail" do
       let(:company_name) { "#{Faker::Company.name} trading as #{trading_as_name}" }
+
       it_behaves_like "legal_entity_name trading as trading_as_name"
     end
 
     context "with 't/a' detail" do
       let(:company_name) { "#{Faker::Company.name} t/a #{trading_as_name}" }
+
       it_behaves_like "legal_entity_name trading as trading_as_name"
     end
   end
@@ -71,11 +74,7 @@ RSpec.shared_examples "Can present entity display name" do |factory:|
 
       context "when lower tier" do
         let(:tier) { lower_tier }
-        it_behaves_like "simply company_name"
-      end
 
-      context "when lower tier" do
-        let(:tier) { lower_tier }
         it_behaves_like "simply company_name"
       end
     end
@@ -86,11 +85,13 @@ RSpec.shared_examples "Can present entity display name" do |factory:|
 
     context "when the registration business type is 'limitedCompany'" do
       let(:business_type) { "limitedCompany" }
+
       it_behaves_like "limited company or limited liability partnership"
     end
 
     context "when the registration business type is 'limitedLiabilityPartnership'" do
       let(:business_type) { "limitedLiabilityPartnership" }
+
       it_behaves_like "limited company or limited liability partnership"
     end
 
@@ -102,11 +103,13 @@ RSpec.shared_examples "Can present entity display name" do |factory:|
 
       context "when upper tier" do
         let(:tier) { upper_tier }
+
         it_behaves_like "with a company_name with truncation"
       end
 
       context "when lower tier" do
         let(:tier) { lower_tier }
+
         it_behaves_like "simply company_name"
       end
     end

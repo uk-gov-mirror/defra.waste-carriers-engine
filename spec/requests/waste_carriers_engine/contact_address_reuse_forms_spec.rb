@@ -4,13 +4,13 @@ require "rails_helper"
 
 module WasteCarriersEngine
   RSpec.describe "ContactAddressReuseForms", type: :request do
-    include_examples "GET flexible form", "contact_address_reuse_form"
+    before do
+      sign_in(user)
+    end
 
     let(:user) { create(:user) }
 
-    before(:each) do
-      sign_in(user)
-    end
+    include_examples "GET flexible form", "contact_address_reuse_form"
 
     RSpec.shared_examples "new or renewing registration" do
 
@@ -27,7 +27,7 @@ module WasteCarriersEngine
             { temp_reuse_registered_address: "yes" }
           )
 
-          expect(response).to have_http_status(302)
+          expect(response).to have_http_status(:found)
 
           expect(response).to redirect_to(
             new_check_your_answers_form_path(transient_registration.token)
@@ -43,7 +43,7 @@ module WasteCarriersEngine
             { temp_reuse_registered_address: "no" }
           )
 
-          expect(response).to have_http_status(302)
+          expect(response).to have_http_status(:found)
 
           expect(response).to redirect_to(
             new_contact_postcode_form_path(transient_registration.token)
@@ -55,7 +55,7 @@ module WasteCarriersEngine
 
     describe "POST contact_address_reuse_form_path" do
 
-      context "When the transient_registration is a new registration" do
+      context "when the transient_registration is a new registration" do
         let(:transient_registration) do
           create(:new_registration, workflow_state: "contact_address_reuse_form")
         end
@@ -63,7 +63,7 @@ module WasteCarriersEngine
         it_behaves_like "new or renewing registration", factory: :new_registration
       end
 
-      context "When the transient_registration is a renewing registration" do
+      context "when the transient_registration is a renewing registration" do
         let(:transient_registration) do
           create(:renewing_registration, workflow_state: "contact_address_reuse_form", from_magic_link: true)
         end

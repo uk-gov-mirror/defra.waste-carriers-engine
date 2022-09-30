@@ -42,7 +42,7 @@ RSpec.shared_examples "Search scopes" do |record_class:, factory:|
     end
 
     context "when the search term is a name" do
-      let!(:term) { "Lee" }
+      let(:term) { "Lee" }
 
       let(:matching_company_name_record) do
         create(factory, :has_required_data, company_name: "Stan Lee Waste Company")
@@ -90,7 +90,7 @@ RSpec.shared_examples "Search scopes" do |record_class:, factory:|
       let(:term) { "*" }
 
       it "does not break the search" do
-        expect { scope }.to_not raise_error
+        expect { scope }.not_to raise_error
       end
     end
   end

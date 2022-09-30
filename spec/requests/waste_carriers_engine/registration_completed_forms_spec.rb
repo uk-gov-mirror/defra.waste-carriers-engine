@@ -39,7 +39,7 @@ module WasteCarriersEngine
 
             registration = WasteCarriersEngine::Registration.find_by(reg_identifier: reg_identifier)
 
-            expect(response).to have_http_status(200)
+            expect(response).to have_http_status(:ok)
             expect(response).to render_template(:new)
             expect(registration).to be_valid
             expect(registration).to be_active
@@ -63,7 +63,7 @@ module WasteCarriersEngine
           it "does not include the finished button" do
             get new_registration_completed_form_path(transient_registration.token)
 
-            expect(response.body).to_not include("Finished")
+            expect(response.body).not_to include("Finished")
           end
         end
 
@@ -81,7 +81,7 @@ module WasteCarriersEngine
 
             registration = WasteCarriersEngine::Registration.find_by(reg_identifier: reg_identifier)
 
-            expect(response).to have_http_status(200)
+            expect(response).to have_http_status(:ok)
             expect(response).to render_template(:new)
             expect(registration).to be_valid
             expect(registration).to be_active

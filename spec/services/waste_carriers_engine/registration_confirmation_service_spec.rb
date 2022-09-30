@@ -7,16 +7,22 @@ module WasteCarriersEngine
     describe ".run" do
       let(:registration) { create(:registration, :has_required_data) }
 
-      subject { described_class.run(registration: registration) }
+      subject(:run_service) { described_class.run(registration: registration) }
+
+      before do
+        allow(Airbrake).to receive(:notify)
+        allow(Notify::RegistrationConfirmationEmailService).to receive(:run)
+        allow(Notify::RegistrationConfirmationLetterService).to receive(:run)
+      end
 
       context "with a valid contact email" do
         it "sends a confirmation email" do
+          run_service
+
           expect(Notify::RegistrationConfirmationEmailService)
-            .to receive(:run)
+            .to have_received(:run)
             .with(registration: registration)
             .once
-
-          subject
         end
 
         context "when an error occurs" do
@@ -28,11 +34,11 @@ module WasteCarriersEngine
               .with(registration: registration)
               .and_raise(the_error)
 
-            expect(Airbrake)
-              .to receive(:notify)
-              .with(the_error, { registration_no: registration.reg_identifier })
+            run_service
 
-            subject
+            expect(Airbrake)
+              .to have_received(:notify)
+              .with(the_error, { registration_no: registration.reg_identifier })
           end
         end
       end
@@ -43,12 +49,12 @@ module WasteCarriersEngine
         end
 
         it "sends a confirmation letter" do
+          run_service
+
           expect(Notify::RegistrationConfirmationLetterService)
-            .to receive(:run)
+            .to have_received(:run)
             .with(registration: registration)
             .once
-
-          subject
         end
       end
 
@@ -56,12 +62,12 @@ module WasteCarriersEngine
         before { registration.contact_email = nil }
 
         it "sends a confirmation letter" do
+          run_service
+
           expect(Notify::RegistrationConfirmationLetterService)
-            .to receive(:run)
+            .to have_received(:run)
             .with(registration: registration)
             .once
-
-          subject
         end
       end
     end

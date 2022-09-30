@@ -13,17 +13,17 @@ module WasteCarriersEngine
       allow(Rails.configuration).to receive(:govpay_url).and_return(govpay_host)
       allow(Rails.configuration).to receive(:govpay_merchant_code).and_return("some_merchant_code")
       allow(Rails.configuration).to receive(:govpay_api_token).and_return("some_token")
-    end
+      allow(Airbrake).to receive(:notify)
 
-    # TODO: Remove this when the feature flag is no longer required
-    before do
+      # TODO: Remove these when the feature flag is no longer required
       allow(WasteCarriersEngine::FeatureToggle).to receive(:active?).with(:govpay_payments).and_return(true)
       allow(WasteCarriersEngine::FeatureToggle).to receive(:active?).with(:use_extended_grace_window).and_return(true)
     end
 
     context "when a valid user is signed in" do
       let(:user) { create(:user) }
-      before(:each) do
+
+      before do
         sign_in(user)
       end
 
@@ -81,8 +81,11 @@ module WasteCarriersEngine
           end
 
           context "when there is an error setting up the govpay url" do
+            let(:govpay_service) { instance_double(GovpayPaymentService) }
+
             before do
-              allow_any_instance_of(GovpayPaymentService).to receive(:prepare_for_payment).and_return(:error)
+              allow(GovpayPaymentService).to receive(:new).and_return(govpay_service)
+              allow(govpay_service).to receive(:prepare_for_payment).and_return(:error)
             end
 
             it "redirects to payment_summary_form" do
@@ -141,9 +144,9 @@ module WasteCarriersEngine
               end
 
               it "does not log an error" do
-                expect(Airbrake).not_to receive(:notify)
-
                 get payment_callback_govpay_forms_path(token, order.payment_uuid)
+
+                expect(Airbrake).not_to have_received(:notify)
               end
 
               context "when it has been flagged for conviction checks" do
@@ -164,13 +167,16 @@ module WasteCarriersEngine
                 end
 
                 context "when the mailer fails" do
+                  let(:mailer_instance) { instance_double(ActionMailer::MessageDelivery) }
+
                   before do
+                    allow(ActionMailer::MessageDelivery).to receive(:new).and_return(mailer_instance)
                     allow(Rails.configuration.action_mailer).to receive(:raise_delivery_errors).and_return(true)
-                    allow_any_instance_of(ActionMailer::MessageDelivery).to receive(:deliver_now).and_raise(StandardError)
+                    allow(mailer_instance).to receive(:deliver_now).and_raise(StandardError)
                   end
 
                   it "does not raise an error" do
-                    expect { get payment_callback_govpay_forms_path(token, order.payment_uuid) }.to_not raise_error
+                    expect { get payment_callback_govpay_forms_path(token, order.payment_uuid) }.not_to raise_error
                   end
                 end
               end
@@ -196,7 +202,7 @@ module WasteCarriersEngine
             end
           end
 
-          context "for pending govpay statuses" do
+          context "with pending govpay statuses" do
 
             RSpec.shared_examples "payment is pending" do
 
@@ -221,16 +227,18 @@ module WasteCarriersEngine
 
             context "when govpay status is created" do
               let(:govpay_status) { "created" }
+
               it_behaves_like "payment is pending"
             end
 
             context "when govpay status is submitted" do
               let(:govpay_status) { "submitted" }
+
               it_behaves_like "payment is pending"
             end
           end
 
-          context "for unsuccessful govpay statuses" do
+          context "with unsuccessful govpay statuses" do
 
             RSpec.shared_examples "payment is unsuccessful but no error" do
 
@@ -241,9 +249,9 @@ module WasteCarriersEngine
               end
 
               it "does not log an error" do
-                expect(Airbrake).not_to receive(:notify)
-
                 get payment_callback_govpay_forms_path(token, order.payment_uuid)
+
+                expect(Airbrake).not_to have_received(:notify)
               end
             end
 
@@ -256,39 +264,44 @@ module WasteCarriersEngine
               end
 
               it "logs an error" do
-                expect(Airbrake).to receive(:notify)
-
                 get payment_callback_govpay_forms_path(token, order.payment_uuid)
+
+                expect(Airbrake).to have_received(:notify)
               end
             end
 
-            context "when govpay status is cancel" do
+            context "with cancelled status" do
               let(:govpay_status) { "cancelled" }
+
               it_behaves_like "payment is unsuccessful but no error"
             end
 
-            context "failure" do
+            context "with failure status" do
               let(:govpay_status) { "failure" }
+
               it_behaves_like "payment is unsuccessful but no error"
             end
 
-            context "error" do
+            context "with an error status" do
               let(:govpay_status) { "not_found" }
+
               it_behaves_like "payment is unsuccessful with an error"
             end
           end
 
-          context "for an invalid success status" do
+          context "with an invalid success status" do
             before { allow(GovpayValidatorService).to receive(:valid_govpay_status?).and_return(false) }
 
             let(:govpay_status) { "success" }
+
             it_behaves_like "payment is unsuccessful with an error"
           end
 
-          context "for an invalid failure status" do
+          context "with an invalid failure status" do
             before { allow(GovpayValidatorService).to receive(:valid_govpay_status?).and_return(false) }
 
             let(:govpay_status) { "cancelled" }
+
             it_behaves_like "payment is unsuccessful with an error"
           end
         end

@@ -10,11 +10,11 @@ module WasteCarriersEngine
             temp_payment_method: temp_payment_method,
             workflow_state: "payment_summary_form")
     end
-    let(:temp_payment_method) {}
+    let(:temp_payment_method) { nil }
 
     describe "#workflow_state" do
-      context ":payment_summary_form state transitions" do
-        context "on next" do
+      context "with :payment_summary_form state transitions" do
+        context "with :next transition" do
           context "when paying by card" do
             let(:temp_payment_method) { "card" }
 

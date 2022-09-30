@@ -7,13 +7,17 @@ module WasteCarriersEngine
     include_examples "GET flexible form", "registration_number_form"
 
     describe "POST registration_number_forms_path" do
+      let(:drch_validator) { instance_double(DefraRuby::Validators::CompaniesHouseService) }
+
       before do
-        allow_any_instance_of(DefraRuby::Validators::CompaniesHouseService).to receive(:status).and_return(:active)
+        allow(DefraRuby::Validators::CompaniesHouseService).to receive(:new).and_return(drch_validator)
+        allow(drch_validator).to receive(:status).and_return(:active)
       end
 
       context "when a valid user is signed in" do
         let(:user) { create(:user) }
-        before(:each) do
+
+        before do
           sign_in(user)
         end
 
@@ -31,7 +35,7 @@ module WasteCarriersEngine
             it "returns a 302 response and redirects to the check_registered_company_name form" do
               post registration_number_forms_path(transient_registration[:token]), params: { registration_number_form: valid_params }
 
-              expect(response).to have_http_status(302)
+              expect(response).to have_http_status(:found)
               expect(response).to redirect_to(new_check_registered_company_name_form_path(transient_registration[:token]))
             end
           end
@@ -41,7 +45,7 @@ module WasteCarriersEngine
 
             it "does not update the transient registration" do
               post registration_number_forms_path(transient_registration[:token]), params: { registration_number_form: invalid_params }
-              expect(transient_registration.reload[:token].to_s).to_not eq(invalid_params[:token])
+              expect(transient_registration.reload[:token].to_s).not_to eq(invalid_params[:token])
             end
           end
         end
@@ -59,8 +63,8 @@ module WasteCarriersEngine
           it "does not update the transient registration, returns a 302 response and redirects to the correct form for the state" do
             post registration_number_forms_path(transient_registration[:token]), params: { registration_number_form: valid_params }
 
-            expect(transient_registration.reload[:company_no].to_s).to_not eq(valid_params[:company_no])
-            expect(response).to have_http_status(302)
+            expect(transient_registration.reload[:company_no].to_s).not_to eq(valid_params[:company_no])
+            expect(response).to have_http_status(:found)
             expect(response).to redirect_to(new_renewal_start_form_path(transient_registration[:token]))
           end
         end

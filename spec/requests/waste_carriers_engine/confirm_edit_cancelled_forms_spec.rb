@@ -7,7 +7,8 @@ module WasteCarriersEngine
     describe "GET new_confirm_edit_cancelled_form_path" do
       context "when a valid user is signed in" do
         let(:user) { create(:user) }
-        before(:each) do
+
+        before do
           sign_in(user)
         end
 
@@ -28,7 +29,7 @@ module WasteCarriersEngine
           it "returns a 200 status" do
             get new_confirm_edit_cancelled_form_path(transient_registration.token)
 
-            expect(response).to have_http_status(200)
+            expect(response).to have_http_status(:ok)
           end
         end
       end
@@ -37,7 +38,8 @@ module WasteCarriersEngine
     describe "POST confirm_edit_cancelled_form_path" do
       context "when a valid user is signed in" do
         let(:user) { create(:user) }
-        before(:each) do
+
+        before do
           sign_in(user)
         end
 

@@ -13,7 +13,7 @@ module WasteCarriersEngine
                        invalid_params: { location: "foo" },
                        test_attribute: :location
 
-      context "When the transient_registration is a new registration" do
+      context "when the transient_registration is a new registration" do
         let(:transient_registration) do
           create(:new_registration, workflow_state: "location_form")
         end
@@ -36,11 +36,9 @@ module WasteCarriersEngine
             transient_registration.save!
           end
 
-          context "and the location is no longer in the UK" do
-            subject { post_form_with_params("location_form", transient_registration.token, { location: "overseas" }) }
-
+          context "when the location is no longer in the UK" do
             it "removes the company attributes" do
-              subject
+              post_form_with_params("location_form", transient_registration.token, { location: "overseas" })
               transient_registration.reload
               expect(transient_registration.company_no).to be_nil
               expect(transient_registration.registered_company_name).to be_nil
