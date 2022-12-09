@@ -4,7 +4,7 @@ require "rest-client"
 
 class DefraRubyCompaniesHouse
   def initialize(company_no)
-    @company_url = "#{Rails.configuration.companies_house_host}#{company_no.to_s.rjust(8, '0')}"
+    @company_url = "#{Rails.configuration.companies_house_host}#{format_company_number(company_no)}"
     @api_key = Rails.configuration.companies_house_api_key
 
     raise StandardError "Failed to load company" unless load_company
@@ -27,7 +27,15 @@ class DefraRubyCompaniesHouse
     ].compact
   end
 
+  def company_status
+    @company[:company_status] if @company
+  end
+
   private
+
+  def format_company_number(company_number)
+    company_number&.to_s&.upcase&.rjust(8, "0")
+  end
 
   def load_company
     @company =

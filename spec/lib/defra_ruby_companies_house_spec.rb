@@ -15,7 +15,7 @@ RSpec.describe DefraRubyCompaniesHouse do
       status: 404
     )
     # ... then add a stub to cover valid company_no values
-    stub_request(:get, /#{Rails.configuration.companies_house_host}[a-zA-Z\d]{8}/).to_return(
+    stub_request(:get, /#{Rails.configuration.companies_house_host}[A-Z\d]{8}/).to_return(
       status: 200,
       body: File.read("./spec/fixtures/files/companies_house_response.json")
     )
@@ -48,7 +48,15 @@ RSpec.describe DefraRubyCompaniesHouse do
       end
     end
 
-    context "when the requests time out" do
+    context "with a lower case company number" do
+      let(:company_no) { "xy12345z" }
+
+      it "returns the company name" do
+        expect(company_name_for_number).to eq "BOGUS LIMITED"
+      end
+    end
+
+    context "when the request times out" do
       it "raises a standard error" do
         expect { company_name_for_number }.to raise_error(StandardError)
       end
@@ -87,6 +95,40 @@ RSpec.describe DefraRubyCompaniesHouse do
 
       it "returns the address lines" do
         expect(address_for_company_number).to eq ["R House", "Middle Street", "Thereabouts", "HD1 2BN"]
+      end
+    end
+  end
+
+  describe "#company_status" do
+    subject(:company_status) { described_class.new(company_no).company_status }
+
+    context "with an invalid company number" do
+      let(:company_no) { invalid_company_no }
+
+      it "raises a standard error" do
+        expect { company_status }.to raise_error(StandardError)
+      end
+    end
+
+    context "when the request times out" do
+      it "raises a standard error" do
+        expect { company_status }.to raise_error(StandardError)
+      end
+    end
+
+    context "when the request returns an error" do
+      before { stub_request(:get, /#{Rails.configuration.companies_house_host}*/).to_raise(SocketError) }
+
+      it "raises a standard error" do
+        expect { company_status }.to raise_error(StandardError)
+      end
+    end
+
+    context "with a valid company number" do
+      let(:company_no) { valid_company_no }
+
+      it "returns the expected status" do
+        expect(company_status).to eq "active"
       end
     end
   end
