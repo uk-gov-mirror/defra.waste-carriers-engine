@@ -18,6 +18,7 @@ module WasteCarriersEngine
       # TODO: Remove these when the feature flag is no longer required
       allow(WasteCarriersEngine::FeatureToggle).to receive(:active?).with(:govpay_payments).and_return(true)
       allow(WasteCarriersEngine::FeatureToggle).to receive(:active?).with(:use_extended_grace_window).and_return(true)
+      allow(WasteCarriersEngine::FeatureToggle).to receive(:active?).with(:additional_debug_logging).and_return true
     end
 
     context "when a valid user is signed in" do
@@ -171,16 +172,22 @@ module WasteCarriersEngine
                   status: 200,
                   body: File.read("./spec/fixtures/files/govpay/get_payment_response_not_found.json")
                 )
+
+                get payment_callback_govpay_forms_path(token, "invalid_uuid")
               end
 
               it "does not create a payment" do
-                get payment_callback_govpay_forms_path(token, "invalid_uuid")
                 expect(transient_registration.reload.finance_details.payments.first).to be_nil
               end
 
               it "redirects to payment_summary_form" do
-                get payment_callback_govpay_forms_path(token, "invalid_uuid")
                 expect(response).to redirect_to(new_payment_summary_form_path(token))
+              end
+
+              it "notifies Airbrake" do
+                expect(Airbrake)
+                  .to have_received(:notify)
+                  .with("Govpay callback error: Invalid payment uuid", { payment_uuid: "invalid_uuid" })
               end
             end
           end
@@ -249,7 +256,7 @@ module WasteCarriersEngine
               it "logs an error" do
                 get payment_callback_govpay_forms_path(token, order.payment_uuid)
 
-                expect(Airbrake).to have_received(:notify)
+                expect(Airbrake).to have_received(:notify).at_least(:once)
               end
             end
 
