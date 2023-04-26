@@ -28,10 +28,14 @@ module WasteCarriersEngine
     field :royalMailUpdateDate, as: :royal_mail_update_date,            type: String
     field :easting,                                                     type: Integer
     field :northing,                                                    type: Integer
+    field :area,                                                        type: String
     field :firstOrOnlyEasting, as: :first_or_only_easting,              type: Integer
     field :firstOrOnlyNorthing, as: :first_or_only_northing,            type: Integer
     field :firstName, as: :first_name,                                  type: String
     field :lastName, as: :last_name,                                    type: String
+
+    scope :missing_area, -> { any_of({ area: nil }, { area: "" }) }
+    scope :with_postcode, -> { where(:postcode.ne => nil) }
 
     def self.create_from_manual_entry(params, overseas)
       address = Address.new
