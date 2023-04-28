@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "defra_ruby/area"
+
 module WasteCarriersEngine
   class DetermineAreaService < BaseService
     def run(easting:, northing:)
