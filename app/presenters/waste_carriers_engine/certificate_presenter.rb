@@ -13,6 +13,10 @@ module WasteCarriersEngine
       upper_tier_sole_trader? || upper_tier_partnership?
     end
 
+    def certificate_link
+      "#{Rails.application.config.wcrs_fo_link_domain}/fo/registrations/#{reg_identifier}/certificate"
+    end
+
     # The certificate displays headings on the left, and values from the
     # registration on the right. Because this heading is dynamic based on the
     # business type, we have a method for it in the presenter.
