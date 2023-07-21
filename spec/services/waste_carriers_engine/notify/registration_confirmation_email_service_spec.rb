@@ -21,7 +21,7 @@ module WasteCarriersEngine
               phone_number: "03708 506506",
               registered_address: "42\r\nFoo Gardens\r\nBaz City\r\nBS1 5AH",
               date_registered: registration.metaData.date_registered.strftime("%e %B %Y"),
-              link_to_file: "Hello World"
+              link_to_file: "http://localhost:3002/fo/registrations/#{registration.reg_identifier}/certificate"
             }
           }
         end
