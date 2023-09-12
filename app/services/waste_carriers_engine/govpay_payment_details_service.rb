@@ -33,7 +33,7 @@ module WasteCarriersEngine
     end
 
     def payment
-      @payment ||= Govpay::Payment.new(response)
+      @payment ||= GovpayIntegration::Payment.new(response)
     end
 
     # Payment status in application terms
