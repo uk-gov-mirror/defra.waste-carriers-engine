@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/DEFRA/defra-ruby-govpay.git
+  revision: 8c479a5e303788f832b97d86aab07194b7b1a479
+  branch: main
+  specs:
+    govpay_integration (0.1.0)
+      rest-client (~> 2.1)
+
 PATH
   remote: .
   specs:
@@ -21,12 +29,6 @@ PATH
       turbolinks
       uk_postcode
       wicked_pdf
-
-PATH
-  remote: /Users/jeromepratt/Source/vagrant/govpay_integration
-  specs:
-    govpay_integration (0.1.0)
-      rest-client (~> 2.1)
 
 GEM
   remote: https://rubygems.org/
