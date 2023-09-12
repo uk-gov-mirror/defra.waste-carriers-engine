@@ -118,7 +118,7 @@ module WasteCarriersEngine
               # Stub the Govpay API only for the back-office bearer token,
               # so the spec will fail if the request is made using the front-office token.
               stub_request(:get, %r{.*#{govpay_host}/payments/#{govpay_id}})
-                #.with(headers: { "Authorization" => "Bearer #{govpay_back_office_api_token}" })
+                # .with(headers: { "Authorization" => "Bearer #{govpay_back_office_api_token}" })
                 .to_return(status: 200, body: File.read("./spec/fixtures/files/govpay/#{response_fixture}"))
             end
 
@@ -143,7 +143,8 @@ module WasteCarriersEngine
           rescue GovpayIntegration::GovpayApiError
             expect(Airbrake).to have_received(:notify).with(GovpayIntegration::GovpayApiError,
                                                             hash_including(
-                                                              message: "Error sending request to govpay (get /payments/a-valid-govpay-payment-id, params: ): 500 Internal Server Error"))
+                                                              message: "Error sending request to govpay (get /payments/a-valid-govpay-payment-id, params: ): 500 Internal Server Error"
+                                                            ))
           end
         end
       end
