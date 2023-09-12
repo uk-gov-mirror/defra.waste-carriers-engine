@@ -15,6 +15,9 @@ gemspec
 # GOV.UK styling
 gem "defra_ruby_template"
 
+# GovPay integration
+gem 'govpay_integration', path: '/Users/jeromepratt/Source/vagrant/govpay_integration'
+
 # Use MongoDB as the database
 gem "mongoid", "~> 7.5"
 # Implement document-level locking

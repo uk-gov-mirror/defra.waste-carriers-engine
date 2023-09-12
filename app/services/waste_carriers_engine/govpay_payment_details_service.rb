@@ -4,7 +4,6 @@ require "rest-client"
 
 module WasteCarriersEngine
   class GovpayPaymentDetailsService
-    include CanSendGovpayRequest
 
     def initialize(govpay_id: nil, is_moto: false, payment_uuid: nil,
                    entity: ::WasteCarriersEngine::TransientRegistration)
@@ -25,7 +24,7 @@ module WasteCarriersEngine
     rescue StandardError => e
       Rails.logger.error "#{e.class} error retrieving status for payment, " \
                          "uuid #{@payment_uuid}, govpay id #{govpay_id}: #{e}"
-      Airbrake.notify(e, message: "Failed to retrieve status for payment",
+      Airbrake.notify(e, message: e.message,
                          payment_uuid:,
                          govpay_id:,
                          entity:)
@@ -56,7 +55,7 @@ module WasteCarriersEngine
     def response
       @response ||=
         JSON.parse(
-          send_request(method: :get,
+          GovpayIntegrationAPI.send_request(method: :get,
                        path: "/payments/#{govpay_id}",
                        is_moto: @is_moto,
                        params: nil)&.body

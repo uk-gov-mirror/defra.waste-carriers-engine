@@ -22,6 +22,12 @@ PATH
       uk_postcode
       wicked_pdf
 
+PATH
+  remote: /Users/jeromepratt/Source/vagrant/govpay_integration
+  specs:
+    govpay_integration (0.1.0)
+      rest-client (~> 2.1)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -477,6 +483,7 @@ DEPENDENCIES
   factory_bot_rails
   faker
   github_changelog_generator
+  govpay_integration!
   govuk_design_system_formbuilder
   matrix
   mongo_session_store

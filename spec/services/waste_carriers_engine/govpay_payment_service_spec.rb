@@ -47,15 +47,15 @@ module WasteCarriersEngine
 
         context "when the request is from the back-office" do
           before do
-            allow(govpay_service).to receive(:send_request)
+            allow(GovpayIntegrationAPI).to receive(:send_request)
             allow(WasteCarriersEngine.configuration).to receive(:host_is_back_office?).and_return(true)
           end
 
           it "sends the moto flag to GovPay" do
-            allow(govpay_service).to receive(:send_request)
+            allow(GovpayIntegrationAPI).to receive(:send_request)
             govpay_service.prepare_for_payment
 
-            expect(govpay_service).to have_received(:send_request).with(
+            expect(GovpayIntegrationAPI).to have_received(:send_request).with(
               is_moto: true,
               method: anything,
               path: anything,
@@ -66,14 +66,14 @@ module WasteCarriersEngine
 
         context "when the request is from the front-office" do
           before do
-            allow(govpay_service).to receive(:send_request)
+            allow(GovpayIntegrationAPI).to receive(:send_request)
             allow(WasteCarriersEngine.configuration).to receive(:host_is_back_office?).and_return(false)
           end
 
           it "does not send the moto flag to GovPay" do
             govpay_service.prepare_for_payment
 
-            expect(govpay_service).to have_received(:send_request).with(
+            expect(GovpayIntegrationAPI).to have_received(:send_request).with(
               is_moto: false,
               method: anything,
               path: anything,

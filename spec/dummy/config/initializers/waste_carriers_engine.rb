@@ -14,6 +14,8 @@ WasteCarriersEngine.configure do |config|
   # Address lookup config
   config.address_host = ENV["ADDRESSBASE_URL"] || "http://localhost:3002"
 
+  config.host_is_back_office = true
+
   # Notify config
   config.notify_api_key = ENV["NOTIFY_API_KEY"]
 end
