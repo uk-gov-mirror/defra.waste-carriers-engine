@@ -27,6 +27,12 @@ module WasteCarriersEngine
         status: 200,
         body: File.read("./spec/fixtures/files/govpay/create_payment_created_response.json")
       )
+      GovpayIntegration.configure do |config|
+        config.govpay_front_office_api_token = "front_office_token"
+        config.govpay_back_office_api_token = "back_office_token"
+      end
+
+      stub_const("GovpayIntegrationAPI", GovpayIntegration::API.new)
     end
 
     describe "prepare_for_payment" do
