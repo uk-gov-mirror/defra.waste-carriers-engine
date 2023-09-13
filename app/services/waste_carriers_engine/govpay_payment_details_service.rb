@@ -32,10 +32,6 @@ module WasteCarriersEngine
       raise e
     end
 
-    def payment
-      @payment ||= GovpayIntegration::Payment.new(response)
-    end
-
     # Payment status in application terms
     def self.payment_status(status)
       {
