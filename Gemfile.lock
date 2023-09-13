@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/DEFRA/defra-ruby-govpay.git
-  revision: 1b9959fc0d4ddee8cd343271d4be824c022f86e4
+  revision: 2c3b5a341ecc94b2e21dce0083a882b580df4ddd
   branch: main
   specs:
     govpay_integration (0.1.0)
