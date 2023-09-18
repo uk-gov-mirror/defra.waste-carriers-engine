@@ -28,13 +28,13 @@ module WasteCarriersEngine
 
       transient_registration.prepare_for_payment(:govpay, current_user)
 
-      GovpayIntegration.configure do |config|
+      DefraRubyGovpay.configure do |config|
         config.govpay_front_office_api_token = govpay_front_office_api_token
         config.govpay_back_office_api_token = govpay_back_office_api_token
         config.host_is_back_office = is_back_office
       end
 
-      stub_const("GovpayIntegrationAPI", GovpayIntegration::API.new)
+      stub_const("DefraRubyGovpayAPI", DefraRubyGovpay::API.new)
     end
 
     subject(:service) { described_class.new(payment_uuid: payment_uuid, is_moto: is_moto) }
@@ -147,13 +147,13 @@ module WasteCarriersEngine
           end
 
           it "raises an exception" do
-            expect { service.govpay_payment_status }.to raise_exception(GovpayIntegration::GovpayApiError)
+            expect { service.govpay_payment_status }.to raise_exception(DefraRubyGovpay::GovpayApiError)
           end
 
           it "notifies Airbrake" do
             service.govpay_payment_status
-          rescue GovpayIntegration::GovpayApiError
-            expect(Airbrake).to have_received(:notify).with(GovpayIntegration::GovpayApiError,
+          rescue DefraRubyGovpay::GovpayApiError
+            expect(Airbrake).to have_received(:notify).with(DefraRubyGovpay::GovpayApiError,
                                                             hash_including(
                                                               message: "Error sending request to govpay (get /payments/a-valid-govpay-payment-id, params: ): 500 Internal Server Error"
                                                             ))

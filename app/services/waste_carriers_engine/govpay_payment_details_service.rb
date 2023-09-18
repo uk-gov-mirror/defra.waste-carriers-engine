@@ -51,10 +51,10 @@ module WasteCarriersEngine
     def response
       @response ||=
         JSON.parse(
-          GovpayIntegrationAPI.send_request(method: :get,
-                                            path: "/payments/#{govpay_id}",
-                                            is_moto: @is_moto,
-                                            params: nil)&.body
+          DefraRubyGovpayAPI.send_request(method: :get,
+                                          path: "/payments/#{govpay_id}",
+                                          is_moto: @is_moto,
+                                          params: nil)&.body
         )
     end
 

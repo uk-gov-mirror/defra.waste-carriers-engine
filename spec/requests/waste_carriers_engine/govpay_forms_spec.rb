@@ -13,13 +13,13 @@ module WasteCarriersEngine
       allow(Rails.configuration).to receive(:govpay_merchant_code).and_return("some_merchant_code")
 
       # set these variables in govpay configuration
-      GovpayIntegration.configure do |config|
+      DefraRubyGovpay.configure do |config|
         config.govpay_url = govpay_host
         config.govpay_front_office_api_token = "some_token"
         config.govpay_back_office_api_token = "some_token"
       end
 
-      stub_const("GovpayIntegrationAPI", GovpayIntegration::API.new)
+      stub_const("DefraRubyGovpayAPI", DefraRubyGovpay::API.new)
 
       allow(Airbrake).to receive(:notify)
     end

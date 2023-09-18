@@ -27,12 +27,12 @@ module WasteCarriersEngine
         status: 200,
         body: File.read("./spec/fixtures/files/govpay/create_payment_created_response.json")
       )
-      GovpayIntegration.configure do |config|
+      DefraRubyGovpay.configure do |config|
         config.govpay_front_office_api_token = "front_office_token"
         config.govpay_back_office_api_token = "back_office_token"
       end
 
-      stub_const("GovpayIntegrationAPI", GovpayIntegration::API.new)
+      stub_const("DefraRubyGovpayAPI", DefraRubyGovpay::API.new)
     end
 
     describe "prepare_for_payment" do
@@ -53,15 +53,15 @@ module WasteCarriersEngine
 
         context "when the request is from the back-office" do
           before do
-            allow(GovpayIntegrationAPI).to receive(:send_request)
+            allow(DefraRubyGovpayAPI).to receive(:send_request)
             allow(WasteCarriersEngine.configuration).to receive(:host_is_back_office?).and_return(true)
           end
 
           it "sends the moto flag to GovPay" do
-            allow(GovpayIntegrationAPI).to receive(:send_request)
+            allow(DefraRubyGovpayAPI).to receive(:send_request)
             govpay_service.prepare_for_payment
 
-            expect(GovpayIntegrationAPI).to have_received(:send_request).with(
+            expect(DefraRubyGovpayAPI).to have_received(:send_request).with(
               is_moto: true,
               method: anything,
               path: anything,
@@ -72,14 +72,14 @@ module WasteCarriersEngine
 
         context "when the request is from the front-office" do
           before do
-            allow(GovpayIntegrationAPI).to receive(:send_request)
+            allow(DefraRubyGovpayAPI).to receive(:send_request)
             allow(WasteCarriersEngine.configuration).to receive(:host_is_back_office?).and_return(false)
           end
 
           it "does not send the moto flag to GovPay" do
             govpay_service.prepare_for_payment
 
-            expect(GovpayIntegrationAPI).to have_received(:send_request).with(
+            expect(DefraRubyGovpayAPI).to have_received(:send_request).with(
               is_moto: false,
               method: anything,
               path: anything,

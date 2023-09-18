@@ -16,7 +16,7 @@ gemspec
 gem "defra_ruby_template"
 
 # GovPay integration
-gem "govpay_integration", git: "https://github.com/DEFRA/defra-ruby-govpay.git", branch: "main"
+gem "defra_ruby_govpay"
 
 # Use MongoDB as the database
 gem "mongoid", "~> 7.5"
