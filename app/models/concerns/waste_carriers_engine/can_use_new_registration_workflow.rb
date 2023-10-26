@@ -24,9 +24,9 @@ module WasteCarriersEngine
 
         # Location
         state :location_form
-        state :register_in_northern_ireland_form
-        state :register_in_scotland_form
-        state :register_in_wales_form
+        state :must_register_in_northern_ireland_form
+        state :must_register_in_scotland_form
+        state :must_register_in_wales_form
 
         state :business_type_form
 
@@ -84,25 +84,19 @@ module WasteCarriersEngine
           transitions from: :start_form, to: :renewal_stop_form
 
           # Location
-          transitions from: :location_form, to: :register_in_northern_ireland_form,
+          transitions from: :location_form, to: :must_register_in_northern_ireland_form,
                       if: :should_register_in_northern_ireland?
 
-          transitions from: :location_form, to: :register_in_scotland_form,
+          transitions from: :location_form, to: :must_register_in_scotland_form,
                       if: :should_register_in_scotland?
 
-          transitions from: :location_form, to: :register_in_wales_form,
+          transitions from: :location_form, to: :must_register_in_wales_form,
                       if: :should_register_in_wales?
 
           transitions from: :location_form, to: :check_your_tier_form,
                       if: :overseas?
 
           transitions from: :location_form, to: :business_type_form
-
-          transitions from: :register_in_northern_ireland_form, to: :business_type_form
-
-          transitions from: :register_in_scotland_form, to: :business_type_form
-
-          transitions from: :register_in_wales_form, to: :business_type_form
 
           # Business type
           transitions from: :business_type_form, to: :your_tier_form,
