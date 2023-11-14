@@ -23,6 +23,7 @@ module WasteCarriersEngine
         renewal_received_pending_conviction_form
         renewal_received_pending_govpay_payment_form
         renewal_received_pending_payment_form
+        deregistration_complete_form
       ].freeze
 
       field :journey_type, type: String
@@ -42,8 +43,27 @@ module WasteCarriersEngine
       scope :completed_digital, -> { where(completed_route: "DIGITAL") }
       scope :completed_assisted_digital, -> { where(completed_route: "ASSISTED_DIGITAL") }
       scope :date_range, lambda { |start_date, end_date|
-        where(:created_at.gte => start_date.midnight, :created_at.lt => end_date.midnight + 1)
+        where(
+          :created_at.gte => start_date.midnight,
+          :created_at.lt => end_date.midnight + 1.day
+        ).and(
+          :$or => [
+            { completed_at: nil },
+            { :completed_at.gte => start_date.midnight, :completed_at.lt => end_date.midnight + 1.day }
+          ]
+        )
       }
+
+      def self.minimum_created_at
+        collection.aggregate([
+                               { "$group" => {
+                                 "_id" => nil,
+                                 "minimumCreatedAt" => { "$min" => "$created_at" }
+                               } }
+                             ]).first["minimumCreatedAt"]&.in_time_zone
+      rescue StandardError
+        nil
+      end
 
       def complete_journey(transient_registration)
         route = WasteCarriersEngine.configuration.host_is_back_office? ? "ASSISTED_DIGITAL" : "DIGITAL"
