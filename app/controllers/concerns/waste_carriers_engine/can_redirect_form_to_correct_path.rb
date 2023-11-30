@@ -20,7 +20,8 @@ module WasteCarriersEngine
 
         main_app.send("new_#{@transient_registration.workflow_state}_path".to_sym, token: @transient_registration.token)
       rescue NoMethodError
-        basic_app_engine.send("new_#{@transient_registration.workflow_state}_path".to_sym, token: @transient_registration.token)
+        basic_app_engine.send("new_#{@transient_registration.workflow_state}_path".to_sym,
+                              token: @transient_registration.token)
       end
     end
   end
