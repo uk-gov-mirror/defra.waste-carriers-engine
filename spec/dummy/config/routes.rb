@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  mount WasteCarriersEngine::Engine => "/"
+  mount WasteCarriersEngine::Engine => "/", as: "basic_app_engine"
 
   devise_for :users
   devise_scope :user do
