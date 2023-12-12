@@ -3,6 +3,9 @@
 module WasteCarriersEngine
   module Notify
     class CopyCardsAwaitingPaymentEmailService < BaseSendEmailService
+      TEMPLATE_ID = "56997dd9-852f-4e18-b4e2-c008a9398bfe".freeze
+      COMMS_LABEL = "Registration cards payment request".freeze
+
       def run(registration:, order:)
         @order = order
         super
@@ -15,7 +18,7 @@ module WasteCarriersEngine
 
         {
           email_address: @registration.contact_email,
-          template_id: "56997dd9-852f-4e18-b4e2-c008a9398bfe",
+          template_id: TEMPLATE_ID,
           personalisation: {
             reg_identifier: @registration.reg_identifier,
             first_name: @registration.first_name,

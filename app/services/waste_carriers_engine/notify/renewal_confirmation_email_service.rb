@@ -3,6 +3,8 @@
 module WasteCarriersEngine
   module Notify
     class RenewalConfirmationEmailService < BaseSendEmailService
+      TEMPLATE_ID = "6d54a9bc-9b62-4d93-a40a-d06d04ed58ca".freeze
+      COMMS_LABEL = "Upper tier renewal complete".freeze
       include CanAttachCertificate
 
       private
@@ -10,7 +12,7 @@ module WasteCarriersEngine
       def notify_options
         {
           email_address: @registration.contact_email,
-          template_id: "6d54a9bc-9b62-4d93-a40a-d06d04ed58ca",
+          template_id: TEMPLATE_ID,
           personalisation: {
             reg_identifier: @registration.reg_identifier,
             registration_type: registration_type,

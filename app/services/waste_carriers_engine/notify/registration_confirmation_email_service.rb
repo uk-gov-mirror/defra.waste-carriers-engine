@@ -28,6 +28,10 @@ module WasteCarriersEngine
         @registration.upper_tier? ? "fe1e4746-c940-4ace-b111-8be64ee53b35" : "889fa2f2-f70c-4b5a-bbc8-d94a8abd3990"
       end
 
+      def comms_label
+        @registration.upper_tier? ? "Upper tier registration complete" : "Lower tier registration complete"
+      end
+
       def registered_address
         certificate_presenter.registered_address_fields.join("\r\n")
       end

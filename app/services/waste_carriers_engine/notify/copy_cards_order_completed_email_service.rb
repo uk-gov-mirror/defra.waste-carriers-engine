@@ -3,6 +3,9 @@
 module WasteCarriersEngine
   module Notify
     class CopyCardsOrderCompletedEmailService < BaseSendEmailService
+      TEMPLATE_ID = "543a89cd-056e-4e9b-a55b-6416980f5472".freeze
+      COMMS_LABEL = "Registration cards order confirmation".freeze
+
       def run(registration:, order:)
         @order = order
         super
@@ -15,7 +18,7 @@ module WasteCarriersEngine
 
         {
           email_address: @registration.contact_email,
-          template_id: "543a89cd-056e-4e9b-a55b-6416980f5472",
+          template_id: TEMPLATE_ID,
           personalisation: {
             reg_identifier: @registration.reg_identifier,
             first_name: @registration.first_name,
