@@ -3,8 +3,8 @@
 module WasteCarriersEngine
   module Notify
     class DeregistrationEmailService < BaseSendEmailService
-      TEMPLATE_ID = "b9926a88-95db-47bd-96d4-0aaae7a322d3".freeze
-      COMMS_LABEL = "Lower tier self serve deregistration invite version 2".freeze
+      TEMPLATE_ID = "b9926a88-95db-47bd-96d4-0aaae7a322d3"
+      COMMS_LABEL = "Lower tier self serve deregistration invite version 2"
 
       private
 

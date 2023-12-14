@@ -49,6 +49,8 @@ module WasteCarriersEngine
               /Your application to renew waste carriers registration CBDU\d has been received/
             )
           end
+
+          it_behaves_like "can create a communication record", "email"
         end
 
         context "with no contact_email" do

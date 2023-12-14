@@ -3,8 +3,9 @@
 module WasteCarriersEngine
   module Notify
     class RenewalPendingOnlinePaymentEmailService < BaseSendEmailService
-      TEMPLATE_ID = "3da098e3-3db2-4c99-8e96-ed9d1a8ef227".freeze
-      COMMS_LABEL = "Upper tier renewal pending online payment".freeze
+      TEMPLATE_ID = "3da098e3-3db2-4c99-8e96-ed9d1a8ef227"
+      COMMS_LABEL = "Upper tier renewal pending online payment"
+
       private
 
       def notify_options

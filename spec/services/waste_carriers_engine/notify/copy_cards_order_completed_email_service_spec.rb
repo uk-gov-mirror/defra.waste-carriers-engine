@@ -47,6 +47,8 @@ module WasteCarriersEngine
             expect(run_service.template["id"]).to eq(template_id)
             expect(run_service.content["subject"]).to eq("We’re printing your waste carriers registration cards")
           end
+
+          it_behaves_like "can create a communication record", "email"
         end
 
         context "with no contact_email" do

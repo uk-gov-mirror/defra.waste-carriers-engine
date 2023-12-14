@@ -5,8 +5,9 @@ module WasteCarriersEngine
     class BaseSendEmailService < BaseService
       include WasteCarriersEngine::ApplicationHelper
       include ActionView::Helpers::NumberHelper
+      include WasteCarriersEngine::CanRecordCommunication
 
-      NOTIFICATION_TYPE = "email".freeze
+      NOTIFICATION_TYPE = "email"
 
       def run(registration:, order: nil, requester: nil)
         # AD registrations will not have a contact_mail
@@ -17,8 +18,9 @@ module WasteCarriersEngine
         @requester = requester
 
         client = Notifications::Client.new(WasteCarriersEngine.configuration.notify_api_key)
-        client.send_email(notify_options)
-        create_communication_record
+        client.send_email(notify_options).tap do |response|
+          create_communication_record if response.instance_of?(Notifications::Client::ResponseNotification)
+        end
       end
 
       private
@@ -31,21 +33,16 @@ module WasteCarriersEngine
         )
       end
 
-      def communication_record_attributes
-        {
-          notify_template_id: template_id,
-          notification_type: NOTIFICATION_TYPE,
-          comms_label: COMMS_LABEL,
-          sent_at: Time.now.utc
-        }
-      end
-
-      def create_communication_record
-        @registration.communication_records.create(communication_record_attributes)
+      def comms_label
+        self.class::COMMS_LABEL
       end
 
       def template_id
-        TEMPLATE_ID
+        self.class::TEMPLATE_ID
+      end
+
+      def notification_type
+        NOTIFICATION_TYPE
       end
     end
   end

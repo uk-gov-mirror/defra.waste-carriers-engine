@@ -3,8 +3,9 @@
 module WasteCarriersEngine
   module Notify
     class RenewalPendingChecksEmailService < BaseSendEmailService
-      TEMPLATE_ID = "d2442022-4f4c-4edd-afc5-aaa0607dabdf".freeze
-      COMMS_LABEL = "Upper tier renewal pending checks".freeze
+      TEMPLATE_ID = "d2442022-4f4c-4edd-afc5-aaa0607dabdf"
+      COMMS_LABEL = "Upper tier renewal pending checks"
+
       private
 
       def notify_options

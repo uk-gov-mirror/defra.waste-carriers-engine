@@ -8,6 +8,8 @@ module WasteCarriersEngine
     # TODO: Refactor to remove the use of allow_any_instance_of
     # rubocop:disable RSpec/AnyInstance
     RSpec.describe RegistrationConfirmationEmailService do
+      let(:notification_type) { "email" }
+
       describe ".run" do
         let(:expected_notify_options) do
           {
@@ -54,6 +56,28 @@ module WasteCarriersEngine
               expect(run_service.template["id"]).to eq(template_id)
               expect(run_service.content["subject"]).to eq("Waste Carrier Registration Complete")
             end
+
+            describe "creating a communication record" do
+              let(:time_sent) { Time.now.utc }
+              let(:expected_communication_record_attrs) do
+                {
+                  notify_template_id: described_class::LOWER_TIER_TEMPLATE_ID,
+                  notification_type: notification_type,
+                  comms_label: described_class::LOWER_TIER_COMMS_LABEL,
+                  sent_at: time_sent
+                }
+              end
+
+              it "will create a communication record with the expected attributes" do
+                Timecop.freeze(time_sent) do
+                  expect { run_service }.to change { registration.communication_records.count }.by(1)
+                  expect(registration.communication_records.last[:notify_template_id]).to eq(expected_communication_record_attrs[:notify_template_id])
+                  expect(registration.communication_records.last[:notification_type]).to eq(expected_communication_record_attrs[:notification_type])
+                  expect(registration.communication_records.last[:comms_label]).to eq(expected_communication_record_attrs[:comms_label])
+                  expect(registration.communication_records.last[:sent_at]).to eq(expected_communication_record_attrs[:sent_at])
+                end
+              end
+            end
           end
 
           context "with an upper tier registration" do
@@ -71,6 +95,28 @@ module WasteCarriersEngine
               expect(run_service).to be_a(Notifications::Client::ResponseNotification)
               expect(run_service.template["id"]).to eq(template_id)
               expect(run_service.content["subject"]).to eq("Waste Carrier Registration Complete")
+            end
+
+            describe "creating a communication record" do
+              let(:time_sent) { Time.now.utc }
+              let(:expected_communication_record_attrs) do
+                {
+                  notify_template_id: described_class::UPPER_TIER_TEMPLATE_ID,
+                  notification_type: notification_type,
+                  comms_label: described_class::UPPER_TIER_COMMS_LABEL,
+                  sent_at: time_sent
+                }
+              end
+
+              it "will create a communication record with the expected attributes" do
+                Timecop.freeze(time_sent) do
+                  expect { run_service }.to change { registration.communication_records.count }.by(1)
+                  expect(registration.communication_records.last[:notify_template_id]).to eq(expected_communication_record_attrs[:notify_template_id])
+                  expect(registration.communication_records.last[:notification_type]).to eq(expected_communication_record_attrs[:notification_type])
+                  expect(registration.communication_records.last[:comms_label]).to eq(expected_communication_record_attrs[:comms_label])
+                  expect(registration.communication_records.last[:sent_at]).to eq(expected_communication_record_attrs[:sent_at])
+                end
+              end
             end
           end
         end

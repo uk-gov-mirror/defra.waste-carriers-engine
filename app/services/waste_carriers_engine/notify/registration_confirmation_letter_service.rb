@@ -6,20 +6,42 @@ module WasteCarriersEngine
   module Notify
     class RegistrationConfirmationLetterService < BaseService
       include WasteCarriersEngine::ApplicationHelper
+      include WasteCarriersEngine::CanRecordCommunication
+
+      LOWER_TIER_TEMPLATE_ID = "e144cc0c-8903-434f-97a0-c798fcd35beb"
+      LOWER_TIER_COMMS_LABEL = "Lower tier waste carrier registration letter V2 " \
+                               "(with cert creation date and duty of care)"
+      UPPER_TIER_TEMPLATE_ID = "06bfc531-6a39-42ec-8466-eba1041fb61b"
+      UPPER_TIER_COMMS_LABEL = "Upper tier waste carrier registration letter V2 " \
+                               "(with cert creation date and duty of care)"
+      NOTIFICATION_TYPE = "letter"
+
       def run(registration:)
         @registration = registration
 
         client = Notifications::Client.new(WasteCarriersEngine.configuration.notify_api_key)
 
-        client.send_letter(template_id: template,
+        client.send_letter(template_id: template_id,
                            reference: @registration.reg_identifier,
-                           personalisation: personalisation)
+                           personalisation: personalisation).tap do |response|
+                             if response.instance_of?(Notifications::Client::ResponseNotification)
+                               create_communication_record
+                             end
+                           end
       end
 
       private
 
-      def template
-        @registration.lower_tier? ? "e144cc0c-8903-434f-97a0-c798fcd35beb" : "06bfc531-6a39-42ec-8466-eba1041fb61b"
+      def notification_type
+        NOTIFICATION_TYPE
+      end
+
+      def template_id
+        @registration.lower_tier? ? LOWER_TIER_TEMPLATE_ID : UPPER_TIER_TEMPLATE_ID
+      end
+
+      def comms_label
+        @registration.lower_tier? ? LOWER_TIER_COMMS_LABEL : UPPER_TIER_COMMS_LABEL
       end
 
       def personalisation

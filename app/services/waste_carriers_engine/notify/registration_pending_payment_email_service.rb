@@ -3,8 +3,8 @@
 module WasteCarriersEngine
   module Notify
     class RegistrationPendingPaymentEmailService < BaseSendEmailService
-      TEMPLATE_ID = "b8b68a4c-adc9-4fe6-86cd-3d5a83822c47".freeze
-      COMMS_LABEL = "Upper tier pending payment".freeze
+      TEMPLATE_ID = "b8b68a4c-adc9-4fe6-86cd-3d5a83822c47"
+      COMMS_LABEL = "Upper tier pending payment"
 
       private
 

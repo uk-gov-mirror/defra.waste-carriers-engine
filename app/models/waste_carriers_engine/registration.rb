@@ -13,6 +13,7 @@ module WasteCarriersEngine
     store_in collection: "registrations"
 
     embeds_many :past_registrations, class_name: "WasteCarriersEngine::PastRegistration"
+    has_many :communication_records, class_name: "WasteCarriersEngine::CommunicationRecord", inverse_of: :registration
     accepts_nested_attributes_for :past_registrations
 
     before_save :update_last_modified

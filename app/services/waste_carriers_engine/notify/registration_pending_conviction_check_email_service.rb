@@ -3,8 +3,9 @@
 module WasteCarriersEngine
   module Notify
     class RegistrationPendingConvictionCheckEmailService < BaseSendEmailService
-      TEMPLATE_ID = "e7dbb0d2-feca-4f59-a5e6-576e5051f4e0".freeze
-      COMMS_LABEL = "Upper tier pending checks".freeze
+      TEMPLATE_ID = "e7dbb0d2-feca-4f59-a5e6-576e5051f4e0"
+      COMMS_LABEL = "Upper tier pending checks"
+
       private
 
       def notify_options

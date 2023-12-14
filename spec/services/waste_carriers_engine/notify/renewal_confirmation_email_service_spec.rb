@@ -55,6 +55,8 @@ module WasteCarriersEngine
               expect(run_service.content["subject"])
                 .to match(/Your waste carriers registration CBDU\d+ has been renewed/)
             end
+
+            it_behaves_like "can create a communication record", "email"
           end
         end
 

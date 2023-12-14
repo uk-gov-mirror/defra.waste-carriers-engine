@@ -50,6 +50,8 @@ module WasteCarriersEngine
               /We’re processing your waste carrier registration CBDU/
             )
           end
+
+          it_behaves_like "can create a communication record", "email"
         end
 
         context "with no contact_email" do

@@ -50,6 +50,8 @@ module WasteCarriersEngine
             expect(run_service.content["subject"])
               .to eq("You need to pay for your waste carriers registration card order")
           end
+
+          it_behaves_like "can create a communication record", "email"
         end
 
         context "with no contact_email" do

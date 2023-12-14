@@ -3,8 +3,9 @@
 module WasteCarriersEngine
   module Notify
     class DeregistrationConfirmationEmailService < BaseSendEmailService
-      TEMPLATE_ID = "012a872c-2e79-4efb-a84e-5ce2bf26d0bf".freeze
-      COMMS_LABEL = "Lower tier deregistration confirmation".freeze
+      TEMPLATE_ID = "012a872c-2e79-4efb-a84e-5ce2bf26d0bf"
+      COMMS_LABEL = "Lower tier deregistration confirmation"
+
       private
 
       def notify_options

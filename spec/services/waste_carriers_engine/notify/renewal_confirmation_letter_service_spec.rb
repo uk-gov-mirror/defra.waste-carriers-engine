@@ -66,6 +66,8 @@ module WasteCarriersEngine
             )
           end
 
+          it_behaves_like "can create a communication record", "letter"
+
           context "without a registered company name" do
             let(:expected_company_name) { company_name }
             let(:cassette_name) { "notify_upper_tier_ad_renewal_confirmation_letter_business_name" }
