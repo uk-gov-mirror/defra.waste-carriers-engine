@@ -22,11 +22,13 @@ module WasteCarriersEngine
         end
         let(:run_service) { described_class.run(registration: registration) }
         let(:notifications_client) { instance_double(Notifications::Client) }
-        let(:notifications_client_response_notification) { instance_double(Notifications::Client::ResponseNotification, class: Notifications::Client::ResponseNotification) }
+        let(:notifications_client_response_notification) { instance_double(Notifications::Client::ResponseNotification) }
 
         before do
           allow(Notifications::Client).to receive(:new).and_return(notifications_client)
           allow(notifications_client).to receive(:send_email).and_return(notifications_client_response_notification)
+          allow(notifications_client_response_notification).to receive(:instance_of?)
+            .with(Notifications::Client::ResponseNotification).and_return(true)
         end
 
         context "with a contact_email" do

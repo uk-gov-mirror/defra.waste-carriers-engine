@@ -25,7 +25,7 @@ module WasteCarriersEngine
         end
         let(:magic_link_service) { instance_double(DeregistrationMagicLinkService) }
         let(:notifications_client) { instance_double(Notifications::Client) }
-        let(:notifications_client_response_notification) { instance_double(Notifications::Client::ResponseNotification, class: Notifications::Client::ResponseNotification) }
+        let(:notifications_client_response_notification) { instance_double(Notifications::Client::ResponseNotification) }
 
         subject(:run_service) { described_class.run(registration: registration) }
 
@@ -34,6 +34,8 @@ module WasteCarriersEngine
           allow(magic_link_service).to receive(:run).with(registration:).and_return(deregistration_link)
           allow(Notifications::Client).to receive(:new).and_return(notifications_client)
           allow(notifications_client).to receive(:send_email).and_return(notifications_client_response_notification)
+          allow(notifications_client_response_notification).to receive(:instance_of?)
+            .with(Notifications::Client::ResponseNotification).and_return(true)
 
         end
 
