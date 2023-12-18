@@ -29,7 +29,7 @@ module WasteCarriersEngine
     def recipient
       case notification_type
       when "letter"
-        [contact_name, displayable_address(@registration.contact_address)].flatten.join(", ")
+        [recipient_name, displayable_address(@registration.contact_address)].flatten.join(", ")
       when "sms"
         @registration.phone_number
       else
@@ -39,6 +39,10 @@ module WasteCarriersEngine
 
     def recipient_address
       @registration.contact_name
+    end
+
+    def recipient_name
+      [@registration.first_name, @registration.last_name].join(" ")
     end
 
     def create_communication_record
