@@ -28,12 +28,12 @@ module WasteCarriersEngine
 
     def recipient
       case notification_type
-      when "email"
-        @registration.contact_email
       when "letter"
         [contact_name, displayable_address(@registration.contact_address)].flatten.join(", ")
       when "sms"
         @registration.contact_phone
+      else
+        @registration.contact_email
       end
     end
 
