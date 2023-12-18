@@ -10,7 +10,7 @@ module WasteCarriersEngine
         notification_type: notification_type,
         comms_label: comms_label,
         sent_at: Time.now.utc,
-        recipient: recipient
+        sent_to: recipient
       }
     end
 

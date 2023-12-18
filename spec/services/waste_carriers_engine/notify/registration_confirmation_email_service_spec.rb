@@ -65,7 +65,7 @@ module WasteCarriersEngine
                   notification_type: notification_type,
                   comms_label: described_class::LOWER_TIER_COMMS_LABEL,
                   sent_at: time_sent,
-                  recipient: registration.contact_email
+                  sent_to: registration.contact_email
                 }
               end
 
@@ -76,7 +76,7 @@ module WasteCarriersEngine
                   expect(registration.communication_records.last[:notification_type]).to eq(expected_communication_record_attrs[:notification_type])
                   expect(registration.communication_records.last[:comms_label]).to eq(expected_communication_record_attrs[:comms_label])
                   expect(registration.communication_records.last[:sent_at]).to eq(expected_communication_record_attrs[:sent_at])
-                  expect(registration.communication_records.last[:recipient]).to eq(expected_communication_record_attrs[:recipient])
+                  expect(registration.communication_records.last[:sent_to]).to eq(expected_communication_record_attrs[:sent_to])
                 end
               end
             end
@@ -107,7 +107,7 @@ module WasteCarriersEngine
                   notification_type: notification_type,
                   comms_label: described_class::UPPER_TIER_COMMS_LABEL,
                   sent_at: time_sent,
-                  recipient: registration.contact_email
+                  sent_to: registration.contact_email
                 }
               end
 
@@ -118,7 +118,7 @@ module WasteCarriersEngine
                   expect(registration.communication_records.last[:notification_type]).to eq(expected_communication_record_attrs[:notification_type])
                   expect(registration.communication_records.last[:comms_label]).to eq(expected_communication_record_attrs[:comms_label])
                   expect(registration.communication_records.last[:sent_at]).to eq(expected_communication_record_attrs[:sent_at])
-                  expect(registration.communication_records.last[:recipient]).to eq(expected_communication_record_attrs[:recipient])
+                  expect(registration.communication_records.last[:sent_to]).to eq(expected_communication_record_attrs[:sent_to])
                 end
               end
             end

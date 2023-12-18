@@ -16,7 +16,7 @@ RSpec.shared_examples "can create a communication record" do |notification_type|
       notification_type: notification_type,
       comms_label: comms_label,
       sent_at: time_sent,
-      recipient: recipient
+      sent_to: recipient
     }
   end
 
@@ -27,7 +27,7 @@ RSpec.shared_examples "can create a communication record" do |notification_type|
       expect(registration.communication_records.last[:notification_type]).to eq(expected_communication_record_attrs[:notification_type])
       expect(registration.communication_records.last[:comms_label]).to eq(expected_communication_record_attrs[:comms_label])
       expect(registration.communication_records.last[:sent_at]).to eq(expected_communication_record_attrs[:sent_at])
-      expect(registration.communication_records.last[:recipient]).to eq(expected_communication_record_attrs[:recipient])
+      expect(registration.communication_records.last[:sent_to]).to eq(expected_communication_record_attrs[:sent_to])
     end
   end
 end
