@@ -31,7 +31,7 @@ module WasteCarriersEngine
       when "letter"
         [contact_name, displayable_address(@registration.contact_address)].flatten.join(", ")
       when "sms"
-        @registration.contact_phone
+        @registration.phone_number
       else
         @registration.contact_email
       end
