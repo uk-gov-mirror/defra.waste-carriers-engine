@@ -75,7 +75,7 @@ module WasteCarriersEngine
                 notification_type: notification_type,
                 comms_label: described_class::UPPER_TIER_COMMS_LABEL,
                 sent_at: time_sent,
-                recipient: registration.contact_email
+                recipient: "Jane Doe, 42, Foo Gardens, Baz City, BS1 5AH"
               }
             end
 
@@ -186,7 +186,7 @@ module WasteCarriersEngine
                 notification_type: notification_type,
                 comms_label: described_class::LOWER_TIER_COMMS_LABEL,
                 sent_at: time_sent,
-                recipient: registration.contact_email
+                recipient: "Jane Doe, 42, Foo Gardens, Baz City, BS1 5AH"
               }
             end
 

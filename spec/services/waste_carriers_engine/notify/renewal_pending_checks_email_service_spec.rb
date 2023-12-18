@@ -42,6 +42,8 @@ module WasteCarriersEngine
             end
           end
 
+          let(:recipient) { registration.contact_email }
+
           it "sends an email" do
             expect(run_service).to be_a(Notifications::Client::ResponseNotification)
             expect(run_service.template["id"]).to eq(template_id)

@@ -10,7 +10,7 @@ module WasteCarriersEngine
         notification_type: notification_type,
         comms_label: comms_label,
         sent_at: Time.now.utc,
-        recipient: @registration.contact_email
+        recipient: recipient
       }
     end
 
@@ -24,6 +24,21 @@ module WasteCarriersEngine
 
     def notification_type
       raise NotImplementedError, "You must implement notification_type for CanRecordCommunication"
+    end
+
+    def recipient
+      case notification_type
+      when "email"
+        @registration.contact_email
+      when "letter"
+        [contact_name, displayable_address(@registration.contact_address)].flatten.join(", ")
+      when "sms"
+        @registration.contact_phone
+      end
+    end
+
+    def recipient_address
+      @registration.contact_name
     end
 
     def create_communication_record
