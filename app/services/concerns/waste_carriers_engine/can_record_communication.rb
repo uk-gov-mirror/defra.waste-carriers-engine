@@ -9,7 +9,8 @@ module WasteCarriersEngine
         notify_template_id: template_id,
         notification_type: notification_type,
         comms_label: comms_label,
-        sent_at: Time.now.utc
+        sent_at: Time.now.utc,
+        recipient: @registration.contact_email
       }
     end
 
