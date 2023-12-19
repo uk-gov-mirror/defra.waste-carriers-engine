@@ -4,21 +4,38 @@ module WasteCarriersEngine
   module Notify
     class RenewalConfirmationLetterService < BaseService
       include WasteCarriersEngine::ApplicationHelper
+      include WasteCarriersEngine::CanRecordCommunication
+
+      TEMPLATE_ID = "95af7082-1906-4ff1-bef5-f85fe4a5a01c"
+      NOTIFICATION_TYPE = "letter"
+      COMMS_LABEL = "Renewal confirmation letter V2 (cert creation date and duty of care)"
 
       def run(registration:)
         @registration = registration
 
         client = Notifications::Client.new(WasteCarriersEngine.configuration.notify_api_key)
 
-        client.send_letter(template_id: template,
+        client.send_letter(template_id: template_id,
                            reference: @registration.reg_identifier,
-                           personalisation: personalisation)
+                           personalisation: personalisation).tap do |response|
+                             if response.instance_of?(Notifications::Client::ResponseNotification)
+                               create_communication_record
+                             end
+                           end
       end
 
       private
 
-      def template
-        "95af7082-1906-4ff1-bef5-f85fe4a5a01c"
+      def template_id
+        TEMPLATE_ID
+      end
+
+      def notification_type
+        NOTIFICATION_TYPE
+      end
+
+      def comms_label
+        COMMS_LABEL
       end
 
       def personalisation

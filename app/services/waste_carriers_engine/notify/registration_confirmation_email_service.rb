@@ -5,6 +5,14 @@ module WasteCarriersEngine
     class RegistrationConfirmationEmailService < BaseSendEmailService
       private
 
+      LOWER_TIER_TEMPLATE_ID = "889fa2f2-f70c-4b5a-bbc8-d94a8abd3990"
+      LOWER_TIER_COMMS_LABEL = "Lower tier waste carrier registration email V2 " \
+                               "(with cert creation date and duty of care)"
+
+      UPPER_TIER_TEMPLATE_ID = "fe1e4746-c940-4ace-b111-8be64ee53b35"
+      UPPER_TIER_COMMS_LABEL = "Upper tier waste carrier registration email V2 " \
+                               "(with cert creation date and duty of care)"
+
       include CanAttachCertificate
 
       def notify_options
@@ -25,7 +33,11 @@ module WasteCarriersEngine
       end
 
       def template_id
-        @registration.upper_tier? ? "fe1e4746-c940-4ace-b111-8be64ee53b35" : "889fa2f2-f70c-4b5a-bbc8-d94a8abd3990"
+        @registration.upper_tier? ? UPPER_TIER_TEMPLATE_ID : LOWER_TIER_TEMPLATE_ID
+      end
+
+      def comms_label
+        @registration.upper_tier? ? UPPER_TIER_COMMS_LABEL : LOWER_TIER_COMMS_LABEL
       end
 
       def registered_address

@@ -42,6 +42,8 @@ module WasteCarriersEngine
             end
           end
 
+          let(:recipient) { registration.contact_email }
+
           it "sends an email" do
             expect(run_service).to be_a(Notifications::Client::ResponseNotification)
             expect(run_service.template["id"]).to eq(template_id)
@@ -49,6 +51,8 @@ module WasteCarriersEngine
               /Your application to renew waste carriers registration CBDU\d has been received/
             )
           end
+
+          it_behaves_like "can create a communication record", "email"
         end
 
         context "with no contact_email" do

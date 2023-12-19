@@ -3,12 +3,15 @@
 module WasteCarriersEngine
   module Notify
     class RegistrationPendingPaymentEmailService < BaseSendEmailService
+      TEMPLATE_ID = "b8b68a4c-adc9-4fe6-86cd-3d5a83822c47"
+      COMMS_LABEL = "Upper tier pending payment"
+
       private
 
       def notify_options
         {
           email_address: @registration.contact_email,
-          template_id: "b8b68a4c-adc9-4fe6-86cd-3d5a83822c47",
+          template_id: TEMPLATE_ID,
           personalisation: {
             reg_identifier: @registration.reg_identifier,
             first_name: @registration.first_name,

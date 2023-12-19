@@ -3,12 +3,15 @@
 module WasteCarriersEngine
   module Notify
     class RenewalPendingPaymentEmailService < BaseSendEmailService
+      TEMPLATE_ID = "25a54b31-cdb0-4139-9ffe-50add03d572e"
+      COMMS_LABEL = "Upper tier renewal pending payment"
+
       private
 
       def notify_options
         {
           email_address: @registration.contact_email,
-          template_id: "25a54b31-cdb0-4139-9ffe-50add03d572e",
+          template_id: TEMPLATE_ID,
           personalisation: {
             reg_identifier: @registration.reg_identifier,
             first_name: @registration.first_name,

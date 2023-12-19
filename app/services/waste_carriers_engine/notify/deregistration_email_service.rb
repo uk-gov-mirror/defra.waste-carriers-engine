@@ -3,12 +3,15 @@
 module WasteCarriersEngine
   module Notify
     class DeregistrationEmailService < BaseSendEmailService
+      TEMPLATE_ID = "b9926a88-95db-47bd-96d4-0aaae7a322d3"
+      COMMS_LABEL = "Lower tier self serve deregistration invite version 2"
+
       private
 
       def notify_options
         {
           email_address: @registration.contact_email,
-          template_id: "b9926a88-95db-47bd-96d4-0aaae7a322d3",
+          template_id: TEMPLATE_ID,
           personalisation: {
             reg_identifier: @registration.reg_identifier,
             company_name: @registration.company_name,
