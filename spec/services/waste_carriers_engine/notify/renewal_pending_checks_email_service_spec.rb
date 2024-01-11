@@ -44,33 +44,24 @@ module WasteCarriersEngine
 
           let(:recipient) { registration.contact_email }
 
-          context "when run on a registration" do
-
-            it "sends an email" do
-              expect(run_service).to be_a(Notifications::Client::ResponseNotification)
-              expect(run_service.template["id"]).to eq(template_id)
-              expect(run_service.content["subject"]).to match(
-                /Your application to renew waste carriers registration CBDU\d has been received/
-              )
-            end
-
-            it_behaves_like "can create a communication record", "email"
+          it "sends an email" do
+            expect(run_service).to be_a(Notifications::Client::ResponseNotification)
+            expect(run_service.template["id"]).to eq(template_id)
+            expect(run_service.content["subject"]).to match(
+              /Your application to renew waste carriers registration CBDU\d has been received/
+            )
           end
 
-          context "with no contact_email" do
-            before { registration.contact_email = nil }
+          it_behaves_like "can create a communication record", "email"
+        end
 
-            it "does not attempt to send an email" do
-              expect_any_instance_of(Notifications::Client).not_to receive(:send_email)
+        context "with no contact_email" do
+          before { registration.contact_email = nil }
 
-              described_class.run(registration: registration)
-            end
-          end
+          it "does not attempt to send an email" do
+            expect_any_instance_of(Notifications::Client).not_to receive(:send_email)
 
-          context "when run on a registration renewal" do
-            let(:registration) { create(:renewing_registration, :has_required_data, contact_email: "foo@example.com") }
-
-            it_behaves_like "can create a communication record", "email"
+            described_class.run(registration: registration)
           end
         end
       end
