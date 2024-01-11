@@ -46,6 +46,10 @@ module WasteCarriersEngine
       @_registration ||= Registration.find_by(reg_identifier: reg_identifier)
     end
 
+    def communication_records
+      registration.communication_records
+    end
+
     def fee_including_possible_type_change
       if registration_type_changed?
         Rails.configuration.renewal_charge + Rails.configuration.type_change_charge
