@@ -46,7 +46,7 @@ module WasteCarriersEngine
     end
 
     def create_communication_record
-      @registration.communication_records.create(communication_record_attributes)
+      @registration.communication_records.create!(communication_record_attributes)
     end
   end
 end
