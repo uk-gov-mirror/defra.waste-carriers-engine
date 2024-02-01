@@ -6,24 +6,33 @@ h1 {
   margin-bottom: 20px;
 }
 body {
-  margin: 40px 60px;
+  /*margin: 40px 60px;*/
+  margin: 5% auto;
 }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+table th, table td {
+  padding: 0.5em;
+  text-align: left;
+}
+
 table tr td:first-child {
   width: 220px;
 }
+
 ul, li {
   list-style-type: none;
   margin-left: 0;
   padding-left: 0;
 }
-li, td, p {
-  font-size: 18px;
+
+li, td, p, .certificate_text {
+  font-size: 1em;
   line-height: 1.5;
-}
-table th {
-  margin-top: 20px;
-  text-align: left;
-  font-size: 22px;
 }
 
 #wrapper {
@@ -49,13 +58,39 @@ table th {
   text-align: left;
 }
 
-.certificate_text {
-  font-size: 14px;
-  line-height: 1.6;
+/* Switch html pdf to match screen width when under 800px */
+@media screen and (max-width: 800px) {
+  #wrapper {
+    width: 100%;
+    padding: 10px;
+  }
 }
 
+/* Adding media query for smaller screens */
+@media screen and (max-width: 480px) {
+  body {
+    margin: 10px;
+  }
+
+  li, td, p, h1, .certificate_text {
+    font-size: 0.9em; /* Smaller font size for small devices */
+  }
+
+  .certificate_table th, .certificate_table td {
+    padding: 4px; /* Smaller padding */
+  }
+
+  /* Adjusting layout for smaller screens */
+  .grid-wrapper, .page-header, .renewal {
+    text-align: center;
+  }
+}
+
+/* Print specific styles */
 @media print {
-  .cta-button {
-    display: none; /* Hide elements not needed for print */
+  /* Ensure the content fits A4 size when printing */
+  body {
+    width: 100%;
+    max-width: none;
   }
 }
