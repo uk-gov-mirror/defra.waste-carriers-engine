@@ -5,10 +5,10 @@ module WasteCarriersEngine
     class RegistrationConfirmationEmailService < BaseSendEmailService
       private
 
-      LOWER_TIER_TEMPLATE_ID = "889fa2f2-f70c-4b5a-bbc8-d94a8abd3990"
+      LOWER_TIER_TEMPLATE_ID = "591d1a44-9c0a-43a5-a76f-235e67df27d8"
       LOWER_TIER_COMMS_LABEL = "Lower tier registration complete"
 
-      UPPER_TIER_TEMPLATE_ID = "fe1e4746-c940-4ace-b111-8be64ee53b35"
+      UPPER_TIER_TEMPLATE_ID = "77ea008f-7965-4f68-93dc-af11fa072234"
       UPPER_TIER_COMMS_LABEL = "Upper tier registration complete"
 
       def notify_options
