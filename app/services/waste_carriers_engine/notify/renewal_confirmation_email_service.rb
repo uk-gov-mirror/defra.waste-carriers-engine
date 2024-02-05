@@ -3,7 +3,7 @@
 module WasteCarriersEngine
   module Notify
     class RenewalConfirmationEmailService < BaseSendEmailService
-      TEMPLATE_ID = "6d54a9bc-9b62-4d93-a40a-d06d04ed58ca"
+      TEMPLATE_ID = "738cb684-9c89-4041-b3b3-66bc983922cc"
       COMMS_LABEL = "Upper tier renewal complete"
 
       private

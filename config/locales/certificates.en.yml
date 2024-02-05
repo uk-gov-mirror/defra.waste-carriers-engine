@@ -4,6 +4,7 @@ en:
       errors:
         token: "You do not have permission to view this page"
       show:
+        view_as_pdf: "View certificate as PDF (opens in new window)"
         heading: "Certificate of Registration under the Waste (England and Wales) Regulations 2011"
         authority: "Regulation authority"
         name: "Name"
@@ -22,7 +23,6 @@ en:
         registered: "Registered as"
         registration_number: "Registration number"
         business_address: "Address of place of business"
-        carrier_telephone_number: "Telephone number"
         registration_date: "Date of registration"
         expiry_date: "Expiry date of registration (unless revoked)"
         cert_created_date: "This certificate was created on %{date}. These details are correct at the time of certificate generation."
@@ -39,13 +39,19 @@ en:
         broker_dealer: "broker and dealer"
         carrier_broker_dealer: "carrier, broker and dealer"
       confirm_email:
-        legend: "Confirm your email address"
+        title: "In order to access your certificate, enter the email address that was used during registration."
+        heading: "In order to access your certificate, enter the email address that was used during registration."
+        email_label: "Email address"
+        hint: "This is the email address that was entered during registration"
+        submit: "Confirm"
       process_email:
-        error: "Invalid email address"
+        error: "You need to enter the email address that the certificate link was sent to"
       renew_token:
+        title: "The certificate link has expired, enter an email address that was used during registration."
         heading: "The certificate link has expired, enter an email address that was used during registration."
         email_label: "Email address"
         hint: "This is the email address that was entered during registration"
         submit: "Continue"
       renewal_sent:
+        title: "If the email address you entered is correct we will send a link to that email address. You can close this window"
         heading: "If the email address you entered is correct we will send a link to that email address. You can close this window"
