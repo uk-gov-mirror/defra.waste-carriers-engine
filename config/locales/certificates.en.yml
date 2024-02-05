@@ -23,7 +23,6 @@ en:
         registered: "Registered as"
         registration_number: "Registration number"
         business_address: "Address of place of business"
-        carrier_telephone_number: "Telephone number"
         registration_date: "Date of registration"
         expiry_date: "Expiry date of registration (unless revoked)"
         cert_created_date: "This certificate was created on %{date}. These details are correct at the time of certificate generation."
@@ -46,7 +45,7 @@ en:
         hint: "This is the email address that was entered during registration"
         submit: "Confirm"
       process_email:
-        error: "You need to enter the email address that the certificate link was sent to."
+        error: "You need to enter the email address that the certificate link was sent to"
       renew_token:
         title: "The certificate link has expired, enter an email address that was used during registration."
         heading: "The certificate link has expired, enter an email address that was used during registration."
