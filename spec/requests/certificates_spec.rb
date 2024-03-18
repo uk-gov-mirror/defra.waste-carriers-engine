@@ -14,12 +14,27 @@ RSpec.describe "Certificates" do
   let(:base_path) { "/#{registration.reg_identifier}/certificate" }
   let(:token_renewal_path) { "/#{registration.reg_identifier}/certificate_renew_token" }
   let(:token_renewal_sent_path) { "/#{registration.reg_identifier}/certificate_renewal_sent" }
+  let(:valid_email_uppercase) { valid_email.upcase }
+  let(:valid_email_mixed_case) { "ConTact@ExAmple.CoM" }
+
 
   describe "POST process_email" do
     context "with valid email" do
       it "sets the valid email in session and redirects to the certificate page" do
         post process_email_path, params: { email: valid_email }
         expect(response).to redirect_to("#{base_path}?token=#{token}")
+      end
+
+      context "with different cases" do
+        it "sets the valid email in session and redirects to the certificate page with uppercase email" do
+          post process_email_path, params: { email: valid_email_uppercase }
+          expect(response).to redirect_to("#{base_path}?token=#{token}")
+        end
+
+        it "sets the valid email in session and redirects to the certificate page with mixed case email" do
+          post process_email_path, params: { email: valid_email_mixed_case }
+          expect(response).to redirect_to("#{base_path}?token=#{token}")
+        end
       end
     end
 
@@ -209,6 +224,18 @@ RSpec.describe "Certificates" do
         expect(response).to redirect_to(token_renewal_sent_path)
         follow_redirect!
         expect(response).to render_template("waste_carriers_engine/certificates/renewal_sent")
+      end
+
+      context "with different cases" do
+        it "resets the token and redirects to the token renewal sent page with a uppercase email" do
+          post process_email_path, params: { email: valid_email_uppercase }
+          expect(response).to redirect_to("#{base_path}?token=#{token}")
+        end
+
+        it "resets the token and redirects to the token renewal sent page with a mixed case email" do
+          post process_email_path, params: { email: valid_email_mixed_case }
+          expect(response).to redirect_to("#{base_path}?token=#{token}")
+        end
       end
     end
 

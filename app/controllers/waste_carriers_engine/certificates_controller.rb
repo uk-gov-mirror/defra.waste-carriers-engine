@@ -85,7 +85,7 @@ module WasteCarriersEngine
     end
 
     def valid_email?(email)
-      [@registration.contact_email, @registration.receipt_email].compact.include?(email)
+      [@registration.contact_email, @registration.receipt_email].compact.map(&:downcase).include?(email.to_s.downcase)
     end
 
     def current_user_struct
