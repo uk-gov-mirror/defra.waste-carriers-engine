@@ -16,6 +16,8 @@ gemspec
 # GOV.UK styling
 gem "defra_ruby_template", "~> 3.13.0"
 
+gem "defra_ruby_govpay", git: "https://github.com/DEFRA/defra-ruby-govpay", branch: "debug-branch"
+
 gem "mongo_session_store"
 
 # Use CanCanCan for user roles and permissions

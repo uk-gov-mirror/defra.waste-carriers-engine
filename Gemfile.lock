@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/DEFRA/defra-ruby-govpay
+  revision: 82d26dd10c5e4556b49ded4daec8fce20e1a8cd3
+  branch: debug-branch
+  specs:
+    defra_ruby_govpay (0.2.1)
+      rest-client (~> 2.1)
+
 PATH
   remote: .
   specs:
@@ -153,8 +161,6 @@ GEM
       notifications-ruby-client
       rails
       sprockets-rails
-    defra_ruby_govpay (0.2.5)
-      rest-client (~> 2.1)
     defra_ruby_style (0.3.0)
       rubocop (>= 1.0, < 2.0)
     defra_ruby_template (3.13.0)
@@ -175,7 +181,7 @@ GEM
       warden (~> 1.2.3)
     diff-lcs (1.5.0)
     docile (1.4.0)
-    domain_name (0.6.20231109)
+    domain_name (0.6.20240107)
     dotenv (2.8.1)
     dotenv-rails (2.8.1)
       dotenv (= 2.8.1)
@@ -241,9 +247,9 @@ GEM
     marcel (1.0.4)
     matrix (0.4.2)
     method_source (1.0.0)
-    mime-types (3.5.1)
+    mime-types (3.5.2)
       mime-types-data (~> 3.2015)
-    mime-types-data (3.2023.1003)
+    mime-types-data (3.2024.0305)
     mini_mime (1.1.5)
     mini_portile2 (2.8.5)
     minitest (5.22.3)
@@ -469,6 +475,7 @@ PLATFORMS
 DEPENDENCIES
   cancancan (~> 3.5.0)
   database_cleaner-mongoid (~> 2.0.1)
+  defra_ruby_govpay!
   defra_ruby_style (~> 0.3.0)
   defra_ruby_template (~> 3.13.0)
   devise (~> 4.9.2)
