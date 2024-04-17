@@ -16,10 +16,12 @@ module WasteCarriersEngine
     end
 
     def copy_attributes_from_registration
+      # Omit addresses and key_people from embedded_documents as these will/won't be
+      # copied separately depending on options passed by the class using this concern
       attributes = SafeCopyAttributesService.run(
         source_instance: registration,
         target_class: self.class,
-        embedded_documents: %w[addresses metaData key_people],
+        embedded_documents: %w[metaData],
         attributes_to_exclude: options[:ignorable_attributes]
       )
       assign_attributes(strip_whitespace(attributes))
