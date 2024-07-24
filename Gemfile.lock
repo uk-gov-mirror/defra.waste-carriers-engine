@@ -259,7 +259,7 @@ GEM
     mongoid-locker (2.0.2)
       mongoid (>= 5.0, < 9)
     multi_json (1.15.0)
-    net-imap (0.4.11)
+    net-imap (0.4.12)
       date
       net-protocol
     net-pop (0.1.2)
@@ -463,7 +463,7 @@ GEM
     websocket-extensions (0.1.5)
     wicked_pdf (2.6.3)
       activesupport
-    zeitwerk (2.6.14)
+    zeitwerk (2.6.15)
 
 PLATFORMS
   ruby
