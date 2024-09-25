@@ -19,9 +19,7 @@ module WasteCarriersEngine
           end
 
           context "when there is a pending govpay payment" do
-            let(:finance_details) { build(:finance_details, :has_pending_govpay_order) }
-
-            subject { create(:new_registration, :has_pending_govpay_status, finance_details: finance_details, workflow_state: "govpay_form") }
+            subject { build(:new_registration, :has_pending_govpay_status, workflow_state: "govpay_form") }
 
             include_examples "has next transition", next_state: "registration_received_pending_govpay_payment_form"
           end

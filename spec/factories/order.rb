@@ -12,6 +12,12 @@ FactoryBot.define do
       total_amount { order_items.sum { |item| item[:amount] } }
     end
 
+    trait :has_pending_govpay_status do
+      has_required_data
+
+      govpay_status { WasteCarriersEngine::Payment::STATUS_CREATED }
+    end
+
     trait :has_copy_cards_item do
       date_created { Time.now }
 

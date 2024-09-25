@@ -177,11 +177,7 @@ module WasteCarriersEngine
 
               context "when the payment uuid is valid" do
                 before do
-                  govpay_id = SecureRandom.hex(22)
-                  order.update!(govpay_id: govpay_id)
-                  payment = build(:payment, amount: order.total_amount, govpay_payment_status: Payment::STATUS_CREATED, govpay_id: govpay_id)
-                  transient_registration.finance_details.payments = [payment]
-                  transient_registration.finance_details.save
+                  order.update!(govpay_status: Payment::STATUS_CREATED)
                 end
 
                 it "redirects to renewal_received_pending_govpay_payment_form" do

@@ -11,13 +11,6 @@ FactoryBot.define do
 
     trait :govpay do
       payment_type { "GOVPAY" }
-      govpay_id { SecureRandom.hex(22) }
-    end
-
-    trait :govpay_pending do
-      payment_type { "GOVPAY" }
-      govpay_id { SecureRandom.hex(22) }
-      govpay_payment_status { WasteCarriersEngine::Payment::STATUS_SUBMITTED }
     end
 
     trait :bank_transfer do
