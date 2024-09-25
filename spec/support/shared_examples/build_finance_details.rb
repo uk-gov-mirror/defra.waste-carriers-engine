@@ -51,6 +51,10 @@ module WasteCarriersEngine
         it "has the correct payment_method" do
           expect(order.payment_method).to eq("ONLINE")
         end
+
+        it "has the correct govpay_status" do
+          expect(order.govpay_status).to eq("IN_PROGRESS")
+        end
       end
 
       context "when it is a bank transfer order" do
