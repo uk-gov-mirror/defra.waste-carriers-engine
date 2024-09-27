@@ -28,6 +28,9 @@ module WasteCarriersEngine
     field :manualOrder, as: :manual_order,           type: String
     field :order_item_reference,                     type: String
 
+
+    before_save :log_govpay_status_change
+
     def self.new_order_for(user_email)
       order = Order.new
 
@@ -79,11 +82,35 @@ module WasteCarriersEngine
       return unless order_items.any?
 
       description = order_items.map(&:description)
-                               .join(", plus ")
+        .join(", plus ")
 
       description[0] = description[0].capitalize
 
       description
+    end
+
+    def log_govpay_status_change
+      if govpay_status_changed?
+        caller_info = find_relevant_caller
+
+        Rails.logger.info <<~LOG_MESSAGE
+          *******************************************
+          !!!!! GOVPAY STATUS CHANGED !!!!!
+          Previous status: #{govpay_status_was || 'NIL'}
+          Current status:  #{govpay_status}
+          Changed in file: #{caller_info}
+          *******************************************
+        LOG_MESSAGE
+      end
+    end
+
+    def find_relevant_caller
+      caller_locations.find do |loc|
+        !loc.path.include?('mongoid') &&
+        !loc.path.include?('activesupport') &&
+        !loc.path.include?('active_model') &&
+        !loc.path.end_with?('order.rb')
+      end.to_s
     end
   end
 end
