@@ -38,6 +38,7 @@ module WasteCarriersEngine
       let(:refund_webhook_service) { instance_double(WasteCarriersEngine::GovpayWebhookRefundService) }
 
       before do
+        allow(FeatureToggle).to receive(:active?).with(:detailed_logging)
         allow(WasteCarriersEngine::GovpayWebhookPaymentService).to receive(:new).and_return(payment_webhook_service)
         allow(payment_webhook_service).to receive(:run)
         allow(WasteCarriersEngine::GovpayWebhookRefundService).to receive(:new).and_return(refund_webhook_service)
@@ -47,7 +48,7 @@ module WasteCarriersEngine
       context "when handling errors" do
         before do
           allow(Airbrake).to receive(:notify)
-          allow(FeatureToggle).to receive(:active?).with("enhanced_govpay_logging").and_return(false)
+          allow(FeatureToggle).to receive(:active?).with(:detailed_logging).and_return(false)
         end
 
         context "with an unrecognised webhook body" do
@@ -60,7 +61,7 @@ module WasteCarriersEngine
           end
 
           context "when enhanced logging is enabled" do
-            before { allow(FeatureToggle).to receive(:active?).with("enhanced_govpay_logging").and_return(true) }
+            before { allow(FeatureToggle).to receive(:active?).with(:detailed_logging).and_return(true) }
 
             context "with sensitive information in webhook body" do
               let(:webhook_body) do

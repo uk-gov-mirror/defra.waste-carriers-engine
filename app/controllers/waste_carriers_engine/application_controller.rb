@@ -4,6 +4,9 @@ module WasteCarriersEngine
   class ApplicationController < ActionController::Base
     include WasteCarriersEngine::CanAddDebugLogging
 
+    # Tag all log rows with the controller and action name if detailed logging enabled
+    around_action :tag_logs
+
     # Collect analytics data
     after_action :record_user_journey
 
@@ -32,6 +35,20 @@ module WasteCarriersEngine
     end
 
     protected
+
+    # Implementing this cop's recommendation obfuscates the logic of this method:
+    # rubocop:disable Style/ExplicitBlockArgument
+    def tag_logs
+      # If detailed_logging is enabled, wrap the yield in a TaggedLogging block to log identify controller and action
+      if FeatureToggle.active?(:detailed_logging)
+        Rails.logger.tagged(self.class.name, action_name) do
+          yield
+        end
+      else
+        yield
+      end
+    end
+    # rubocop:enable Style/ExplicitBlockArgument
 
     def record_user_journey
       return unless @transient_registration.present? && @transient_registration.token.present?

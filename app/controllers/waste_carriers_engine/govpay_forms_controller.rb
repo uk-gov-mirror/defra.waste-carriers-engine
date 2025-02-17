@@ -9,6 +9,7 @@ module WasteCarriersEngine
       super(GovpayForm, "govpay_form")
 
       payment_info = prepare_for_payment
+      DetailedLogger.warn "payment_info: #{payment_info}"
 
       if payment_info == :error
         flash[:error] = I18n.t(".waste_carriers_engine.govpay_forms.new.setup_error")
@@ -20,20 +21,15 @@ module WasteCarriersEngine
 
     def payment_callback
       find_or_initialize_transient_registration(params[:token])
+      DetailedLogger.warn "payment_callback transient_registration: #{@transient_registration&.reg_identifier}"
 
       govpay_payment_status = GovpayPaymentDetailsService.new(
         payment_uuid: params[:uuid],
         is_moto: WasteCarriersEngine.configuration.host_is_back_office?
       ).govpay_payment_status
+      DetailedLogger.warn "payment_callback govpay payment status: #{govpay_payment_status}"
 
-      @transient_registration.with_lock do
-        case GovpayPaymentDetailsService.payment_status(govpay_payment_status)
-        when :success, :pending
-          respond_to_acceptable_payment(govpay_payment_status)
-        else
-          respond_to_unsuccessful_payment(govpay_payment_status)
-        end
-      end
+      process_govpay_payment_status(govpay_payment_status)
     rescue StandardError => e
       log_transient_registration_details("Error in payment callback", e, @transient_registration)
       Rails.logger.warn "Govpay payment callback error for payment uuid \"#{params[:uuid]}\": #{e}"
@@ -44,6 +40,19 @@ module WasteCarriersEngine
 
     private
 
+    def process_govpay_payment_status(govpay_payment_status)
+      govpay_payment_application_status = GovpayPaymentDetailsService.payment_status(govpay_payment_status)
+      DetailedLogger.warn "Govpay payment status in application terms: #{govpay_payment_application_status}"
+      @transient_registration.with_lock do
+        case govpay_payment_application_status
+        when :success, :pending
+          respond_to_acceptable_payment(govpay_payment_status)
+        else
+          respond_to_unsuccessful_payment(govpay_payment_status)
+        end
+      end
+    end
+
     def prepare_for_payment
       @transient_registration.prepare_for_payment(:govpay, current_user)
       order = @transient_registration.finance_details.orders.first
@@ -52,7 +61,9 @@ module WasteCarriersEngine
     end
 
     def respond_to_acceptable_payment(action)
-      return unless valid_transient_registration?
+      valid = valid_transient_registration?
+      DetailedLogger.warn "Responding to accepted payment, action #{action}, TR valid: #{valid}"
+      return unless valid
 
       govpay_callback_service = create_govpay_callback_service(action)
 
@@ -66,7 +77,9 @@ module WasteCarriersEngine
     end
 
     def respond_to_unsuccessful_payment(action)
-      return unless valid_transient_registration?
+      valid = valid_transient_registration?
+      DetailedLogger.warn "Responding to unsuccessful payment, action #{action}, TR valid: #{valid}"
+      return unless valid
 
       govpay_callback_service = create_govpay_callback_service(action)
 
@@ -98,7 +111,7 @@ module WasteCarriersEngine
 
       valid_text = is_valid ? "Valid" : "Invalid"
       title = "#{valid_text} Govpay response: #{action}"
-      Rails.logger.debug [title, "Params:", params.to_json].join("\n")
+      Rails.logger.warn [title, "Params:", params.to_json].join("\n")
       Airbrake.notify(title, error_message: params)
     end
 

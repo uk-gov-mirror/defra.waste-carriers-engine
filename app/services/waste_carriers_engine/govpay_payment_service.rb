@@ -12,29 +12,28 @@ module WasteCarriersEngine
     end
 
     def prepare_for_payment
-      response = DefraRubyGovpay::API.new(host_is_back_office:).send_request(
-        method: :post,
-        path: "/payments",
-        is_moto: host_is_back_office,
-        params: payment_params
-      )
+      Rails.logger.tagged("GovpayPaymentService", "prepare_for_payment") do
+        response = govpay_payment_response
+        response_json = JSON.parse(response.body)
 
-      response_json = JSON.parse(response.body)
+        govpay_payment_id = response_json["payment_id"]
+        DetailedLogger.warn "payment_uuid #{@order.payment_uuid}, payment_params: #{payment_params}, " \
+                            "received govpay payment id #{govpay_payment_id}"
 
-      govpay_payment_id = response_json["payment_id"]
-      if govpay_payment_id.present?
-        @order.govpay_id = govpay_payment_id
-        @order.save!
-        {
-          payment: nil, # @payment,
-          url: govpay_redirect_url(response)
-        }
-      else
+        if govpay_payment_id.present?
+          @order.govpay_id = govpay_payment_id
+          @order.save!
+          {
+            payment: nil, # @payment,
+            url: govpay_redirect_url(response)
+          }
+        else
+          :error
+        end
+      rescue StandardError => e
+        DetailedLogger.error("prepare_for_payment error: #{e}")
         :error
       end
-    rescue StandardError
-      # The error will have been logged by CanSendGovPayRequest, just return an error response here
-      :error
     end
 
     def payment_callback_url
@@ -51,6 +50,15 @@ module WasteCarriersEngine
     end
 
     private
+
+    def govpay_payment_response
+      DefraRubyGovpay::API.new(host_is_back_office:).send_request(
+        method: :post,
+        path: "/payments",
+        is_moto: host_is_back_office,
+        params: payment_params
+      )
+    end
 
     def host_is_back_office
       @host_is_back_office ||= WasteCarriersEngine.configuration.host_is_back_office?
