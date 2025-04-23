@@ -3,14 +3,23 @@
 require "rails_helper"
 
 module WasteCarriersEngine
-  RSpec.describe GovpayWebhookPaymentService do
-    describe ".run" do
+  RSpec.describe GovpayPaymentWebhookHandler do
+    describe ".process" do
 
-      subject(:run_service) { described_class.run(webhook_body) }
+      subject(:run_service) { described_class.process(webhook_body) }
 
       let(:webhook_body) { JSON.parse(file_fixture("govpay/webhook_payment_update_body.json").read) }
       let(:webhook_resource) { webhook_body["resource"] }
       let(:govpay_payment_id) { webhook_body["resource"]["payment_id"] }
+      let(:prior_payment_status) { Payment::STATUS_SUBMITTED }
+
+      let(:registration) { create(:registration, :has_required_data) }
+      let!(:wcr_payment) do
+        create(:payment, :govpay,
+               finance_details: registration.finance_details,
+               govpay_id: govpay_payment_id,
+               govpay_payment_status: prior_payment_status)
+      end
 
       include_examples "Govpay webhook services error logging"
 
@@ -23,15 +32,6 @@ module WasteCarriersEngine
       end
 
       context "when the update is for a payment" do
-        let(:prior_payment_status) { Payment::STATUS_SUBMITTED }
-        let(:registration) { create(:registration, :has_required_data) }
-        let!(:wcr_payment) do
-          create(:payment, :govpay,
-                 finance_details: registration.finance_details,
-                 govpay_id: govpay_payment_id,
-                 govpay_payment_status: prior_payment_status)
-        end
-
         context "when status is not present in the update" do
           before { assign_webhook_status(nil) }
 

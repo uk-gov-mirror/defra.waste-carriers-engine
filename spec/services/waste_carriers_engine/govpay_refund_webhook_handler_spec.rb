@@ -3,11 +3,11 @@
 require "rails_helper"
 
 module WasteCarriersEngine
-  RSpec.describe GovpayWebhookRefundService do
+  RSpec.describe GovpayRefundWebhookHandler do
 
-    describe ".run" do
+    describe ".process" do
 
-      subject(:run_service) { described_class.run(webhook_body) }
+      subject(:run_service) { described_class.process(webhook_body) }
 
       let(:webhook_body) { JSON.parse(file_fixture("govpay/webhook_refund_update_body.json").read) }
       let(:govpay_refund_id) { webhook_body["refund_id"] }

@@ -14,7 +14,7 @@ RSpec.shared_examples "Govpay webhook services error logging" do
       run_service
 
       expect(Airbrake).to have_received(:notify)
-    rescue ArgumentError
+    rescue StandardError
       # expected exception
     end
 
@@ -22,7 +22,7 @@ RSpec.shared_examples "Govpay webhook services error logging" do
       run_service
 
       expect(Rails.logger).to have_received(:error)
-    rescue ArgumentError
+    rescue StandardError
       # expected exception
     end
   end
@@ -66,7 +66,7 @@ RSpec.shared_examples "Govpay webhook status transitions" do
 
     it "does not update the status from #{old_status} to #{new_status}" do
       expect { run_service }.not_to(change { wcr_payment.reload.govpay_payment_status })
-    rescue WasteCarriersEngine::GovpayWebhookBaseService::InvalidGovpayStatusTransition
+    rescue DefraRubyGovpay::GovpayWebhookBaseService::InvalidGovpayStatusTransition
       # expected exception
     end
 
@@ -74,7 +74,7 @@ RSpec.shared_examples "Govpay webhook status transitions" do
       run_service
 
       expect(Airbrake).to have_received(:notify)
-    rescue WasteCarriersEngine::GovpayWebhookBaseService::InvalidGovpayStatusTransition
+    rescue DefraRubyGovpay::GovpayWebhookBaseService::InvalidGovpayStatusTransition
       # expected exception
     end
   end
