@@ -4,9 +4,10 @@ inherit_gem:
   defra_ruby_style:
     - default.yml
 
-require:
+plugins:
   - rubocop-factory_bot
   - rubocop-rspec
+  - rubocop-rspec_rails
 
 AllCops:
   TargetRubyVersion: 3.2.2
