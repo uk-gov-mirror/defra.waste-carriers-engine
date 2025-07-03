@@ -81,7 +81,9 @@ module WasteCarriersEngine
     end
 
     def order_by_payment_uuid
-      @transient_registration&.finance_details&.orders&.find_by(payment_uuid: @payment_uuid)
+      return nil unless @transient_registration&.finance_details&.orders
+
+      @transient_registration.finance_details.orders.find_by(payment_uuid: @payment_uuid)
     end
 
     def govpay_response_validator(govpay_status)

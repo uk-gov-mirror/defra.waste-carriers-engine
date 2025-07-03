@@ -17,8 +17,7 @@ module WasteCarriersEngine
     let(:govpay_service) { described_class.new(transient_registration, order) }
 
     before do
-      allow(Rails.configuration).to receive(:govpay_url).and_return(govpay_host)
-      allow(Rails.configuration).to receive(:renewal_charge).and_return(10_500)
+      allow(Rails.configuration).to receive_messages(govpay_url: govpay_host, renewal_charge: 10_500)
 
       transient_registration.prepare_for_payment(:govpay)
 
