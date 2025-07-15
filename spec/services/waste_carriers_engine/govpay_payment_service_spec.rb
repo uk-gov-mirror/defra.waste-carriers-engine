@@ -43,9 +43,10 @@ module WasteCarriersEngine
           expect(url).to eq("https://www.payments.service.gov.uk/secure/bb0a272c-8eaf-468d-b3xf-ae5e000d2231")
         end
 
-        # Including this test because the Worldpay equivalent does create a new payment
-        it "does not create a new payment" do
-          expect { govpay_service.prepare_for_payment }.not_to change { transient_registration.finance_details.payments.length }
+        # The payment used to be created by the callback; now created when govpay returns the payment id.
+        it "creates a new payment" do
+          expect { govpay_service.prepare_for_payment }
+            .to change { transient_registration.finance_details.payments.length }.from(0).to(1)
         end
 
         context "when the request is from the back-office" do
