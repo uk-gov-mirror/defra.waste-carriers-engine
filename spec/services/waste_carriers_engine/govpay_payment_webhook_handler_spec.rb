@@ -107,6 +107,24 @@ module WasteCarriersEngine
             end
           end
 
+          context "when the webhook changes the status to expired" do
+            let(:prior_payment_status) { Payment::STATUS_STARTED }
+
+            before do
+              allow(DefraRubyGovpay::WebhookPaymentService).to receive(:run)
+
+              assign_webhook_status("expired")
+            end
+
+            it "deletes the skeleton payment" do
+              expect { run_service }.to change { wcr_payment.finance_details.reload.payments.count }.by(-1)
+            end
+
+            it "does not update the balance" do
+              expect { run_service }.not_to change { wcr_payment.finance_details.reload.balance }
+            end
+          end
+
           context "when the webhook changes the status to success" do
             let(:prior_payment_status) { Payment::STATUS_STARTED }
 
