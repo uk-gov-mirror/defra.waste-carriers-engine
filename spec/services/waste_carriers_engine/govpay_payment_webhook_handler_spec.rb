@@ -85,6 +85,13 @@ module WasteCarriersEngine
         end
 
         context "when the payment status has changed" do
+          let(:transient_registration) { create(:new_registration, :has_pending_govpay_status) }
+          let!(:wcr_payment) do
+            create(:payment, :govpay,
+                   finance_details: transient_registration.finance_details,
+                   govpay_id: govpay_payment_id,
+                   govpay_payment_status: prior_payment_status)
+          end
 
           # unfinished statuses
           it_behaves_like "valid and invalid transitions", Payment::STATUS_CREATED, %w[started submitted success failed cancelled error], %w[]
@@ -111,13 +118,19 @@ module WasteCarriersEngine
             let(:prior_payment_status) { Payment::STATUS_STARTED }
 
             before do
-              allow(DefraRubyGovpay::WebhookPaymentService).to receive(:run)
+              allow(DefraRubyGovpay::WebhookPaymentService).to receive(:run).and_call_original
+
+              transient_registration.update(temp_govpay_next_url: Faker::Internet.url)
 
               assign_webhook_status("expired")
             end
 
             it "deletes the skeleton payment" do
               expect { run_service }.to change { wcr_payment.finance_details.reload.payments.count }.by(-1)
+            end
+
+            it "deletes the transient_registration's temp_govpay_next_url value" do
+              expect { run_service }.to change { wcr_payment.finance_details.transient_registration.reload.temp_govpay_next_url }.to(nil)
             end
 
             it "does not update the balance" do

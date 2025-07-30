@@ -78,6 +78,7 @@ module WasteCarriersEngine
       payment[:registration_reference] = "Govpay"
       payment[:comment] = "Paid via Govpay"
       payment[:uuid] = order.payment_uuid
+      payment[:govpay_payment_status] = Payment::STATUS_CREATED
       payment
     end
 
