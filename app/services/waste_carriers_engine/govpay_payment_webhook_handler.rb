@@ -60,8 +60,6 @@ module WasteCarriersEngine
       # If the payment is on a transient_registration, prevent retries from reusing the old next_url:
       transient_registration = payment.finance_details.transient_registration
       transient_registration&.update(temp_govpay_next_url: nil)
-
-      payment.destroy!
     end
 
     def complete_registration_or_renewal_if_ready

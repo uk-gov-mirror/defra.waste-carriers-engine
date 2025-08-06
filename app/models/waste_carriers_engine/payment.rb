@@ -13,6 +13,7 @@ module WasteCarriersEngine
     STATUS_FAILED = "failed"
     STATUS_SUCCESS = "success"
     STATUS_COMPLETE = "complete"
+    STATUS_EXPIRED = "expired"
 
     # Historic Worldpay payment statuses:
     STATUS_REFUSED = "REFUSED"

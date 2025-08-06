@@ -21,7 +21,10 @@ module WasteCarriersEngine
                govpay_payment_status: prior_payment_status)
       end
 
-      before { allow(WasteCarriersEngine::RegistrationConfirmationService).to receive(:run) }
+      before do
+        allow(WasteCarriersEngine::RegistrationCompletionService).to receive(:run)
+        allow(WasteCarriersEngine::RegistrationConfirmationService).to receive(:run)
+      end
 
       describe "invalid webhook errors" do
         context "when the update is not for a payment" do
@@ -53,13 +56,12 @@ module WasteCarriersEngine
         context "when the registration is not found" do
           before do
             allow(GovpayFindRegistrationService).to receive(:run).and_return(nil)
-            allow(RegistrationCompletionService).to receive(:new)
           end
 
           it "does not call the registration completion service" do
             run_service
 
-            expect(RegistrationCompletionService).not_to have_received(:new)
+            expect(WasteCarriersEngine::RegistrationCompletionService).not_to have_received(:run)
           end
         end
       end
@@ -68,8 +70,8 @@ module WasteCarriersEngine
 
         before do
           allow(Rails.logger).to receive(:warn)
-          registration.finance_details.update_balance
-          registration.save!
+          wcr_payment.finance_details.update_balance
+          wcr_payment.save!
         end
 
         context "when the payment status has not changed" do
@@ -91,6 +93,12 @@ module WasteCarriersEngine
                    finance_details: transient_registration.finance_details,
                    govpay_id: govpay_payment_id,
                    govpay_payment_status: prior_payment_status)
+          end
+
+          before do
+            allow(Rails.logger).to receive(:warn)
+            transient_registration.finance_details.update_balance
+            transient_registration.save!
           end
 
           # unfinished statuses
@@ -125,8 +133,8 @@ module WasteCarriersEngine
               assign_webhook_status("expired")
             end
 
-            it "deletes the skeleton payment" do
-              expect { run_service }.to change { wcr_payment.finance_details.reload.payments.count }.by(-1)
+            it "does not delete the skeleton payment" do
+              expect { run_service }.not_to change { wcr_payment.finance_details.reload.payments.count }
             end
 
             it "deletes the transient_registration's temp_govpay_next_url value" do
@@ -135,6 +143,10 @@ module WasteCarriersEngine
 
             it "does not update the balance" do
               expect { run_service }.not_to change { wcr_payment.finance_details.reload.balance }
+            end
+
+            it "updates the payment status" do
+              expect { run_service }.to change { wcr_payment.reload.govpay_payment_status }.to(Payment::STATUS_EXPIRED)
             end
           end
 
@@ -160,12 +172,6 @@ module WasteCarriersEngine
 
       context "when the payment belongs to a new registration" do
         let(:registration) { create(:new_registration, :has_required_data, :has_pending_govpay_status) }
-        let(:registration_completion_service) { instance_double(RegistrationCompletionService) }
-
-        before do
-          allow(RegistrationCompletionService).to receive(:new).and_return(registration_completion_service)
-          allow(registration_completion_service).to receive(:run)
-        end
 
         it_behaves_like "a valid payment update"
 
@@ -177,7 +183,7 @@ module WasteCarriersEngine
           it "does not call the registration completion service" do
             run_service
 
-            expect(registration_completion_service).not_to have_received(:run)
+            expect(RegistrationCompletionService).not_to have_received(:run)
           end
         end
 
@@ -187,7 +193,7 @@ module WasteCarriersEngine
           it "calls the registration completion service" do
             run_service
 
-            expect(registration_completion_service).to have_received(:run)
+            expect(RegistrationCompletionService).to have_received(:run)
           end
         end
       end
