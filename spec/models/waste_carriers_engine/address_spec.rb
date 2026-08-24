@@ -102,6 +102,32 @@ module WasteCarriersEngine
           end
         end
 
+        context "with a flat above a named building (org nil, premises present)" do
+          let(:data) do
+            {
+              "address" => "FLAT 9, SUMMER COURT, WHEELER STREET, MAIDSTONE, ME14 2UX",
+              "organisation" => nil,
+              "premises" => "SUMMER COURT",
+              "street_address" => "WHEELER STREET",
+              "locality" => nil
+            }
+          end
+
+          before { address.assign_house_number_and_address_lines(data) }
+
+          it "keeps the flat detail from the address field" do
+            expect(address[:house_number]).to eq("FLAT 9")
+          end
+
+          it "assigns premises to address_line_1" do
+            expect(address[:address_line_1]).to eq("SUMMER COURT")
+          end
+
+          it "assigns street_address to address_line_2" do
+            expect(address[:address_line_2]).to eq("WHEELER STREET")
+          end
+        end
+
         context "with a business address (org/premises present)" do
           let(:data) do
             {
@@ -115,7 +141,7 @@ module WasteCarriersEngine
 
           before { address.assign_house_number_and_address_lines(data) }
 
-          it "does NOT extract from address field (uses organisation as house_number)" do
+          it "uses organisation as house_number" do
             expect(address[:house_number]).to eq("ENVIRONMENT AGENCY")
           end
 
@@ -163,12 +189,20 @@ module WasteCarriersEngine
 
           before { address.assign_house_number_and_address_lines(data) }
 
-          it "does NOT extract from address field (organisation is present)" do
+          it "assigns organisation as house_number" do
             expect(address[:house_number]).to eq("ACME CORP")
           end
 
-          it "assigns street_address to address_line_1" do
-            expect(address[:address_line_1]).to eq("MAIN STREET")
+          it "keeps the building number from the address field" do
+            expect(address[:address_line_1]).to eq("123")
+          end
+
+          it "assigns street_address to address_line_2" do
+            expect(address[:address_line_2]).to eq("MAIN STREET")
+          end
+
+          it "assigns locality to address_line_3" do
+            expect(address[:address_line_3]).to eq("LONDON")
           end
         end
       end
@@ -240,6 +274,8 @@ module WasteCarriersEngine
         before do
           os_places_data["organisation"] = nil
           os_places_data["locality"] = "SOUTH BRISTOL"
+          # Update address to be consistent (no organisation prefix)
+          os_places_data["address"] = "HORIZON HOUSE, DEANERY ROAD, BRISTOL, BS1 5AH"
         end
 
         it "skips the missing field when assigning address lines" do
