@@ -128,6 +128,35 @@ module WasteCarriersEngine
           end
         end
 
+        context "with more parts than there are address fields" do
+          let(:data) do
+            {
+              "address" => "THE MANAGER, FLAT 3, ROSE COURT, 12 STATION APPROACH, HIGH STREET, LITTLE VILLAGE, BIGTOWN, AB1 2CD",
+              "organisation" => "THE MANAGER",
+              "premises" => "ROSE COURT",
+              "street_address" => "HIGH STREET",
+              "locality" => "LITTLE VILLAGE"
+            }
+          end
+
+          before { address.assign_house_number_and_address_lines(data) }
+
+          it "folds the surplus leading parts into house_number" do
+            expect(address[:house_number]).to eq("THE MANAGER, FLAT 3")
+          end
+
+          it "assigns the remaining lines in order" do
+            expect(address[:address_line_1]).to eq("ROSE COURT")
+            expect(address[:address_line_2]).to eq("12 STATION APPROACH")
+            expect(address[:address_line_3]).to eq("HIGH STREET")
+            expect(address[:address_line_4]).to eq("LITTLE VILLAGE")
+          end
+
+          it "does not write any attribute with a blank key" do
+            expect(address.attributes.keys).to all(be_present)
+          end
+        end
+
         context "with a business address (org/premises present)" do
           let(:data) do
             {

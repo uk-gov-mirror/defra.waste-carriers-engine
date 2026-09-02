@@ -87,6 +87,10 @@ module WasteCarriersEngine
                               address_line_3
                               address_line_4]
 
+      # Fold surplus leading parts into house_number so no line is lost
+      overflow = lines.size - address_attributes.size
+      lines = [lines.shift(overflow + 1).join(", ")] + lines if overflow.positive?
+
       # Assign lines one at a time until we run out of lines to assign
       write_attribute(address_attributes.shift, lines.shift) until lines.empty?
     end
